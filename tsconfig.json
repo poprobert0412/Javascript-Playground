@@ -13,7 +13,8 @@
     // "lib": ["esnext"],
     // "types": ["node"],
     // and npm install -D @types/node
-    // Other Outputs
+    // Other Outputs    
+    "removeComments": true,
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
