@@ -206,6 +206,57 @@
             padding-left: 14px;
             border-left: 3px solid var(--accent-4);
         }
+
+        @media (max-width: 768px) {
+            .achievements-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .achievement-card {
+                padding: 20px;
+            }
+
+            .achievement-card .ach-icon {
+                font-size: 2rem;
+            }
+
+            .achievement-card h3 {
+                font-size: 1rem;
+            }
+
+            .achievements-stats {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .stat-box {
+                padding: 16px;
+            }
+
+            .reset-btn {
+                width: 100%;
+                max-width: 280px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .achievement-card {
+                padding: 16px;
+            }
+
+            .achievement-card .ach-icon {
+                font-size: 1.6rem;
+            }
+
+            .achievement-card h3 {
+                font-size: 0.9rem;
+            }
+
+            .achievement-card p {
+                font-size: 0.78rem;
+            }
+        }
     </style>
 </head>
 

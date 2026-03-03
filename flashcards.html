@@ -271,6 +271,88 @@
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.72rem;
         }
+
+        @media (max-width: 768px) {
+            .flashcard-container {
+                margin: 0 8px 24px;
+            }
+
+            .flashcard {
+                min-height: 250px;
+            }
+
+            .flashcard-face {
+                padding: 28px 20px;
+            }
+
+            .flashcard-front .fc-term {
+                font-size: 1.4rem;
+            }
+
+            .flashcard-back .fc-definition {
+                font-size: 0.92rem;
+            }
+
+            .flashcard-back .fc-example {
+                font-size: 0.78rem;
+            }
+
+            .fc-nav {
+                gap: 8px;
+            }
+
+            .fc-btn {
+                padding: 10px 20px;
+                font-size: 0.82rem;
+            }
+
+            .fc-categories {
+                gap: 6px;
+            }
+
+            .fc-cat-btn {
+                padding: 6px 12px;
+                font-size: 0.72rem;
+            }
+
+            .keyboard-hint {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .flashcard {
+                min-height: 220px;
+            }
+
+            .flashcard-face {
+                padding: 24px 16px;
+            }
+
+            .flashcard-front .fc-term {
+                font-size: 1.2rem;
+            }
+
+            .fc-nav {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .fc-btn {
+                width: 100%;
+                max-width: 260px;
+                text-align: center;
+            }
+
+            .flashcard-controls {
+                gap: 8px;
+            }
+
+            .fc-badge {
+                font-size: 0.72rem;
+                padding: 4px 10px;
+            }
+        }
     </style>
 </head>
 

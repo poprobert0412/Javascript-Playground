@@ -325,6 +325,73 @@
             .two-col {
                 grid-template-columns: 1fr;
             }
+
+            .overview-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .overview-card {
+                padding: 20px;
+            }
+
+            .overview-number {
+                font-size: 2rem;
+            }
+
+            .progress-section,
+            .recent-activity {
+                padding: 20px;
+            }
+
+            .progress-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .progress-label {
+                min-width: unset;
+            }
+
+            .progress-bar-wrap {
+                width: 100%;
+            }
+
+            .level-card {
+                padding: 20px;
+            }
+
+            .level-icon {
+                font-size: 3rem;
+            }
+
+            .level-name {
+                font-size: 1.25rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .overview-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .overview-number {
+                font-size: 1.8rem;
+            }
+
+            .overview-label {
+                font-size: 0.8rem;
+            }
+
+            .activity-item {
+                padding: 10px 12px;
+                gap: 10px;
+            }
+
+            .activity-text {
+                font-size: 0.82rem;
+            }
         }
     </style>
 </head>
