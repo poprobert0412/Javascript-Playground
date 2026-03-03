@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript & TypeScript Playground</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --bg-code: #0d1117;
+            --accent-1: #e94560;
+            --accent-2: #0f3460;
+            --accent-3: #533483;
+            --accent-4: #00d2ff;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0b0;
+            --text-accent: #00d2ff;
+            --success: #00e676;
+            --warning: #ffab40;
+            --border: rgba(255,255,255,0.08);
+            --shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* === Animated Background === */
+        .bg-animation {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .bg-animation .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.15;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .bg-animation .orb:nth-child(1) {
+            width: 400px; height: 400px;
+            background: var(--accent-1);
+            top: -100px; left: -100px;
+            animation-delay: 0s;
+        }
+
+        .bg-animation .orb:nth-child(2) {
+            width: 500px; height: 500px;
+            background: var(--accent-3);
+            bottom: -150px; right: -150px;
+            animation-delay: -7s;
+        }
+
+        .bg-animation .orb:nth-child(3) {
+            width: 300px; height: 300px;
+            background: var(--accent-4);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -14s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(50px, -30px) scale(1.1); }
+            50% { transform: translate(-20px, 50px) scale(0.9); }
+            75% { transform: translate(30px, 20px) scale(1.05); }
+        }
+
+        /* === Header === */
+        header {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 60px 20px 40px;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-4), var(--accent-1), var(--accent-3));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        header .badge {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 6px 16px;
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--accent-4);
+            font-weight: 500;
+        }
+
+        /* === Main Layout === */
+        main {
+            position: relative;
+            z-index: 1;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* === Section Titles === */
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 40px 0 20px;
+            padding-left: 14px;
+            border-left: 3px solid var(--accent-1);
+            color: var(--text-primary);
+        }
+
+        .section-title span {
+            color: var(--accent-4);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+
+        /* === Cards === */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(0, 210, 255, 0.2);
+        }
+
+        .card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card h3 .icon {
+            font-size: 1.3rem;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+
+        /* === Code Blocks === */
+        .code-block {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 18px 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.88rem;
+            line-height: 1.7;
+            overflow-x: auto;
+            position: relative;
+            margin-bottom: 14px;
+        }
+
+        .code-block .lang-tag {
+            position: absolute;
+            top: 8px; right: 12px;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.6;
+        }
+
+        .code-block .keyword { color: #c678dd; }
+        .code-block .string { color: #98c379; }
+        .code-block .number { color: #d19a66; }
+        .code-block .comment { color: #5c6370; font-style: italic; }
+        .code-block .function { color: #61afef; }
+        .code-block .type { color: #e5c07b; }
+        .code-block .operator { color: #56b6c2; }
+
+        /* === Interactive Console === */
+        .console-area {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .console-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 18px;
+            background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .console-header .dot {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+        }
+
+        .console-header .dot.red { background: #ff5f57; }
+        .console-header .dot.yellow { background: #ffbd2e; }
+        .console-header .dot.green { background: #28c840; }
+
+        .console-header span {
+            margin-left: 10px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .console-input-area {
+            display: flex;
+            padding: 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .console-prompt {
+            padding: 14px 0 14px 18px;
+            color: var(--accent-4);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            user-select: none;
+        }
+
+        #consoleInput {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            padding: 14px 10px;
+            outline: none;
+        }
+
+        #consoleInput::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.5;
+        }
+
+        #runBtn {
+            padding: 14px 24px;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
+            border: none;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+            letter-spacing: 0.5px;
+        }
+
+        #runBtn:hover { opacity: 0.85; }
+
+        #consoleOutput {
+            padding: 16px 18px;
+            min-height: 80px;
+            max-height: 250px;
+            overflow-y: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.7;
+        }
+
+        .output-line {
+            padding: 2px 0;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .output-line.result { color: var(--success); }
+        .output-line.error { color: var(--accent-1); }
+        .output-line.info { color: var(--accent-4); }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* === Try It Buttons === */
+        .try-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 18px;
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid rgba(0, 210, 255, 0.25);
+            border-radius: 8px;
+            color: var(--accent-4);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 8px;
+        }
+
+        .try-btn:hover {
+            background: rgba(0, 210, 255, 0.2);
+            border-color: var(--accent-4);
+            transform: translateY(-1px);
+        }
+
+        /* === Exercise Cards === */
+        .exercise-card {
+            background: linear-gradient(135deg, rgba(83, 52, 131, 0.2), rgba(15, 52, 96, 0.2));
+            border: 1px solid rgba(83, 52, 131, 0.3);
+        }
+
+        .exercise-card .exercise-label {
+            display: inline-block;
+            padding: 3px 10px;
+            background: rgba(233, 69, 96, 0.2);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: var(--accent-1);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .exercise-card textarea {
+            width: 100%;
+            min-height: 100px;
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.88rem;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .exercise-card textarea:focus {
+            border-color: var(--accent-4);
+        }
+
+        .exercise-card .exercise-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .btn-run {
+            padding: 10px 22px;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-run:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(233, 69, 96, 0.3);
+        }
+
+        .btn-hint {
+            padding: 10px 22px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-hint:hover {
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+
+        .exercise-output {
+            margin-top: 12px;
+            padding: 12px 16px;
+            background: var(--bg-code);
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            min-height: 40px;
+            display: none;
+        }
+
+        .hint-text {
+            margin-top: 10px;
+            padding: 12px 16px;
+            background: rgba(255, 171, 64, 0.1);
+            border-left: 3px solid var(--warning);
+            border-radius: 0 8px 8px 0;
+            font-size: 0.9rem;
+            color: var(--warning);
+            display: none;
+        }
+
+        /* === Concept Grid === */
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        /* === Footer === */
+        footer {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--accent-4);
+            text-decoration: none;
+        }
+
+        footer a:hover { text-decoration: underline; }
+
+        /* === Scrollbar === */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--accent-2); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-3); }
+
+        /* === Responsive === */
+        @media (max-width: 768px) {
+            header h1 { font-size: 2rem; }
+            main { padding: 12px; }
+            .card { padding: 20px; }
+            .concept-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-animation">
+    <div class="orb"></div>
+    <div class="orb"></div>
+    <div class="orb"></div>
+</div>
+
+<header>
+    <h1>⚡ JS & TS Playground</h1>
+    <p>Învață JavaScript și TypeScript pas cu pas, cu exemple interactive și exerciții practice.</p>
+    <div class="badge">📚 Ghid Interactiv pentru Începători</div>
+</header>
+
+<main>
+
+    <!-- ========== CONSOLĂ INTERACTIVĂ ========== -->
+    <h2 class="section-title">Consolă Interactivă <span>// scrie cod JS aici</span></h2>
+
+    <div class="console-area">
+        <div class="console-header">
+            <div class="dot red"></div>
+            <div class="dot yellow"></div>
+            <div class="dot green"></div>
+            <span>console.js</span>
+        </div>
+        <div id="consoleOutput"></div>
+        <div class="console-input-area">
+            <div class="console-prompt">❯</div>
+            <input type="text" id="consoleInput" placeholder="Scrie cod JavaScript... (ex: 2 + 2)" autocomplete="off">
+            <button id="runBtn">▶ RUN</button>
+        </div>
+    </div>
+
+    <!-- ========== VARIABILE ========== -->
+    <h2 class="section-title">1. Variabile <span>// let, const, var</span></h2>
+
+    <div class="concept-grid">
+        <div class="card">
+            <h3><span class="icon">📦</span> let & const</h3>
+            <p><strong>let</strong> — variabilă care poate fi reasignată.<br>
+               <strong>const</strong> — valoare constantă, nu poate fi schimbată.</p>
+            <div class="code-block">
+                <span class="lang-tag">js</span>
+<span class="keyword">let</span> varsta = <span class="number">25</span>;
+varsta = <span class="number">26</span>;  <span class="comment">// ✅ OK</span>
+
+<span class="keyword">const</span> nume = <span class="string">"Robert"</span>;
+<span class="comment">// nume = "Ion"; ❌ Error!</span>
+            </div>
+            <button class="try-btn" onclick="tryCode('let varsta = 25; varsta = 26; console.log(`Varsta: ${varsta}`)') ">▶ Încearcă</button>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">🏷️</span> Tipuri de date</h3>
+            <p>JavaScript are tipuri primitive: <strong>string</strong>, <strong>number</strong>, <strong>boolean</strong>, <strong>null</strong>, <strong>undefined</strong>.</p>
+            <div class="code-block">
+                <span class="lang-tag">js</span>
+<span class="keyword">let</span> text = <span class="string">"Salut"</span>;      <span class="comment">// string</span>
+<span class="keyword">let</span> nr = <span class="number">42</span>;              <span class="comment">// number</span>
+<span class="keyword">let</span> activ = <span class="keyword">true</span>;        <span class="comment">// boolean</span>
+<span class="keyword">let</span> gol = <span class="keyword">null</span>;          <span class="comment">// null</span>
+<span class="keyword">let</span> x;                    <span class="comment">// undefined</span>
+            </div>
+            <button class="try-btn" onclick="tryCode('let text = &quot;Salut&quot;; console.log(typeof text); let nr = 42; console.log(typeof nr); let activ = true; console.log(typeof activ);')">▶ Încearcă typeof</button>
+        </div>
+    </div>
+
+    <!-- ========== FUNCȚII ========== -->
+    <h2 class="section-title">2. Funcții <span>// function, arrow =></span></h2>
+
+    <div class="concept-grid">
+        <div class="card">
+            <h3><span class="icon">⚙️</span> Funcție clasică</h3>
+            <p>Funcțiile sunt blocuri de cod reutilizabile. Se declară cu <code>function</code>.</p>
+            <div class="code-block">
+                <span class="lang-tag">js</span>
+<span class="keyword">function</span> <span class="function">salut</span>(nume) {
+    <span class="keyword">return</span> <span class="string">`Bună, ${</span>nume<span class="string">}!`</span>;
+}
+
+<span class="function">console.log</span>(<span class="function">salut</span>(<span class="string">"Robert"</span>));
+            </div>
+            <button class="try-btn" onclick="tryCode('function salut(nume) { return `Bună, ${nume}!`; } console.log(salut(&quot;Robert&quot;));')">▶ Încearcă</button>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">➡️</span> Arrow Function</h3>
+            <p>Sintaxă modernă și concisă, introdusă în ES6. Perfectă pentru funcții scurte.</p>
+            <div class="code-block">
+                <span class="lang-tag">js</span>
+<span class="keyword">const</span> <span class="function">dublu</span> = (n) <span class="operator">=></span> n * <span class="number">2</span>;
+
+<span class="function">console.log</span>(<span class="function">dublu</span>(<span class="number">7</span>));  <span class="comment">// 14</span>
+
+<span class="keyword">const</span> <span class="function">sumă</span> = (a, b) <span class="operator">=></span> a + b;
+<span class="function">console.log</span>(<span class="function">sumă</span>(<span class="number">3</span>, <span class="number">5</span>)); <span class="comment">// 8</span>
+            </div>
+            <button class="try-btn" onclick="tryCode('const dublu = (n) => n * 2; console.log(dublu(7)); const sumă = (a, b) => a + b; console.log(sumă(3, 5));')">▶ Încearcă</button>
+        </div>
+    </div>
+
+    <!-- ========== ARRAYS ========== -->
+    <h2 class="section-title">3. Arrays <span>// liste de elemente</span></h2>
+
+    <div class="card">
+        <h3><span class="icon">📋</span> Operații cu Arrays</h3>
+        <p>Array-urile sunt colecții ordonate. Poți adăuga, șterge, filtra și transforma elementele.</p>
+        <div class="code-block">
+            <span class="lang-tag">js</span>
+<span class="keyword">const</span> fructe = [<span class="string">"măr"</span>, <span class="string">"banană"</span>, <span class="string">"portocală"</span>];
+
+fructe.<span class="function">push</span>(<span class="string">"kiwi"</span>);          <span class="comment">// adaugă la sfârșit</span>
+fructe.<span class="function">pop</span>();                   <span class="comment">// șterge ultimul</span>
+
+<span class="comment">// Iterare cu forEach</span>
+fructe.<span class="function">forEach</span>(f <span class="operator">=></span> <span class="function">console.log</span>(f));
+
+<span class="comment">// Map — transformă fiecare element</span>
+<span class="keyword">const</span> mari = fructe.<span class="function">map</span>(f <span class="operator">=></span> f.<span class="function">toUpperCase</span>());
+
+<span class="comment">// Filter — filtrează</span>
+<span class="keyword">const</span> scurte = fructe.<span class="function">filter</span>(f <span class="operator">=></span> f.length <= <span class="number">5</span>);
+        </div>
+        <button class="try-btn" onclick="tryCode('const fructe = [&quot;măr&quot;, &quot;banană&quot;, &quot;portocală&quot;]; fructe.push(&quot;kiwi&quot;); console.log(&quot;Lista:&quot;, fructe); const mari = fructe.map(f => f.toUpperCase()); console.log(&quot;Uppercase:&quot;, mari); const scurte = fructe.filter(f => f.length <= 5); console.log(&quot;Scurte:&quot;, scurte);')">▶ Încearcă</button>
+    </div>
+
+    <!-- ========== OBIECTE ========== -->
+    <h2 class="section-title">4. Obiecte <span>// { key: value }</span></h2>
+
+    <div class="card">
+        <h3><span class="icon">🧱</span> Obiecte JavaScript</h3>
+        <p>Obiectele stochează date în perechi <strong>cheie: valoare</strong>. Sunt fundamentale în JS.</p>
+        <div class="code-block">
+            <span class="lang-tag">js</span>
+<span class="keyword">const</span> student = {
+    nume: <span class="string">"Robert"</span>,
+    varsta: <span class="number">25</span>,
+    limbaje: [<span class="string">"JavaScript"</span>, <span class="string">"TypeScript"</span>],
+    <span class="function">prezentare</span>() {
+        <span class="keyword">return</span> <span class="string">`${</span><span class="keyword">this</span>.nume<span class="string">} știe ${</span><span class="keyword">this</span>.limbaje.<span class="function">join</span>(<span class="string">" și "</span>)<span class="string">}`</span>;
+    }
+};
+
+<span class="function">console.log</span>(student.nume);
+<span class="function">console.log</span>(student.<span class="function">prezentare</span>());
+        </div>
+        <button class="try-btn" onclick="tryCode('const student = { nume: &quot;Robert&quot;, varsta: 25, limbaje: [&quot;JavaScript&quot;, &quot;TypeScript&quot;], prezentare() { return `${this.nume} știe ${this.limbaje.join(&quot; și &quot;)}`; } }; console.log(student.nume); console.log(student.prezentare());')">▶ Încearcă</button>
+    </div>
+
+    <!-- ========== TYPESCRIPT BASICS ========== -->
+    <h2 class="section-title">5. TypeScript Basics <span>// tipuri statice</span></h2>
+
+    <div class="concept-grid">
+        <div class="card" style="border-left: 3px solid var(--accent-4);">
+            <h3><span class="icon">🔷</span> De ce TypeScript?</h3>
+            <p>TypeScript adaugă <strong>tipuri statice</strong> peste JavaScript. Asta înseamnă că prinzi erorile <em>înainte</em> să rulezi codul!</p>
+            <div class="code-block">
+                <span class="lang-tag">ts</span>
+<span class="comment">// TypeScript — tipuri explicite</span>
+<span class="keyword">let</span> nume: <span class="type">string</span> = <span class="string">"Robert"</span>;
+<span class="keyword">let</span> varsta: <span class="type">number</span> = <span class="number">25</span>;
+<span class="keyword">let</span> activ: <span class="type">boolean</span> = <span class="keyword">true</span>;
+
+<span class="comment">// Funcție cu tipuri</span>
+<span class="keyword">function</span> <span class="function">salut</span>(nume: <span class="type">string</span>): <span class="type">string</span> {
+    <span class="keyword">return</span> <span class="string">`Salut, ${</span>nume<span class="string">}!`</span>;
+}
+            </div>
+        </div>
+
+        <div class="card" style="border-left: 3px solid var(--accent-4);">
+            <h3><span class="icon">📐</span> Interfaces</h3>
+            <p>Interfețele definesc <strong>forma</strong> unui obiect — ce proprietăți are și ce tipuri au.</p>
+            <div class="code-block">
+                <span class="lang-tag">ts</span>
+<span class="keyword">interface</span> <span class="type">Student</span> {
+    nume: <span class="type">string</span>;
+    varsta: <span class="type">number</span>;
+    limbaje: <span class="type">string</span>[];
+    activ?: <span class="type">boolean</span>;  <span class="comment">// opțional</span>
+}
+
+<span class="keyword">const</span> eu: <span class="type">Student</span> = {
+    nume: <span class="string">"Robert"</span>,
+    varsta: <span class="number">25</span>,
+    limbaje: [<span class="string">"JS"</span>, <span class="string">"TS"</span>]
+};
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== EXERCIȚII ========== -->
+    <h2 class="section-title">🎯 Exerciții Practice <span>// exersează aici</span></h2>
+
+    <!-- Exercițiul 1 -->
+    <div class="card exercise-card">
+        <div class="exercise-label">Exercițiu 1</div>
+        <h3><span class="icon">🧩</span> Calculează suma unui array</h3>
+        <p>Scrie o funcție <code>sumaArray</code> care primește un array de numere și returnează suma lor.</p>
+        <textarea id="ex1" spellcheck="false">function sumaArray(numere) {
+    // Scrie codul tău aici
+    // Hint: folosește .reduce() sau un for loop
+}
+
+console.log(sumaArray([1, 2, 3, 4, 5])); // Ar trebui să afișeze: 15</textarea>
+        <div class="exercise-actions">
+            <button class="btn-run" onclick="runExercise('ex1')">▶ Rulează</button>
+            <button class="btn-hint" onclick="showHint('hint1')">💡 Hint</button>
+        </div>
+        <div class="hint-text" id="hint1">
+            Folosește <code>numere.reduce((sum, n) => sum + n, 0)</code> pentru a calcula suma!
+        </div>
+        <div class="exercise-output" id="ex1-output"></div>
+    </div>
+
+    <!-- Exercițiul 2 -->
+    <div class="card exercise-card">
+        <div class="exercise-label">Exercițiu 2</div>
+        <h3><span class="icon">🔍</span> Filtrează numerele pare</h3>
+        <p>Scrie o funcție <code>numPare</code> care returnează doar numerele pare dintr-un array.</p>
+        <textarea id="ex2" spellcheck="false">function numPare(numere) {
+    // Scrie codul tău aici
+    // Hint: folosește .filter()
+}
+
+console.log(numPare([1, 2, 3, 4, 5, 6, 7, 8])); // [2, 4, 6, 8]</textarea>
+        <div class="exercise-actions">
+            <button class="btn-run" onclick="runExercise('ex2')">▶ Rulează</button>
+            <button class="btn-hint" onclick="showHint('hint2')">💡 Hint</button>
+        </div>
+        <div class="hint-text" id="hint2">
+            Folosește <code>numere.filter(n => n % 2 === 0)</code> — operatorul <code>%</code> returnează restul împărțirii!
+        </div>
+        <div class="exercise-output" id="ex2-output"></div>
+    </div>
+
+    <!-- Exercițiul 3 -->
+    <div class="card exercise-card">
+        <div class="exercise-label">Exercițiu 3</div>
+        <h3><span class="icon">🏗️</span> Creează un obiect</h3>
+        <p>Creează un obiect <code>masina</code> cu proprietățile: marca, model, an, și o metodă <code>descriere()</code>.</p>
+        <textarea id="ex3" spellcheck="false">const masina = {
+    // Adaugă proprietățile aici
+    // marca: "...",
+    // model: "...",
+    // an: 2024,
+    // descriere() { return `...`; }
+};
+
+console.log(masina.descriere());</textarea>
+        <div class="exercise-actions">
+            <button class="btn-run" onclick="runExercise('ex3')">▶ Rulează</button>
+            <button class="btn-hint" onclick="showHint('hint3')">💡 Hint</button>
+        </div>
+        <div class="hint-text" id="hint3">
+            Folosește template literals: <code>descriere() { return `${this.marca} ${this.model} (${this.an})`; }</code>
+        </div>
+        <div class="exercise-output" id="ex3-output"></div>
+    </div>
+
+</main>
+
+<footer>
+    <p>⚡ JavaScript & TypeScript Playground — Creat pentru a învăța prin practică</p>
+    <p style="margin-top: 8px;">
+        Resurse utile:
+        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">MDN</a> ·
+        <a href="https://www.typescriptlang.org/docs/" target="_blank">TypeScript Docs</a> ·
+        <a href="https://javascript.info/" target="_blank">javascript.info</a>
+    </p>
+</footer>
+
+<script>
+    // === Consolă Interactivă ===
+    const consoleInput = document.getElementById('consoleInput');
+    const consoleOutput = document.getElementById('consoleOutput');
+    const runBtn = document.getElementById('runBtn');
+    let commandHistory = [];
+    let historyIndex = -1;
+
+    function addOutput(text, type = 'result') {
+        const line = document.createElement('div');
+        line.className = `output-line ${type}`;
+        line.textContent = text;
+        consoleOutput.appendChild(line);
+        consoleOutput.scrollTop = consoleOutput.scrollHeight;
+    }
+
+    function executeCode(code) {
+        if (!code.trim()) return;
+
+        addOutput(`❯ ${code}`, 'info');
+        commandHistory.unshift(code);
+        historyIndex = -1;
+
+        // Override console.log temporar
+        const originalLog = console.log;
+        const outputs = [];
+
+        console.log = (...args) => {
+            outputs.push(args.map(a => {
+                if (typeof a === 'object') return JSON.stringify(a, null, 2);
+                return String(a);
+            }).join(' '));
+        };
+
+        try {
+            const result = eval(code);
+            outputs.forEach(o => addOutput(o, 'result'));
+            if (result !== undefined && outputs.length === 0) {
+                addOutput(typeof result === 'object' ? JSON.stringify(result, null, 2) : String(result), 'result');
+            }
+        } catch (err) {
+            addOutput(`❌ ${err.message}`, 'error');
+        }
+
+        console.log = originalLog;
+    }
+
+    function tryCode(code) {
+        consoleInput.value = code;
+        executeCode(code);
+        consoleInput.value = '';
+        consoleInput.focus();
+    }
+
+    runBtn.addEventListener('click', () => {
+        executeCode(consoleInput.value);
+        consoleInput.value = '';
+    });
+
+    consoleInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            executeCode(consoleInput.value);
+            consoleInput.value = '';
+        }
+        if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (historyIndex < commandHistory.length - 1) {
+                historyIndex++;
+                consoleInput.value = commandHistory[historyIndex];
+            }
+        }
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (historyIndex > 0) {
+                historyIndex--;
+                consoleInput.value = commandHistory[historyIndex];
+            } else {
+                historyIndex = -1;
+                consoleInput.value = '';
+            }
+        }
+    });
+
+    // === Exerciții ===
+    function runExercise(id) {
+        const code = document.getElementById(id).value;
+        const outputEl = document.getElementById(`${id}-output`);
+        outputEl.style.display = 'block';
+        outputEl.innerHTML = '';
+
+        const originalLog = console.log;
+        const outputs = [];
+
+        console.log = (...args) => {
+            outputs.push(args.map(a => {
+                if (typeof a === 'object') return JSON.stringify(a);
+                return String(a);
+            }).join(' '));
+        };
+
+        try {
+            eval(code);
+            if (outputs.length > 0) {
+                outputEl.innerHTML = outputs.map(o =>
+                    `<div class="output-line result">✅ ${o}</div>`
+                ).join('');
+            } else {
+                outputEl.innerHTML = '<div class="output-line info">ℹ️ Codul a rulat, dar nu a afișat nimic. Adaugă console.log()!</div>';
+            }
+        } catch (err) {
+            outputEl.innerHTML = `<div class="output-line error">❌ ${err.message}</div>`;
+        }
+
+        console.log = originalLog;
+    }
+
+    function showHint(id) {
+        const hint = document.getElementById(id);
+        hint.style.display = hint.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // === Mesaj de bun venit ===
+    addOutput('🚀 Bine ai venit! Scrie cod JavaScript și apasă Enter sau ▶ RUN.', 'info');
+    addOutput('💡 Încearcă: 2 + 2, "salut".toUpperCase(), [1,2,3].map(n => n * 10)', 'info');
+</script>
+
+</body>
+</html>
