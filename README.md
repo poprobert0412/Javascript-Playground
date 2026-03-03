@@ -22,6 +22,7 @@
 | ✏️ **18 Exerciții Practice** | Cu hint-uri, de la simplu la Boss Final |
 | ❓ **15 Quiz-uri** | Testează-ți cunoștințele cu feedback instant |
 | 🎯 **8 Provocări Consolă** | Scrie JavaScript direct din F12! |
+| 🖥️ **9 Console Challenges** | Deschide DevTools → Console și manipulează pagina cu cod real! |
 | 🚀 **3 Mini-Proiecte** | To-Do List, Quiz Game, Weather App |
 | 💻 **Playground** | Consolă JS interactivă cu autocomplete |
 | 🧩 **Code Puzzle** | Drag & drop — aranjează codul corect |
@@ -39,8 +40,8 @@
 | 🔊 **Sound Effects** | Ding melodic la corect, buzz la greșit |
 | ⌨️ **Ctrl+K Căutare** | Scurtătură globală pentru căutare |
 | 📥 **Export/Import** | Salvează/restaurează progresul ca JSON |
-| ✨ **Page Transitions** | Fade-in la încărcare, fade-out la navigare |
-| 📜 **Scroll Animations** | Elemente apar cu fade pe scroll |
+| ✨ **Page Transitions** | Slide-up smooth la încărcare cu loading bar gradient |
+| 📜 **Scroll Animations** | 5 variante direcționale (fade-up/down/left/right, scale-up) cu blur |
 | 💬 **Tooltip-uri** | Hover arată descrieri pe link-uri |
 | 🤔 **Pagina 404** | Pagină custom cu cod animat |
 | 📱 **Responsive Design** | Perfect pe telefon, tabletă și desktop |
@@ -54,7 +55,8 @@
 - **JavaScript (Vanilla)** — Zero dependențe externe, cod curat și comentat
 - **Google Fonts** — Inter + JetBrains Mono
 - **localStorage** — Salvare progres, teme, achievements
-- **Intersection Observer** — Scroll animations
+- **Intersection Observer** — Scroll animations cu 5 variante direcționale
+- **MutationObserver** — Detectare automată completare Console Challenges
 - **Web Audio API** — Sound effects fără fișiere externe
 - **Responsive Design** — 3 breakpoints (1024px, 768px, 480px)
 
@@ -64,40 +66,42 @@
 
 ```
 📦 JavaScript-Playground/
-├── 📄 index.html              # Pagina principală (landing page)
-├── 📄 lectii.html             # 19 lecții interactive
-├── 📄 exercitii.html          # 18 exerciții practice
-├── 📄 quizuri.html            # 15 quiz-uri
-├── 📄 provocari.html          # 8 provocări consolă
-├── 📄 proiecte.html           # 3 mini-proiecte
-├── 📄 playground.html         # Consolă JS interactivă
-├── 📄 puzzle.html             # 10 code puzzle-uri
-├── 📄 flashcards.html          # 44 flashcards JavaScript
-├── 📄 achievements.html       # Pagina achievements
-├── 📄 dashboard.html          # Dashboard progres
-├── 📄 cheatsheet.html         # Referință rapidă
-├── 📄 devtools.html           # Tutorial DevTools
-├── 📄 debugging.html          # Tutorial debugging
-├── 📄 glosar.html             # Glosar 238+ termeni
-├── 📄 search.html             # Căutare instant
-├── 📄 404.html                # Pagină 404 custom
+├── 📄 index.html                # Pagina principală (landing page)
+├── 📄 lectii.html               # 19 lecții interactive
+├── 📄 exercitii.html            # 18 exerciții practice
+├── 📄 quizuri.html              # 15 quiz-uri
+├── 📄 provocari.html            # 8 provocări consolă
+├── 📄 proiecte.html             # 3 mini-proiecte
+├── 📄 playground.html           # Consolă JS interactivă
+├── 📄 puzzle.html               # 10 code puzzle-uri
+├── 📄 flashcards.html           # 44 flashcards JavaScript
+├── 📄 console-challenges.html   # 🆕 9 Console Challenges (DevTools)
+├── 📄 achievements.html         # Pagina achievements
+├── 📄 dashboard.html            # Dashboard progres
+├── 📄 cheatsheet.html           # Referință rapidă
+├── 📄 devtools.html             # Tutorial DevTools
+├── 📄 debugging.html            # Tutorial debugging
+├── 📄 glosar.html               # Glosar 238+ termeni
+├── 📄 search.html               # Căutare instant
+├── 📄 404.html                  # Pagină 404 custom
 ├── 📂 css/
-│   └── 📄 styles.css          # Stiluri CSS partajate
+│   └── 📄 styles.css            # Stiluri CSS partajate
 ├── 📂 js/
-│   ├── 📄 script.js           # JS principal (partajat)
-│   ├── 📄 index.js            # Typing animation (landing)
-│   ├── 📄 glosar.js           # Logica glosar
-│   ├── 📄 quizuri.js          # Logica quiz
-│   ├── 📄 proiecte.js         # Logica mini-proiecte
-│   ├── 📄 provocari.js        # Logica provocări
-│   ├── 📄 search.js           # Logica căutare
-│   ├── 📄 achievements.js     # Logica achievements
-│   ├── 📄 dashboard.js        # Logica dashboard
-│   ├── 📄 puzzle.js           # Logica code puzzle
-│   └── 📄 flashcards.js       # Logica flashcards
-├── 📄 LICENSE                 # Licență MIT
-├── 📄 README.md               # Acest fișier
-└── 🖼️ screenshot.png          # Preview homepage
+│   ├── 📄 script.js             # JS principal (partajat, 16 secțiuni)
+│   ├── 📄 index.js              # Typing animation (landing)
+│   ├── 📄 glosar.js             # Logica glosar
+│   ├── 📄 quizuri.js            # Logica quiz + confetti + sounds
+│   ├── 📄 proiecte.js           # Logica mini-proiecte
+│   ├── 📄 provocari.js          # Logica provocări
+│   ├── 📄 search.js             # Logica căutare
+│   ├── 📄 achievements.js       # Logica achievements
+│   ├── 📄 dashboard.js          # Logica dashboard
+│   ├── 📄 puzzle.js             # Logica code puzzle + confetti
+│   ├── 📄 flashcards.js         # Logica flashcards
+│   └── 📄 console-challenges.js # 🆕 Console Challenges detection
+├── 📄 LICENSE                   # Licență MIT
+├── 📄 README.md                 # Acest fișier
+└── 🖼️ screenshot.png            # Preview homepage
 ```
 
 ---
@@ -124,15 +128,40 @@
 
 ---
 
-## 📸 Preview
+## 📸 Screenshots
 
-| Pagină | Descriere |
-|---|---|
-| 🏠 **Landing** | Pagina principală cu roadmap și statistici |
-| 📖 **Lecții** | Fiecare lecție cu demo-uri live și note de prof |
-| 🧩 **Code Puzzle** | Drag & drop cu scor și streak |
-| 📊 **Dashboard** | Sistem de nivele + bare de progres animate |
-| 🏆 **Achievements** | Badge-uri cu animații pulse |
+### 🏠 Homepage
+![Homepage](screenshot.png)
+
+### 🖥️ Console Challenges — Învață din DevTools
+![Console Challenges](screenshot-console.png)
+
+### ❓ Quiz cu Confetti + Achievement Toast
+![Quiz cu Confetti](screenshot-quiz.png)
+
+### 🃏 Flashcards cu Flip 3D
+![Flashcards](screenshot-flashcards.png)
+
+### 📊 Dashboard Progres
+![Dashboard](screenshot-dashboard.png)
+
+### 🤔 Pagina 404 Custom
+![404](screenshot-404.png)
+
+---
+
+## 🖥️ Console Challenges — Cum Funcționează?
+
+Aceasta este una dintre cele mai **unice** funcționalități ale platformei:
+
+1. Deschizi pagina `Console Challenges` 
+2. Apeși **F12** → tab-ul **Console**
+3. Scrii comenzi JavaScript reale pentru a manipula pagina
+4. Pagina **detectează automat** ce ai făcut (MutationObserver + polling)
+5. La **3 completări** → confetti! La **9** → achievement special!
+
+**Concepte acoperite:**
+`querySelector`, `getElementById`, `textContent`, `classList.add`, `style`, `addEventListener`, `createElement`, `appendChild`, `setAttribute`, `innerHTML`, `remove()`
 
 ---
 

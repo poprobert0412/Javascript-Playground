@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🖥️ Console Challenges — JS Playground</title>
+    <meta name="description" content="9 provocări interactive — deschide F12 și scrie JavaScript direct din consolă!">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* === CONSOLE CHALLENGES PAGE STYLES === */
+        .cc-intro {
+            text-align: center;
+            padding: 40px 20px 20px;
+        }
+
+        .cc-intro h1 {
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, #00d2ff, #00e676);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .cc-intro p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .cc-hint-box {
+            background: rgba(0, 210, 255, 0.08);
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            border-radius: 12px;
+            padding: 16px 24px;
+            margin: 20px auto;
+            max-width: 500px;
+            text-align: center;
+            color: var(--text-accent);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .cc-hint-box kbd {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 0.85rem;
+        }
+
+        /* Progress Bar */
+        .cc-progress {
+            text-align: center;
+            margin: 20px auto 30px;
+            max-width: 500px;
+        }
+
+        .cc-progress-bar {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            height: 14px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .cc-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00d2ff, #00e676, #ffd700);
+            border-radius: 12px;
+            transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .cc-progress-text {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .cc-progress-text span {
+            color: var(--text-accent);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* Milestone message */
+        .cc-milestone {
+            text-align: center;
+            padding: 14px;
+            border-radius: 12px;
+            margin: 0 auto 30px;
+            max-width: 600px;
+            font-weight: 600;
+            font-size: 1rem;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .cc-milestone.show {
+            display: block;
+        }
+
+        .cc-milestone.m3 {
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            color: #00d2ff;
+        }
+
+        .cc-milestone.m6 {
+            background: rgba(0, 230, 118, 0.1);
+            border: 1px solid rgba(0, 230, 118, 0.3);
+            color: #00e676;
+        }
+
+        .cc-milestone.m9 {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(233, 69, 96, 0.15));
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            color: #ffd700;
+            font-size: 1.2rem;
+        }
+
+        /* Task Grid */
+        .cc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
+        }
+
+        .cc-task {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cc-task::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-1), var(--accent-4));
+            opacity: 0.4;
+        }
+
+        .cc-task.completed {
+            border-color: rgba(0, 230, 118, 0.4);
+        }
+
+        .cc-task.completed::before {
+            background: linear-gradient(90deg, #00e676, #00d2ff);
+            opacity: 1;
+        }
+
+        .cc-task-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .cc-task-num {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .cc-task.completed .cc-task-num {
+            background: #00e676;
+            border-color: #00e676;
+            color: #000;
+        }
+
+        .cc-task-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        .cc-task-concept {
+            display: inline-block;
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid rgba(0, 210, 255, 0.2);
+            border-radius: 6px;
+            padding: 2px 10px;
+            font-size: 0.75rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-accent);
+            margin-bottom: 12px;
+        }
+
+        .cc-task-desc {
+            color: var(--text-secondary);
+            font-size: 0.88rem;
+            line-height: 1.5;
+            margin-bottom: 14px;
+        }
+
+        /* Command box */
+        .cc-cmd {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #98c379;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin-bottom: 14px;
+            line-height: 1.5;
+        }
+
+        .cc-cmd .comment {
+            color: #5c6370;
+            font-style: italic;
+        }
+
+        .cc-cmd .keyword {
+            color: #c678dd;
+        }
+
+        .cc-cmd .string {
+            color: #e5c07b;
+        }
+
+        .cc-cmd .method {
+            color: #61afef;
+        }
+
+        /* Interactive area */
+        .cc-playground {
+            background: var(--bg-secondary);
+            border: 1px dashed var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.4s ease;
+        }
+
+        .cc-playground.active-state {
+            border-color: rgba(0, 230, 118, 0.4);
+            background: rgba(0, 230, 118, 0.05);
+        }
+
+        /* Status badge */
+        .cc-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .cc-status.pending {
+            background: rgba(255, 171, 64, 0.1);
+            color: #ffab40;
+            border: 1px solid rgba(255, 171, 64, 0.2);
+        }
+
+        .cc-status.done {
+            background: rgba(0, 230, 118, 0.1);
+            color: #00e676;
+            border: 1px solid rgba(0, 230, 118, 0.2);
+        }
+
+        /* Task-specific */
+        .task-checkbox {
+            width: 22px;
+            height: 22px;
+            accent-color: #00e676;
+            cursor: pointer;
+        }
+
+        .task-text-target {
+            color: var(--text-secondary);
+            font-style: italic;
+            transition: all 0.3s ease;
+        }
+
+        .task-box {
+            width: 60px;
+            height: 60px;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            transition: all 0.5s ease;
+        }
+
+        .task-box.active {
+            background: #00e676 !important;
+            border-color: #00e676;
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 0 20px rgba(0, 230, 118, 0.4);
+        }
+
+        #task5-btn {
+            padding: 8px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        #task5-btn:hover {
+            border-color: var(--text-accent);
+        }
+
+        #task6-container {
+            min-height: 40px;
+            flex-wrap: wrap;
+        }
+
+        #task7-input {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 14px;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            width: 200px;
+        }
+
+        #task7-input:focus {
+            border-color: var(--text-accent);
+        }
+
+        #task8-container {
+            min-height: 40px;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        #task9-target {
+            background: linear-gradient(135deg, #e94560, #533483);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .cc-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .cc-intro h1 {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo">⚡ JS Playground</div>
+        <div class="nav-links">
+            <a href="index.html">🏠 Acasă</a>
+            <a href="lectii.html">📖 Lecții</a>
+            <a href="exercitii.html">✏️ Exerciții</a>
+            <a href="quizuri.html">❓ Quiz</a>
+            <a href="cheatsheet.html">📋 Cheatsheet</a>
+            <a href="devtools.html">🔧 DevTools</a>
+            <a href="provocari.html">🎯 Provocări</a>
+            <a href="proiecte.html">🚀 Proiecte</a>
+            <a href="debugging.html">🐛 Debug</a>
+            <a href="glosar.html">📖 Glosar</a>
+            <a href="search.html">🔍 Caută</a>
+            <a href="playground.html">💻 Playground</a>
+            <a href="achievements.html">🏆 Achievements</a>
+            <a href="dashboard.html">📊 Dashboard</a>
+            <a href="puzzle.html">🧩 Code Puzzle</a>
+            <a href="flashcards.html">🃏 Flashcards</a>
+            <a href="console-challenges.html" class="active">🖥️ Console Tasks</a>
+        </div>
+    </nav>
+
+    <!-- Intro -->
+    <div class="cc-intro">
+        <h1>🖥️ Console Challenges</h1>
+        <p>Deschide <strong>DevTools</strong> (F12 → Console) și scrie cod JavaScript real pentru a manipula această
+            pagină. Învață făcând!</p>
+        <div class="cc-hint-box">
+            Apasă <kbd>F12</kbd> sau <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>J</kbd> → tab-ul <strong>Console</strong>
+        </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="cc-progress">
+        <div class="cc-progress-bar">
+            <div class="cc-progress-fill" id="progressFill"></div>
+        </div>
+        <div class="cc-progress-text"><span id="completedCount">0</span> / 9 completate</div>
+    </div>
+
+    <!-- Milestone messages -->
+    <div class="cc-milestone m3" id="milestone3">🎉 3/9 completate! Ai prins baza — continuă!</div>
+    <div class="cc-milestone m6" id="milestone6">🔥 6/9 completate! Ești pe drumul cel bun!</div>
+    <div class="cc-milestone m9" id="milestone9">🏆 TOATE 9 COMPLETATE! Ești un MAESTRU al consolei! 🏆</div>
+
+    <main>
+        <div class="cc-grid">
+
+            <!-- TASK 1: querySelector + checked -->
+            <div class="cc-task" id="task1" data-task="1">
+                <div class="cc-task-header">
+                    <div class="cc-task-num">1</div>
+                    <div class="cc-task-title">Bifează checkbox-ul</div>
+                </div>
+                <div class="cc-task-concept">querySelector + .checked</div>
+                <div class="cc-task-desc">
+                    Folosește <code>querySelector</code> pentru a găsi checkbox-ul și setează-i proprietatea
+                    <code>checked</code> pe <code>true</code>.
+                </div>
+                <div class="cc-cmd">
+                    <span class="comment">// Scrie asta în consolă:</span>
+                    <span class="keyword">document</span>.<span class="method">querySelector</span>(<span
+                        class="string">'#task1-check'</span>).<span class="method">checked</span> = <span
+                        class="keyword">true</span>;
+                </div>
+                <div class="cc-playground">
+                    <input type="checkbox" class="task-checkbox" id="task1-check">
+                    <label for="task1-check" style="color:var(--text-secondary)">Checkbox de bifat din consolă</label>
+                </div>
+                <div class="cc-status pending" id="task1-status">⏳ În așteptare</div>
+            </div>
+
+            <!-- TASK 2: getElementById + textContent -->
+            <div class="cc-task" id="task2" data-task="2">
+                <div class="cc-task-header">
+                    <div class="cc-task-num">2</div>
+                    <div class="cc-task-title">Schimbă textul</div>
+                </div>
+                <div class="cc-task-concept">getElementById + textContent</div>
+                <div class="cc-task-desc">
+                    Găsește elementul cu <code>getElementById</code> și schimbă-i textul folosind
+                    <code>textContent</code>.
+                </div>
+                <div class="cc-cmd">
+                    <span class="comment">// Schimbă textul:</span>
+                    <span class="keyword">document</span>.<span class="method">getElementById</span>(<span
+                        class="string">'task2-text'</span>).<span class="method">textContent</span> = <span
+                        class="string">'Am reușit!'</span>;
+                </div>
+                <div class="cc-playground">
+                    <span class="task-text-target" id="task2-text">Schimbă-mă din consolă!</span>
+                </div>
+                <div class="cc-status pending" id="task2-status">⏳ În așteptare</div>
+            </div>
+
+            <!-- TASK 3: classList.add -->
+            <div class="cc-task" id="task3" data-task="3">
+                <div class="cc-task-header">
+                    <div class="cc-task-num">3</div>
+                    <div class="cc-task-title">Adaugă o clasă CSS</div>
+                </div>
+                <div class="cc-task-concept">classList.add()</div>
+                <div class="cc-task-desc">
+                    Adaugă clasa <code>active</code> pe cutie. CSS-ul va face restul — culoare, rotire, umbră!
+                </div>
+                <div class="cc-cmd">
+                    <span class="comment">// Adaugă clasa 'active':</span>
+                    <span class="keyword">document</span>.<span class="method">querySelector</span>(<span
+                        class="string">'#task3-box'</span>).<span class="method">classList</span>.<span
+                        class="method">add</span>(<span class="string">'active'</span>);
+                </div>
+                <div class="cc-playground">
+                    <div class="task-box" id="task3-box"></div>
+                </div>
+                <div class="cc-status pending" id="task3-status">⏳ În așteptare</div>
+            </div>
+
+            <!-- TASK 4: style manipulation -->
+            <div class="cc-task" id="task4" data-task="4">
+                <div class="cc-task-header">
+                    <div class="cc-task-num">4</div>
+                    <div class="cc-task-title">Schimbă stilul CSS</div>
+                </div>
+                <div class="cc-task-concept">element.style.property</div>
+                <div class="cc-task-desc">
+                    Modifică <code>background</code>-ul cutiei la orice culoare vrei (ex: <code>cyan</code>,
+                    <code>#ff6b6b</code>, <code>gold</code>).
+                </div>
+                <div class="cc-cmd">
+                    <span class="comment">// Schimbă background-ul:</span>
+                    <span class="keyword">document</span>.<span class="method">getElementById</span>(<span
+                        class="string">'task4-box'</span>).<span class="method">style</span>.<span
+                        class="method">background</span> = <span class="string">'cyan'</span>;
+                </div>
+                <div class="cc-playground">
+                    <div class="task-box" id="task4-box"></div>
+                </div>
+                <div class="cc-status pending" id="task4-status">⏳ În așteptare</div>
+            </div>
+
+            <!-- TASK 5: addEventListener -->
+            <div class="cc-task" id="task5" data-task="5">
+                <div class="cc-task-header">
+                    <div class="cc-task-num">5</div>
+                    <div class="cc-task-title">Adaugă un Event Listener</div>
+                </div>
+                <div class="cc-task-concept">addEventListener('click', ...)</div>
+                <div class="cc-task-desc">
+                    Adaugă un <code>click</code> listener pe buton care schimbă textul. Apoi <strong>apasă
+                        butonul</strong>!
+                </div>
+                <div class="cc-cmd">
+                    <span class="comment">// Adaugă listener, apoi click pe buton:</span>
+                    <span class="keyword">document</span>.<span class="method">getElementById</span>(<span
+                        class="string">'task5-btn'</span>).<span class="method">addEventListener</span>(<span
+                        class="string">'click'</span>, <span class="keyword">function</span>() {
+                    this.<span class="method">textContent</span> = <span class="string">'✅ Funcționează!'</span>;
+                    });
+                </div>
+                <div class="cc-playground">
+                    <button id="task5-btn">Apasă-mă (după ce adaugi listener)</button>
+                </div>
+                <div class="cc-status pending" id="task5-status">⏳ În așteptare</div>
+            </div>
+
+            <!-- TASK 6: createElement + appendChild -->
+            <div class="cc-task" id="task6" data-task="6">
+                <div class="cc-task-header">
+                    <div class="cc-task-num">6</div>
+                    <div class="cc-task-title">Creează un element nou</div>
+                </div>
+                <div class="cc-task-concept">createElement + appendChild</div>
+                <div class="cc-task-desc">
+                    Creează un element <code>&lt;div&gt;</code> cu text și adaugă-l în container.
+                </div>
+                <div class="cc-cmd">
+                    <span class="comment">// Creează și adaugă un element:</span>
+                    <span class="keyword">var</span> el = <span class="keyword">document</span>.<span
+                        class="method">createElement</span>(<span class="string">'div'</span>);
+                    el.<span class="method">textContent</span> = <span class="string">'Nou element creat! 🎯'</span>;
+                    el.<span class="method">style</span>.<span class="method">cssText</span> = <span
+                        class="string">'padding:8px;background:#00e676;color:#000;border-radius:8px;font-weight:600'</span>;
+                    <span class="keyword">document</span>.<span class="method">getElementById</span>(<span
+                        class="string">'task6-container'</span>).<span class="method">appendChild</span>(el);
+                </div>
+                <div class="cc-playground" id="task6-container">
+                    <span style="color:var(--text-secondary);font-size:0.85rem">Container gol — adaugă ceva!</span>
+                </div>
+                <div class="cc-status pending" id="task6-status">⏳ În așteptare</div>
+            </div>
+
+            <!-- TASK 7: setAttribute -->
+            <div class="cc-task" id="task7" data-task="7">
+                <div class="cc-task-header">
+                    <div class="cc-task-num">7</div>
+                    <div class="cc-task-title">Modifică un atribut</div>
+                </div>
+                <div class="cc-task-concept">setAttribute()</div>
+                <div class="cc-task-desc">
+                    Schimbă <code>placeholder</code>-ul input-ului folosind <code>setAttribute</code>.
+                </div>
+                <div class="cc-cmd">
+                    <span class="comment">// Schimbă placeholder-ul:</span>
+                    <span class="keyword">document</span>.<span class="method">getElementById</span>(<span
+                        class="string">'task7-input'</span>).<span class="method">setAttribute</span>(<span
+                        class="string">'placeholder'</span>, <span class="string">'Schimbat din consolă! 🚀'</span>);
+                </div>
+                <div class="cc-playground">
+                    <input type="text" id="task7-input" placeholder="Placeholder original...">
+                </div>
+                <div class="cc-status pending" id="task7-status">⏳ În așteptare</div>
+            </div>
+
+            <!-- TASK 8: innerHTML -->
+            <div class="cc-task" id="task8" data-task="8">
+                <div class="cc-task-header">
+                    <div class="cc-task-num">8</div>
+                    <div class="cc-task-title">Injectează HTML</div>
+                </div>
+                <div class="cc-task-concept">innerHTML</div>
+                <div class="cc-task-desc">
+                    Folosește <code>innerHTML</code> pentru a adăuga conținut HTML cu tag-uri în container.
+                </div>
+                <div class="cc-cmd">
+                    <span class="comment">// Injectează HTML:</span>
+                    <span class="keyword">document</span>.<span class="method">getElementById</span>(<span
+                        class="string">'task8-container'</span>).<span class="method">innerHTML</span> = <span
+                        class="string">'&lt;strong style="color:#00d2ff"&gt;🔥 HTML injectat!&lt;/strong&gt;'</span>;
+                </div>
+                <div class="cc-playground" id="task8-container">
+                    <span style="color:var(--text-secondary);font-size:0.85rem">Conținut HTML va apărea aici...</span>
+                </div>
+                <div class="cc-status pending" id="task8-status">⏳ În așteptare</div>
+            </div>
+
+            <!-- TASK 9: remove() -->
+            <div class="cc-task" id="task9" data-task="9">
+                <div class="cc-task-header">
+                    <div class="cc-task-num">9</div>
+                    <div class="cc-task-title">Șterge un element</div>
+                </div>
+                <div class="cc-task-concept">element.remove()</div>
+                <div class="cc-task-desc">
+                    Folosește <code>remove()</code> pentru a șterge elementul roșu din pagină. Dispare complet!
+                </div>
+                <div class="cc-cmd">
+                    <span class="comment">// Șterge elementul:</span>
+                    <span class="keyword">document</span>.<span class="method">getElementById</span>(<span
+                        class="string">'task9-target'</span>).<span class="method">remove</span>();
+                </div>
+                <div class="cc-playground" id="task9-playground">
+                    <div id="task9-target">🗑️ Șterge-mă din consolă!</div>
+                </div>
+                <div class="cc-status pending" id="task9-status">⏳ În așteptare</div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer
+        style="text-align:center;padding:30px;color:var(--text-secondary);font-size:0.85rem;border-top:1px solid var(--border);">
+        ⚡ JavaScript Playground — Creat pentru a învăța prin practică<br>
+        <a href="https://github.com/poprobert0412" style="color:var(--text-accent);">Creat de poprobert0412</a>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script src="js/console-challenges.js"></script>
+</body>
+
+</html>
