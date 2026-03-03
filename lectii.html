@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecții — Învață JavaScript Pas cu Pas</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .lesson-nav {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .lesson-nav a {
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .lesson-nav a:hover {
+            color: var(--accent-4);
+            background: rgba(0, 210, 255, 0.08);
+            border-color: rgba(0, 210, 255, 0.2);
+        }
+
+        .key-area-wrap {
+            display: inline-block;
+            padding: 6px 12px;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            outline: none;
+            min-width: 200px;
+            text-align: center;
+            margin: 8px 0;
+        }
+
+        .key-area-wrap:focus {
+            border-color: var(--accent-4);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo">⚡ JS Playground</div>
+        <div class="nav-links">
+            <a href="index.html">🏠 Acasă</a>
+            <a href="lectii.html" class="active">📖 Lecții</a>
+            <a href="exercitii.html">✏️ Exerciții</a>
+            <a href="quizuri.html">❓ Quiz</a>
+            <a href="cheatsheet.html">📋 Cheatsheet</a>
+            <a href="devtools.html">🔧 DevTools</a>
+            <a href="provocari.html">🎯 Provocări</a>
+            <a href="proiecte.html">🚀 Proiecte</a>
+            <a href="playground.html">💻 Playground</a>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <h1>📖 Lecții JavaScript</h1>
+        <p>De la variabile la events — tot ce trebuie să știi, explicat pas cu pas cu exemple interactive.</p>
+        <span class="badge">19 Lecții • 4 Demo-uri Live</span>
+    </div>
+
+    <main>
+        <!-- Quick nav -->
+        <div class="lesson-nav">
+            <a href="#variabile">📦 Variabile</a>
+            <a href="#tipuri">🏷️ Tipuri</a>
+            <a href="#conditionals">🔀 Condiții</a>
+            <a href="#loops">🔄 Bucle</a>
+            <a href="#functii">⚙️ Funcții</a>
+            <a href="#arrays">📋 Array-uri</a>
+            <a href="#strings">📝 String-uri</a>
+            <a href="#obiecte">🧱 Obiecte</a>
+            <a href="#comparisons">⚖️ Comparații</a>
+            <a href="#errors">🛡️ Erori</a>
+            <a href="#builtins">🧰 Built-in</a>
+            <a href="#scope">🔒 Scope</a>
+            <a href="#destructuring">📦 Destructuring</a>
+            <a href="#classes">🏛️ Classes</a>
+            <a href="#async">⏳ Async</a>
+            <a href="#fetch">🌍 Fetch</a>
+            <a href="#dom">🌐 DOM</a>
+            <a href="#events">🎯 Events</a>
+            <a href="#events-demo">🎮 Demo Live</a>
+        </div>
+
+        <!-- ============ LECȚIA 1: VARIABILE ============ -->
+        <h2 class="section-title" id="variabile">📦 Lecția 1 — Variabile <span>let, const, var</span></h2>
+
+        <div class="card">
+            <h3><span class="icon">📦</span> Ce sunt variabilele?</h3>
+            <p>Variabilele sunt "cutii" în care stochezi informații. Ca un sertar cu etichetă — pui ceva înăuntru, iar
+                eticheta e numele variabilei.</p>
+            <div class="code-block"><span class="lang-tag">javascript</span>
+                <span class="comment">// CONST — constantă, NU se poate reasigna</span>
+                <span class="keyword">const</span> <span class="function">nume</span> = <span
+                    class="string">"Robert"</span>;
+                <span class="keyword">const</span> <span class="function">PI</span> = <span
+                    class="number">3.14159</span>;
+
+                <span class="comment">// LET — se poate reasigna (schimba)</span>
+                <span class="keyword">let</span> <span class="function">varsta</span> = <span class="number">25</span>;
+                <span class="function">varsta</span> = <span class="number">26</span>; <span class="comment">// ✅
+                    OK</span>
+                <span class="function">varsta</span>++; <span class="comment">// ✅ OK — acum e 27</span>
+
+                <span class="comment">// VAR — versiunea VECHE, nu o mai folosi!</span>
+                <span class="keyword">var</span> <span class="function">vechi</span> = <span class="string">"nu folosi
+                    var"</span>;
+            </div>
+            <div class="prof-note">
+                <div class="prof-label">🎓 Sfat de Prof</div>
+                Regulă simplă: folosește <code>const</code> pentru tot. Numai când trebuie să <em>schimbi</em> valoarea,
+                folosește <code>let</code>. Nu folosi niciodată <code>var</code> — are probleme cu "scope-ul" (vei
+                învăța mai târziu).
+                <br><br>
+                <strong>Deschide F12 → Console</strong> și scrie acolo variabilele! Experimentează live!
+            </div>
+        </div>
+
+        <!-- ============ LECȚIA 2: TIPURI ============ -->
+        <h2 class="section-title" id="tipuri">🏷️ Lecția 2 — Tipuri de Date <span>string, number, boolean, null,
+                undefined</span></h2>
+
+        <div class="card">
+            <h3><span class="icon">🏷️</span> Tipurile primitive din JavaScript</h3>
+            <p>JavaScript are 7 tipuri de date. Cele mai importante 5:</p>
+            <div class="code-block"><span class="lang-tag">javascript</span>
+                <span class="comment">// STRING — text (între ghilimele sau backticks)</span>
+                <span class="keyword">const</span> text = <span class="string">"Salut, lume!"</span>;
+                <span class="keyword">const</span> altText = <span class="string">`Bună, ${text}`</span>; <span
+                    class="comment">// template literal</span>
+
+                <span class="comment">// NUMBER — numere (întregi sau zecimale)</span>
+                <span class="keyword">const</span> intreg = <span class="number">42</span>;
+                <span class="keyword">const</span> zecimal = <span class="number">3.14</span>;
+
+                <span class="comment">// BOOLEAN — adevărat sau fals</span>
+                <span class="keyword">const</span> eStudnet = <span class="keyword">true</span>;
+                <span class="keyword">const</span> eNoapte = <span class="keyword">false</span>;
+
+                <span class="comment">// NULL — "nimic" (setat INTENȚIONAT)</span>
+                <span class="keyword">const</span> nimic = <span class="keyword">null</span>;
+
+                <span class="comment">// UNDEFINED — "nu e definit" (implicit)</span>
+                <span class="keyword">let</span> ceva; <span class="comment">// ceva = undefined</span>
+
+                <span class="comment">// typeof — verifică tipul</span>
+                <span class="keyword">typeof</span> <span class="string">"salut"</span> <span class="comment">// →
+                    "string"</span>
+                <span class="keyword">typeof</span> <span class="number">42</span> <span class="comment">// →
+                    "number"</span>
+                <span class="keyword">typeof</span> <span class="keyword">true</span> <span class="comment">// →
+                    "boolean"</span>
+                <span class="keyword">typeof</span> <span class="keyword">null</span> <span class="comment">// →
+                    "object" (BUG din 1995!)</span>
+            </div>
+            <div class="prof-note">
+                <div class="prof-label">💡 De ce contează tipurile?</div>
+                <code>"5" + 2</code> = <code>"52"</code> (lipește text!) vs <code>5 + 2</code> = <code>7</code> (adună
+                numere).
+                JavaScript face conversii automate care pot fi surprinzătoare. De aceea TypeScript a fost creat — adaugă
+                <em>verificarea tipurilor</em>!
+            </div>
+        </div>
+
+        <!-- ============ LECȚIA 3: CONDIȚII ============ -->
+        <h2 class="section-title" id="conditionals">🔀 Lecția 3 — Condiții <span>if, else, switch, ternary</span></h2>
+
+        <div class="card">
+            <h3><span class="icon">🔀</span> if / else if / else — Decizii în cod</h3>
+            <p>Condițiile permit codului tău să ia <strong>decizii</strong>. "Dacă X, fă asta. Altfel, fă altceva."</p>
+            <div class="code-block"><span class="lang-tag">javascript</span>
+                <span class="comment">// IF / ELSE IF / ELSE</span>
+                <span class="keyword">const</span> nota = <span class="number">8</span>;
+
+                <span class="keyword">if</span> (nota >= <span class="number">9</span>) {
+                <span class="function">console</span>.<span class="function">log</span>(<span class="string">"Excelent!
+                    🏆"</span>);
+                } <span class="keyword">else if</span> (nota >= <span class="number">5</span>) {
+                <span class="function">console</span>.<span class="function">log</span>(<span class="string">"Promovat!
+                    ✅"</span>);
+                } <span class="keyword">else</span> {
+                <span class="function">console</span>.<span class="function">log</span>(<span class="string">"Nepromovat
+                    ❌"</span>);
+                }
+
+                <span class="comment">// TERNARY — if/else pe O LINIE</span>
+                <span class="keyword">const</span> mesaj = nota >= <span class="number">5</span> <span
+                    class="operator">?</span> <span class="string">"Promovat"</span> <span class="operator">:</span>
+                <span class="string">"Nepromovat"</span>;
+
+                <span class="comment">// SWITCH — pentru mai multe cazuri</span>
+                <span class="keyword">const</span> zi = <span class="string">"Luni"</span>;
+                <span class="keyword">switch</span> (zi) {
+                <span class="keyword">case</span> <span class="string">"Luni"</span>: <span
+                    class="function">console</span>.<span class="function">log</span>(<span class="string">"Start de
+                    săptămână"</span>); <span class="keyword">break</span>;
+                <span class="keyword">case</span> <span class="string">"Vineri"</span>: <span
+                    class="function">console</span>.<span class="function">log</span>(<span class="string">"Weekend
+                    aproape!"</span>); <span class="keyword">break</span>;
+                <span class="keyword">default</span>: <span class="function">console</span>.<span
+                    class="function">log</span>(<span class="string">"Zi normală"</span>);
+                }
+            </div>
+            <div class="prof-note">
+                <div class="prof-label">🎓 Când folosești ce?</div>
+                <code>if/else</code> = pentru 2-3 condiții simple<br>
+                <code>ternary ? :</code> = pentru condiții pe o singură linie (ex: atribuire)<br>
+                <code>switch</code> = când ai MULTE cazuri posibile (ex: ziua săptămânii, meniu)
+                <br><br>⚠️ Nu uita <code>break</code> în switch! Fără el, codul "cade" în următorul case!
+            </div>
+        </div>
+
+        <!-- ============ LECȚIA 4: BUCLE ============ -->
+        <h2 class="section-title" id="loops">🔄 Lecția 4 — Bucle <span>for, while, for...of, for...in</span></h2>
+
+        <div class="card">
+            <h3><span class="icon">🔄</span> Buclele — repetă codul automat</h3>
+            <p>Buclele execută o bucată de cod <strong>de mai multe ori</strong>. Fără ele, ar trebui să copiezi codul
+                manual.</p>
+            <div class="code-block"><span class="lang-tag">javascript</span>
+                <span class="comment">// FOR — cel mai comun loop</span>
+                <span class="comment">// for (INIȚIALIZARE; CONDIȚIE; PAS)</span>
+                <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i
+                < <span class="number">5</span>; i++) {
+                    <span class="function">console</span>.<span class="function">log</span>(i); <span class="comment">//
+                        0, 1, 2, 3, 4</span>
+                    }
+
+                    <span class="comment">// WHILE — repetă CÂT TIMP condiția e true</span>
+                    <span class="keyword">let</span> x = <span class="number">10</span>;
+                    <span class="keyword">while</span> (x > <span class="number">0</span>) {
+                    x -= <span class="number">2</span>; <span class="comment">// x = x - 2</span>
+                    }
+                    <span class="comment">// x este acum 0</span>
+
+                    <span class="comment">// FOR...OF — parcurge un array (simplu!)</span>
+                    <span class="keyword">const</span> fructe = [<span class="string">"mar"</span>, <span
+                        class="string">"banana"</span>, <span class="string">"kiwi"</span>];
+                    <span class="keyword">for</span> (<span class="keyword">const</span> fruct <span
+                        class="keyword">of</span> fructe) {
+                    <span class="function">console</span>.<span class="function">log</span>(fruct); <span
+                        class="comment">// "mar", "banana", "kiwi"</span>
+                    }
+
+                    <span class="comment">// FOR...IN — parcurge CHEILE unui obiect</span>
+                    <span class="keyword">const</span> persoana = { nume: <span class="string">"Robert"</span>, varsta:
+                    <span class="number">25</span> };
+                    <span class="keyword">for</span> (<span class="keyword">const</span> cheie <span
+                        class="keyword">in</span> persoana) {
+                    <span class="function">console</span>.<span class="function">log</span>(cheie, <span
+                        class="string">"="</span>, persoana[cheie]);
+                    } <span class="comment">// "nume = Robert", "varsta = 25"</span>
+            </div>
+            <div class="prof-note">
+                <div class="prof-label">🎓 Tabel comparativ bucle</div>
+                <code>for</code> = când știi CÂTE iterații vrei (de la 0 la 10)<br>
+                <code>while</code> = când nu știi câte iterații, dar știi CONDIȚIA<br>
+                <code>for...of</code> = cel mai simplu mod de a parcurge un ARRAY<br>
+                <code>for...in</code> = parcurge CHEILE unui obiect<br><br>
+                💡 <code>break</code> = oprește bucla complet | <code>continue</code> = sare la următoarea iterație
+            </div>
+        </div>
+
+        <!-- ============ LECȚIA 5: FUNCȚII ============ -->
+        <h2 class="section-title" id="functii">⚙️ Lecția 5 — Funcții <span>function, return, arrow =></span></h2>
+
+        <div class="card">
+            <h3><span class="icon">⚙️</span> Funcții clasice vs Arrow Functions</h3>
+            <p>O funcție e un bloc de cod reutilizabil — ca o rețetă pe care o poți chema oricând.</p>
+            <div class="code-block"><span class="lang-tag">javascript</span>
+                <span class="comment">// FUNCȚIE CLASICĂ</span>
+                <span class="keyword">function</span> <span class="function">aduna</span>(a, b) {
+                <span class="keyword">return</span> a + b;
+                }
+                <span class="function">aduna</span>(<span class="number">3</span>, <span class="number">5</span>); <span
+                    class="comment">// → 8</span>
+
+                <span class="comment">// ARROW FUNCTION (forma scurtă)</span>
+                <span class="keyword">const</span> <span class="function">scade</span> = (a, b) <span
+                    class="operator">=></span> a - b;
+                <span class="function">scade</span>(<span class="number">10</span>, <span class="number">3</span>);
+                <span class="comment">// → 7</span>
+
+                <span class="comment">// Cu un parametru — fără paranteze</span>
+                <span class="keyword">const</span> <span class="function">dublu</span> = n <span
+                    class="operator">=></span> n * <span class="number">2</span>;
+                <span class="function">dublu</span>(<span class="number">21</span>); <span class="comment">// →
+                    42</span>
+
+                <span class="comment">// Fără return (doar face ceva)</span>
+                <span class="keyword">function</span> <span class="function">saluta</span>(nume) {
+                <span class="function">console</span>.<span class="function">log</span>(<span class="string">`Salut,
+                    ${nume}!`</span>);
+                <span class="comment">// Nu are return → returnează undefined</span>
+                }
+            </div>
+            <div class="prof-note">
+                <div class="prof-label">🎓 Când folosești ce?</div>
+                <code>function</code> = pentru funcții mari, cu nume clar.<br>
+                <code>=></code> (arrow) = pentru funcții mici, callback-uri, și ca parametri (.map, .filter, etc.).<br>
+                <em>return</em> e OPȚIONAL — funcția poate doar "face" ceva fără să returneze.
+            </div>
+        </div>
+
+        <!-- ============ LECȚIA 4: ARRAY-URI ============ -->
+        <h2 class="section-title" id="arrays">📋 Lecția 6 — Array-uri <span>.map(), .filter(), .reduce(),
+                .forEach()</span></h2>
+
+        <div class="card">
+            <h3><span class="icon">📋</span> Metodele magice ale array-urilor</h3>
+            <p>Array = o listă de elemente. Metodele de array sunt super-puteri ale JavaScript-ului!</p>
+            <div class="code-block"><span class="lang-tag">javascript</span>
+                <span class="keyword">const</span> numere = [<span class="number">1</span>, <span
+                    class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span
+                    class="number">5</span>];
+
+                <span class="comment">// .map() — TRANSFORMĂ fiecare element</span>
+                numere.<span class="function">map</span>(n <span class="operator">=></span> n * <span
+                    class="number">10</span>); <span class="comment">// → [10, 20, 30, 40, 50]</span>
+
+                <span class="comment">// .filter() — FILTREAZĂ (păstrează doar ce trece testul)</span>
+                numere.<span class="function">filter</span>(n <span class="operator">=></span> n > <span
+                    class="number">3</span>); <span class="comment">// → [4, 5]</span>
+
+                <span class="comment">// .reduce() — COMBINĂ totul într-o singură valoare</span>
+                numere.<span class="function">reduce</span>((total, n) <span class="operator">=></span> total + n, <span
+                    class="number">0</span>); <span class="comment">// → 15</span>
+
+                <span class="comment">// .forEach() — EXECUTĂ ceva pentru fiecare (nu returnează)</span>
+                numere.<span class="function">forEach</span>(n <span class="operator">=></span> <span
+                    class="function">console</span>.<span class="function">log</span>(n));
+
+                <span class="comment">// .push() / .pop() — adaugă la sfârșit / scoate ultimul</span>
+                numere.<span class="function">push</span>(<span class="number">6</span>); <span class="comment">//
+                    [1,2,3,4,5,6]</span>
+                numere.<span class="function">pop</span>(); <span class="comment">// scoate 6, rămâne [1,2,3,4,5]</span>
+
+                <span class="comment">// CHAINING — lanțuiești metode!</span>
+                numere
+                .<span class="function">filter</span>(n <span class="operator">=></span> n % <span
+                    class="number">2</span> === <span class="number">0</span>) <span class="comment">// [2, 4]</span>
+                .<span class="function">map</span>(n <span class="operator">=></span> n * <span
+                    class="number">100</span>); <span class="comment">// [200, 400]</span>
+            </div>
+            <div class="prof-note">
+                <div class="prof-label">💡 Tabel comparativ</div>
+                <code>.map()</code> → Array NOU, <em>transformând</em> fiecare element<br>
+                <code>.filter()</code> → Array NOU, doar elementele care trec <em>testul</em><br>
+                <code>.reduce()</code> → O SINGURĂ valoare (sumă, maxim, obiect, etc.)<br>
+                <code>.forEach()</code> → Nimic nou, doar <em>execută</em> ceva pt fiecare
+            </div>
+        </div>
+
+        <!-- ============ LECȚIA 7: STRING METHODS ============ -->
+        <h2 class="section-title" id="strings">📝 Lecția 7 — Metode String <span>.split(), .includes(), .slice(),
+                .replace()</span></h2>
+
+        <div class="card">
+            <h3><span class="icon">📝</span> String-urile au super-puteri!</h3>
+            <p>Un string nu e doar text — are zeci de metode utile. Iată cele mai importante:</p>
+            <div class="code-block"><span class="lang-tag">javascript</span>
+                <span class="keyword">const</span> text = <span class="string">"Salut, JavaScript!"</span>;
+
+                <span class="comment">// LUNGIME</span>
+                text.<span class="function">length</span>; <span class="comment">// 18</span>
+
+                <span class="comment">// MAJUSCULE / MINUSCULE</span>
+                text.<span class="function">toUpperCase</span>(); <span class="comment">// "SALUT, JAVASCRIPT!"</span>
+                text.<span class="function">toLowerCase</span>(); <span class="comment">// "salut, javascript!"</span>
+
+                <span class="comment">// CĂUTARE</span>
+                text.<span class="function">includes</span>(<span class="string">"Java"</span>); <span
+                    class="comment">// true (conține "Java"?)</span>
+                text.<span class="function">startsWith</span>(<span class="string">"Sal"</span>); <span
+                    class="comment">// true</span>
+                text.<span class="function">indexOf</span>(<span class="string">"Java"</span>); <span class="comment">//
+                    7 (poziția unde începe)</span>
+
+                <span class="comment">// TĂIERE</span>
+                text.<span class="function">slice</span>(<span class="number">0</span>, <span class="number">5</span>);
+                <span class="comment">// "Salut" (de la 0 la 5)</span>
+                text.<span class="function">slice</span>(<span class="number">7</span>); <span class="comment">//
+                    "JavaScript!" (de la 7 la capăt)</span>
+
+                <span class="comment">// ÎNLOCUIRE</span>
+                text.<span class="function">replace</span>(<span class="string">"JavaScript"</span>, <span
+                    class="string">"Lume"</span>); <span class="comment">// "Salut, Lume!"</span>
+
+                <span class="comment">// SPLIT — transformă string în ARRAY</span>
+                <span class="string">"a,b,c"</span>.<span class="function">split</span>(<span
+                    class="string">","</span>); <span class="comment">// ["a", "b", "c"]</span>
+                <span class="string">"Salut lume"</span>.<span class="function">split</span>(<span class="string">"
+                    "</span>); <span class="comment">// ["Salut", "lume"]</span>
+
+                <span class="comment">// TRIM — scoate spațiile de la capete</span>
+                <span class="string">" salut "</span>.<span class="function">trim</span>(); <span class="comment">//
+                    "salut"</span>
+
+                <span class="comment">// REPEAT</span>
+                <span class="string">"ha"</span>.<span class="function">repeat</span>(<span class="number">3</span>);
+                <span class="comment">// "hahaha"</span>
+            </div>
+            <div class="prof-note">
+                <div class="prof-label">💡 String-urile sunt IMUTABILE!</div>
+                Metodele de string NU modifică string-ul original — returnează unul NOU!<br>
+                <code>text.toUpperCase()</code> NU schimbă <code>text</code> — trebuie să salvezi:
+                <code>const nou = text.toUpperCase();</code><br><br>
+                <code>.split()</code> + <code>.reverse()</code> + <code>.join()</code> = inversarea unui text! Încearcă
+                în Playground:
+                <code>"Robert".split("").reverse().join("")</code>
+            </div>
+        </div>
+
+        <!-- ============ LECȚIA 8: OBIECTE ============ -->
+        <h2 class="section-title" id="obiecte">🧱 Lecția 8 — Obiecte <span>proprietăți, metode, this</span></h2>
+
+        <div class="card">
+            <h3><span class="icon">🧱</span> Obiectele — structuri de date complexe</h3>
+            <p>Un obiect grupează date și funcții (metode) sub un singur "capac". Ca o fișă de angajat.</p>
+            <div class="code-block"><span class="lang-tag">javascript</span>
+                <span class="keyword">const</span> persoana = {
+                <span class="comment">// Proprietăți (date)</span>
+                nume: <span class="string">"Robert"</span>,
+                varsta: <span class="number">25</span>,
+                hobbyuri: [<span class="string">"coding"</span>, <span class="string">"gaming"</span>],
+
+                <span class="comment">// Metodă (funcție în obiect)</span>
+                <span class="function">prezentare</span>() {
+                <span class="comment">// "this" = obiectul curent (persoana)</span>
+                <span class="keyword">return</span> <span class="string">`${this.nume}, ${this.varsta} ani`</span>;
+                }
+                };
+
+                persoana.nume; <span class="comment">// "Robert"</span>
+                persoana.hobbyuri[<span class="number">0</span>]; <span class="comment">// "coding"</span>
+                persoana.<span class="function">prezentare</span>(); <span class="comment">// "Robert, 25 ani"</span>
+
+                <span class="comment">// Destructuring — extragi proprietăți în variabile</span>
+                <span class="keyword">const</span> { nume, varsta } = persoana;
+                <span class="comment">// Acum: nume = "Robert", varsta = 25</span>
+            </div>
+            <div class="prof-note">
+                <div class="prof-label">🎓 Ce e "this"?</div>
+                <code>this</code> = "eu, obiectul curent". Când scrii <code>this.nume</code> într-o metodă,
+                te referi la proprietatea <code>nume</code> a obiectului în care e metoda.
+                E ca și cum ai zice "numele <em>meu</em>".
+            </div>
+        </div>
+
+        <!-- ============ LECȚIA 9: COMPARAȚII ============ -->
+        <h2 class="section-title" id="comparisons">⚖️ Lecția 9 — Comparații &amp; Logică <span>==, ===, &&, ||, !</span>
+        </h2>
+
+        <div class="card">
+            <h3><span class="icon">⚖️</span> Operatori de comparare și logici</h3>
+            <p>Fundația oricărui <code>if</code>! Cum compari valori și combini condiții.</p>
+            <div class="code-block"><span class="lang-tag">javascript</span>
+                <span class="comment">// == vs === (FOARTE IMPORTANT!)</span>
+                <span class="number">5</span> == <span class="string">"5"</span> <span class="comment">// true — ==
+                    convertește tipurile</span>
+                <span class="number">5</span> === <span class="string">"5"</span> <span class="comment">// false — ===
+                    compară ȘI tipul</span>
+                <span class="comment">// 🏆 FOLOSEȘTE MEREU === !</span>
+
+                <span class="comment">// Operatori de comparare</span>
+                <span class="number">10</span> > <span class="number">5</span> <span class="comment">// true (mai
+                    mare)</span>
+                <span class="number">3</span>
+                < <span class="number">7</span> <span class="comment">// true (mai mic)</span>
+                    <span class="number">5</span> >= <span class="number">5</span> <span class="comment">// true (mai
+                        mare sau egal)</span>
+                    <span class="number">4</span>
+                    <= <span class="number">3</span> <span class="comment">// false (mai mic sau egal)</span>
+                        <span class="number">5</span> !== <span class="string">"5"</span> <span class="comment">// true
+                            (strict diferit)</span>
+
+                        <span class="comment">// OPERATORI LOGICI</span>
+                        <span class="keyword">true</span> && <span class="keyword">true</span> <span class="comment">//
+                            true — AND (ambele trebuie true)</span>
+                        <span class="keyword">true</span> && <span class="keyword">false</span> <span class="comment">//
+                            false</span>
+                        <span class="keyword">true</span> || <span class="keyword">false</span> <span class="comment">//
+                            true — OR (cel puțin unul true)</span>
+                        <span class="keyword">false</span> || <span class="keyword">false</span> <span
+                            class="comment">// false</span>
+                        !<span class="keyword">true</span> <span class="comment">// false — NOT (neagă)</span>
+                        !<span class="keyword">false</span> <span class="comment">// true</span>
+
+                        <span class="comment">// COMBINAT — exemplu real</span>
+                        <span class="keyword">const</span> varsta = <span class="number">20</span>;
+                        <span class="keyword">const</span> arePermis = <span class="keyword">true</span>;
+                        <span class="keyword">if</span> (varsta >= <span class="number">18</span> && arePermis) {
+                        <span class="function">console</span>.<span class="function">log</span>(<span
+                            class="string">"Poți conduce!"</span>);
+                        }
+            </div>
+            <div class="prof-note">
+                <div class="prof-label">🎓 Memorează așa</div>
+                <code>&&</code> (AND) = "ȘI" — <em>ambele</em> trebuie să fie adevărate<br>
+                <code>||</code> (OR) = "SAU" — <em>cel puțin una</em> trebuie să fie adevărată<br>
+                <code>!</code> (NOT) = "NU" — inversează: true → false, false → true<br><br>
+                Trucuri: <code>const x = valoare || "default"</code> — dacă valoare e falsy, folosește "default"<br>
+                <code>const y = obj?.prop</code> — optional chaining (nu crape dacă obj e null)
+            </div>
+        </div>
+
+        <!-- ============ LECȚIA 10: ERORI ============ -->
+        <h2 class="section-title" id="errors">🛡️ Lecția 10 — Error Handling <span>try, catch, finally, throw</span>
+        </h2>
+
+        <div class="card">
+            <h3><span class="icon">🛡️</span> try/catch — Prinde erorile fără crash!</h3>
+            <p>Fără try/catch, o eroare OPREȘTE tot codul. Cu try/catch, o <strong>prinzi</strong> și poți face ceva cu
+                ea.</p>
+            <div class="code-block"><span class="lang-tag">javascript</span>
+                <span class="comment">// FĂRĂ try/catch → pagina crape</span>
+                <span class="comment">// variabilaInexistenta; // ❌ ReferenceError!</span>
+
+                <span class="comment">// CU try/catch → eroarea e prinsă</span>
+                <span class="keyword">try</span> {
+                <span class="keyword">const</span> data = JSON.<span class="function">parse</span>(<span
+                    class="string">"nu sunt JSON"</span>);
+                } <span class="keyword">catch</span> (err) {
+                <span class="function">console</span>.<span class="function">log</span>(<span
+                    class="string">"Eroare:"</span>, err.message);
+                <span class="comment">// → "Unexpected token n in JSON"</span>
+                } <span class="keyword">finally</span> {
+                <span class="function">console</span>.<span class="function">log</span>(<span class="string">"Se execută
+                    MEREU"</span>);
+                }
+
+                <span class="comment">// THROW — arunci PROPRIA ta eroare</span>
+                <span class="keyword">function</span> <span class="function">divide</span>(a, b) {
+                <span class="keyword">if</span> (b === <span class="number">0</span>) {
+                <span class="keyword">throw new</span> <span class="type">Error</span>(<span class="string">"Nu poți
+                    împărți la zero!"</span>);
+                }
+                <span class="keyword">return</span> a / b;
+                }
+
+                <span class="keyword">try</span> {
+                <span class="function">divide</span>(<span class="number">10</span>, <span class="number">0</span>);
+                } <span class="keyword">catch</span> (err) {
+                <span class="function">console</span>.<span class="function">log</span>(err.message); <span
+                    class="comment">// "Nu poți împărți la zero!"</span>
+                }
+            </div>
+            <div class="prof-note">
+                <div class="prof-label">🎓 Când folosești try/catch?</div>
+                1. Când faci <code>JSON.parse()</code> (datele pot fi invalide)<br>
+                2. Când faci <code>fetch()</code> către un API (rețeaua poate pica)<br>
+                3. Când execuți cod de la utilizator (ca <code>eval()</code> în playground!)<br>
+                4. Când citești fișiere sau accesezi baze de date<br><br>
+                <code>finally</code> = se execută MEREU, indiferent dacă e eroare sau nu (bun pentru cleanup)
+            </div>
+        </div>
+
+        <!-- ============ LECȚIA 11: BUILT-INS ============ -->
+        <h2 class="section-title" id="builtins">🧰 Lecția 11 — Built-in Objects <span>Math, Date, JSON,
+                localStorage</span></h2>
+
+        <div class="card">
+            <h3><span class="icon">🧰</span> Obiectele built-in — deja incluse în JS!</h3>
+            <p>JavaScript vine cu obiecte gata făcute, pline de funcții utile. Nu trebuie să le importi!</p>
+            <div class="code-block"><span class="lang-tag">javascript</span>
+                <span class="comment">// === MATH — operații matematice ===</span>
+                Math.<span class="function">random</span>(); <span class="comment">// număr aleator 0-1 (ex:
+                    0.7342)</span>
+                Math.<span class="function">floor</span>(<span class="number">4.7</span>); <span class="comment">// 4
+                    (rotunjește în JOS)</span>
+                Math.<span class="function">ceil</span>(<span class="number">4.2</span>); <span class="comment">// 5
+                    (rotunjește în SUS)</span>
+                Math.<span class="function">round</span>(<span class="number">4.5</span>); <span class="comment">// 5
+                    (rotunjire normală)</span>
+                Math.<span class="function">max</span>(<span class="number">3</span>, <span class="number">7</span>,
+                <span class="number">1</span>); <span class="comment">// 7 (maximul)</span>
+                Math.<span class="function">min</span>(<span class="number">3</span>, <span class="number">7</span>,
+                <span class="number">1</span>); <span class="comment">// 1 (minimul)</span>
+                Math.<span class="function">abs</span>(-<span class="number">5</span>); <span class="comment">// 5
+                    (valoare absolută)</span>
+                <span class="comment">// Random 1-100: Math.floor(Math.random() * 100) + 1</span>
+
+                <span class="comment">// === DATE — data și ora ===</span>
+                <span class="keyword">const</span> acum = <span class="keyword">new</span> <span
+                    class="type">Date</span>();
+                acum.<span class="function">getFullYear</span>(); <span class="comment">// 2026</span>
+                acum.<span class="function">getMonth</span>(); <span class="comment">// 0-11 (ianuarie=0!)</span>
+                acum.<span class="function">getDate</span>(); <span class="comment">// ziua lunii (1-31)</span>
+                acum.<span class="function">getHours</span>(); <span class="comment">// ora (0-23)</span>
+                acum.<span class="function">toLocaleDateString</span>(<span class="string">"ro-RO"</span>); <span
+                    class="comment">// "03.03.2026"</span>
+
+                <span class="comment">// === JSON — convert obiecte ↔ text ===</span>
+                <span class="keyword">const</span> obj = { a: <span class="number">1</span>, b: <span
+                    class="number">2</span> };
+                JSON.<span class="function">stringify</span>(obj); <span class="comment">// '{"a":1,"b":2}' (obiect →
+                    text)</span>
+                JSON.<span class="function">parse</span>(<span class="string">'{"a":1}'</span>); <span
+                    class="comment">// {a: 1} (text → obiect)</span>
+
+                <span class="comment">// === localStorage — salvează date în browser! ===</span>
+                localStorage.<span class="function">setItem</span>(<span class="string">"nume"</span>, <span
+                    class="string">"Robert"</span>); <span class="comment">// salvează</span>
+                localStorage.<span class="function">getItem</span>(<span class="string">"nume"</span>); <span
+                    class="comment">// "Robert"</span>
+                localStorage.<span class="function">removeItem</span>(<span class="string">"nume"</span>); <span
+                    class="comment">// șterge</span>
+                <span class="comment">// Datele PERSISTĂ chiar dacă închizi browser-ul!</span>
+            </div>
+            <div class="prof-note">
+                <div class="prof-label">💡 localStorage — cea mai ușoară "bază de date"</div>
+                Vrei să salvezi setările utilizatorului? Scorul la un joc? Codul din playground?<br>
+                <code>localStorage</code> e cel mai simplu mod — date salvate direct în browser!<br><br>
+                ⚠️ <code>localStorage</code> salvează DOAR string-uri! Pentru obiecte:<br>
+                <code>localStorage.setItem("data", JSON.stringify(obiect));</code><br>
+                <code>const data = JSON.parse(localStorage.getItem("data"));</code>
+            </div>
+        </div>
+
+        <!-- ============ LECȚIA 12: SCOPE & CLOSURES ============ -->
+        <h2 class="section-title" id="scope">🔒 Lecția 12 — Scope & Closures <span>global, local, block, closure</span>
+        </h2>
+
+        <div class="card">
+            <h3><span class="icon">🔒</span> Scope — unde "trăiesc" variabilele</h3>
+            <p><strong>Scope</strong> = zona din cod în care o variabilă e vizibilă. Dacă o declari într-o funcție, nu o
+                poți accesa din afară!</p>
+            <div class="code-block"><span class="lang-tag">javascript</span>
+                <span class="comment">// GLOBAL SCOPE — vizibilă ORIUNDE</span>
+                <span class="keyword">const</span> global = <span class="string">"Sunt vizibilă peste tot!"</span>;
+
+                <span class="keyword">function</span> <span class="function">exemplu</span>() {
+                <span class="comment">// LOCAL SCOPE — vizibilă DOAR în funcție</span>
+                <span class="keyword">const</span> local = <span class="string">"Exist doar aici"</span>;
+                <span class="function">console</span>.<span class="function">log</span>(global); <span
+                    class="comment">// ✅ Merge!</span>
+                <span class="function">console</span>.<span class="function">log</span>(local); <span class="comment">//
+                    ✅ Merge!</span>
+                }
+                <span class="comment">// console.log(local); // ❌ ERROR! local nu există aici</span>
+
+                <span class="comment">// BLOCK SCOPE (let/const) — vizibilă doar în { }</span>
+                <span class="keyword">if</span> (<span class="keyword">true</span>) {
+                <span class="keyword">let</span> block = <span class="string">"Doar în if"</span>;
+                <span class="keyword">var</span> vechi = <span class="string">"Scapă din if!"</span>; <span
+                    class="comment">// ⚠️ var NU respectă block scope!</span>
+                }
+                <span class="comment">// console.log(block); // ❌ ERROR!</span>
+                <span class="comment">// console.log(vechi); // ✅ Merge (de aceea var e rău!)</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">🎁</span> Closures — funcții care "țin minte"</h3>
+            <p>Un <strong>closure</strong> e o funcție care "își amintește" variabilele din mediul unde a fost creată,
+                chiar și după ce acel mediu a terminat de executat.</p>
+            <div class="code-block"><span class="lang-tag">javascript</span>
+                <span class="comment">// CLOSURE — funcția internă "ține minte" count</span>
+                <span class="keyword">function</span> <span class="function">creazaContor</span>() {
+                <span class="keyword">let</span> count = <span class="number">0</span>; <span class="comment">//
+                    variabilă "privată"</span>
+                <span class="keyword">return</span> <span class="keyword">function</span>() {
+                count++;
+                <span class="keyword">return</span> count;
+                };
+                }
+
+                <span class="keyword">const</span> contor = <span class="function">creazaContor</span>();
+                contor(); <span class="comment">// 1</span>
+                contor(); <span class="comment">// 2</span>
+                contor(); <span class="comment">// 3</span>
+                <span class="comment">// Nu poți accesa "count" direct — e PRIVAT!</span>
+                <span class="comment">// Doar funcția returnată poate modifica count</span>
+
+                <span class="comment">// EXEMPLU PRACTIC — funcție cu "memorie"</span>
+                <span class="keyword">function</span> <span class="function">salutGenerator</span>(salut) {
+                <span class="keyword">return</span> <span class="keyword">function</span>(nume) {
+                <span class="keyword">return</span> <span class="string">`${salut}, ${nume}!`</span>;
+                };
+                }
+                <span class="keyword">const</span> salutRO = <span class="function">salutGenerator</span>(<span
+                    class="string">"Bună"</span>);
+                <span class="keyword">const</span> salutEN = <span class="function">salutGenerator</span>(<span
+                    class="string">"Hello"</span>);
+                salutRO(<span class="string">"Robert"</span>); <span class="comment">// "Bună, Robert!"</span>
+                salutEN(<span class="string">"Robert"</span>); <span class="comment">// "Hello, Robert!"</span>
+            </div>
+            <div class="prof-note">
+                <div class="prof-label">🎓 De ce contează closures?</div>
+                1. <strong>Variabile private</strong> — ascunzi date de restul codului<br>
+                2. <strong>Funcții fabrică</strong> — creezi funcții personalizate<br>
+                3. <strong>Event handlers</strong> — butoanele din playground folosesc closures!<br>
+                4. <strong>React Hooks</strong> — useState, useEffect sunt bazate pe closures<br><br>
+                💡 Regulă: orice funcție definită înăuntrul altei funcții are acces la variabilele funcției exterioare
+            </div>
+        </div>
+
+        <!-- ============ LECȚIA 13: DESTRUCTURING & SPREAD ============ -->
+        <h2 class="section-title" id="destructuring">📦 Lecția 13 — Destructuring & Spread <span>extrage, combină,
+                copiază</span></h2>
+
+        <div class="card">
+            <h3><span class="icon">📦</span> Destructuring — extragi valori rapid</h3>
+            <p><strong>Destructuring</strong> = scurtătură pentru a extrage valori din obiecte și array-uri în variabile
+                separate.</p>
+            <div class="code-block"><span class="lang-tag">javascript</span>
+                <span class="comment">// === OBJECT DESTRUCTURING ===</span>
+                <span class="keyword">const</span> persoana = { nume: <span class="string">"Robert"</span>, varsta:
+                <span class="number">25</span>, oras: <span class="string">"București"</span> };
+
+                <span class="comment">// FĂRĂ destructuring (lung)</span>
+                <span class="keyword">const</span> n = persoana.nume;
+                <span class="keyword">const</span> v = persoana.varsta;
+
+                <span class="comment">// CU destructuring (scurt!)</span>
+                <span class="keyword">const</span> { nume, varsta, oras } = persoana;
+                <span class="comment">// Acum: nume = "Robert", varsta = 25, oras = "București"</span>
+
+                <span class="comment">// Cu REDENUMIRE</span>
+                <span class="keyword">const</span> { nume: numeleMeu, varsta: varstaMea } = persoana;
+
+                <span class="comment">// Cu VALOARE DEFAULT</span>
+                <span class="keyword">const</span> { job = <span class="string">"nespecificat"</span> } = persoana;
+                <span class="comment">// job = "nespecificat" (nu există în obiect)</span>
+
+                <span class="comment">// === ARRAY DESTRUCTURING ===</span>
+                <span class="keyword">const</span> culori = [<span class="string">"roșu"</span>, <span
+                    class="string">"verde"</span>, <span class="string">"albastru"</span>];
+                <span class="keyword">const</span> [prima, aDoua, aTreia] = culori;
+                <span class="comment">// prima = "roșu", aDoua = "verde", aTreia = "albastru"</span>
+
+                <span class="comment">// Sari peste elemente</span>
+                <span class="keyword">const</span> [, , ultima] = culori; <span class="comment">// ultima =
+                    "albastru"</span>
+
+                <span class="comment">// ÎN FUNCȚII — super util!</span>
+                <span class="keyword">function</span> <span class="function">afiseazaUser</span>({ nume, varsta }) {
+                <span class="function">console</span>.<span class="function">log</span>(<span class="string">`${nume},
+                    ${varsta} ani`</span>);
+                }
+                <span class="function">afiseazaUser</span>(persoana); <span class="comment">// "Robert, 25 ani"</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">✨</span> Spread & Rest — cele 3 puncte magice (...)</h3>
+            <p><code>...</code> are 2 funcții: <strong>SPREAD</strong> (desfaci) și <strong>REST</strong> (aduni).
+                Contextul decide care e.</p>
+            <div class="code-block"><span class="lang-tag">javascript</span>
+                <span class="comment">// === SPREAD — "desfaci" un array/obiect ===</span>
+                <span class="keyword">const</span> numere = [<span class="number">1</span>, <span
+                    class="number">2</span>, <span class="number">3</span>];
+                <span class="keyword">const</span> mai_multe = [...numere, <span class="number">4</span>, <span
+                    class="number">5</span>]; <span class="comment">// [1, 2, 3, 4, 5]</span>
+
+                <span class="comment">// COPIERE array (fără referință!)</span>
+                <span class="keyword">const</span> copie = [...numere]; <span class="comment">// copie
+                    independentă</span>
+
+                <span class="comment">// COMBINARE array-uri</span>
+                <span class="keyword">const</span> a = [<span class="number">1</span>, <span class="number">2</span>], b
+                = [<span class="number">3</span>, <span class="number">4</span>];
+                <span class="keyword">const</span> combinat = [...a, ...b]; <span class="comment">// [1, 2, 3, 4]</span>
+
+                <span class="comment">// SPREAD pe obiecte</span>
+                <span class="keyword">const</span> user = { nume: <span class="string">"Robert"</span>, varsta: <span
+                    class="number">25</span> };
+                <span class="keyword">const</span> userUpdated = { ...user, varsta: <span class="number">26</span>,
+                oras: <span class="string">"București"</span> };
+                <span class="comment">// { nume: "Robert", varsta: 26, oras: "București" }</span>
+
+                <span class="comment">// === REST — "aduni" restul argumentelor ===</span>
+                <span class="keyword">function</span> <span class="function">suma</span>(...numere) {
+                <span class="keyword">return</span> numere.<span class="function">reduce</span>((t, n) <span
+                    class="operator">=></span> t + n, <span class="number">0</span>);
+                }
+                <span class="function">suma</span>(<span class="number">1</span>, <span class="number">2</span>, <span
+                    class="number">3</span>, <span class="number">4</span>); <span class="comment">// 10 (primește
+                    oricâte argumente!)</span>
+
+                <span class="comment">// REST în destructuring</span>
+                <span class="keyword">const</span> [primul, ...restul] = [<span class="number">1</span>, <span
+                    class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>];
+                <span class="comment">// primul = 1, restul = [2, 3, 4]</span>
+            </div>
+            <div class="prof-note">
+                <div class="prof-label">🎓 Unde le vezi peste tot?</div>
+                <strong>React:</strong> <code>const [state, setState] = useState(0);</code> → Array destructuring!<br>
+                <strong>Props:</strong> <code>function Component({ title, children })</code> → Object destructuring!<br>
+                <strong>State updates:</strong> <code>setState({...state, name: "nou"})</code> → Spread!<br><br>
+                💡 E imposibil să scrii React/Vue/Angular fără destructuring și spread. Învață-le BINE!
+            </div>
+        </div>
+
+        <!-- ============ LECȚIA 14: CLASSES ============ -->
+        <h2 class="section-title" id="classes">🏛️ Lecția 14 — Classes (OOP) <span>class, constructor, extends,
+                super</span></h2>
+
+        <div class="card">
+            <h3><span class="icon">🏛️</span> Classes — "planuri" pentru obiecte</h3>
+            <p>O <strong>clasă</strong> e un plan/șablon din care creezi obiecte. Ca o matriță pentru prăjituri — faci
+                câte vrei din ea!</p>
+            <div class="code-block"><span class="lang-tag">javascript</span>
+                <span class="comment">// DEFINIREA unei clase</span>
+                <span class="keyword">class</span> <span class="type">Animal</span> {
+                <span class="comment">// constructor = se apelează automat la "new Animal()"</span>
+                <span class="function">constructor</span>(nume, sunet) {
+                <span class="keyword">this</span>.nume = nume; <span class="comment">// proprietate</span>
+                <span class="keyword">this</span>.sunet = sunet;
+                }
+
+                <span class="comment">// Metodă (funcție a clasei)</span>
+                <span class="function">vorbeste</span>() {
+                <span class="keyword">return</span> <span class="string">`${this.nume} face: ${this.sunet}!`</span>;
+                }
+                }
+
+                <span class="comment">// CREAREA obiectelor (instanțe)</span>
+                <span class="keyword">const</span> caine = <span class="keyword">new</span> <span
+                    class="type">Animal</span>(<span class="string">"Rex"</span>, <span class="string">"Ham"</span>);
+                <span class="keyword">const</span> pisica = <span class="keyword">new</span> <span
+                    class="type">Animal</span>(<span class="string">"Mimi"</span>, <span class="string">"Miau"</span>);
+                caine.<span class="function">vorbeste</span>(); <span class="comment">// "Rex face: Ham!"</span>
+                pisica.<span class="function">vorbeste</span>(); <span class="comment">// "Mimi face: Miau!"</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">🧬</span> Moștenire — extends & super</h3>
+            <p><strong>extends</strong> = o clasă "moștenește" tot de la alta. <strong>super</strong> = apelează
+                constructorul părintelui.</p>
+            <div class="code-block"><span class="lang-tag">javascript</span>
+                <span class="comment">// Clasa PĂRINTE</span>
+                <span class="keyword">class</span> <span class="type">Vehicul</span> {
+                <span class="function">constructor</span>(marca, vitezaMax) {
+                <span class="keyword">this</span>.marca = marca;
+                <span class="keyword">this</span>.vitezaMax = vitezaMax;
+                <span class="keyword">this</span>.vitezaCurenta = <span class="number">0</span>;
+                }
+
+                <span class="function">accelereaza</span>(km) {
+                <span class="keyword">this</span>.vitezaCurenta = Math.<span class="function">min</span>(
+                <span class="keyword">this</span>.vitezaCurenta + km,
+                <span class="keyword">this</span>.vitezaMax
+                );
+                <span class="keyword">return</span> <span class="string">`${this.marca}: ${this.vitezaCurenta}
+                    km/h`</span>;
+                }
+
+                <span class="function">franeaza</span>() {
+                <span class="keyword">this</span>.vitezaCurenta = <span class="number">0</span>;
+                <span class="keyword">return</span> <span class="string">`${this.marca}: STOP!`</span>;
+                }
+                }
+
+                <span class="comment">// Clasa COPIL (moștenește de la Vehicul)</span>
+                <span class="keyword">class</span> <span class="type">Masina</span> <span class="keyword">extends</span>
+                <span class="type">Vehicul</span> {
+                <span class="function">constructor</span>(marca, vitezaMax, nrUsi) {
+                <span class="keyword">super</span>(marca, vitezaMax); <span class="comment">// apelează constructor-ul
+                    Vehicul</span>
+                <span class="keyword">this</span>.nrUsi = nrUsi; <span class="comment">// proprietate NOUĂ</span>
+                }
+
+                <span class="comment">// Metodă NOUĂ (doar pentru Masina)</span>
+                <span class="function">descriere</span>() {
+                <span class="keyword">return</span> <span class="string">`${this.marca} cu ${this.nrUsi} uși, max
+                    ${this.vitezaMax} km/h`</span>;
+                }
+                }
+
+                <span class="keyword">const</span> bmw = <span class="keyword">new</span> <span
+                    class="type">Masina</span>(<span class="string">"BMW"</span>, <span class="number">250</span>, <span
+                    class="number">4</span>);
+                bmw.<span class="function">accelereaza</span>(<span class="number">100</span>); <span class="comment">//
+                    "BMW: 100 km/h" (moștenită!)</span>
+                bmw.<span class="function">descriere</span>(); <span class="comment">// "BMW cu 4 uși, max 250
+                    km/h"</span>
+            </div>
+            <div class="prof-note">
+                <div class="prof-label">🎓 Classes vs Objects?</div>
+                <strong>Obiect literal</strong> <code>{ }</code> = bun pentru un singur obiect unic<br>
+                <strong>Class</strong> = bun când ai nevoie de MULTE obiecte similare<br><br>
+                🏭 Gândește-te la o clasă ca la o FABRICĂ:<br>
+                <code>class Masina</code> = fabrica | <code>new Masina("BMW")</code> = o mașină produsă<br><br>
+                💡 În React, componentele de clasă folosesc exact sintaxa asta!<br>
+                <code>class App extends React.Component { ... }</code>
+            </div>
+        </div>
+
+        <!-- ============ LECȚIA 15: PROMISES & ASYNC/AWAIT ============ -->
+        <h2 class="section-title" id="async">⏳ Lecția 15 — Promises & Async/Await <span>cod asincron, .then(),
+                await</span></h2>
+
+        <div class="card">
+            <h3><span class="icon">⏳</span> Asincron — codul care NU blochează</h3>
+            <p>JS e <strong>single-threaded</strong> — execută o singură linie la un moment dat. Dar unele operații
+                durează (rețea, timere). <strong>Async</strong> = "începe asta, dar continuă cu restul, și anunță-mă
+                când e gata!"</p>
+            <div class="code-block"><span class="lang-tag">javascript</span>
+                <span class="comment">// === setTimeout — cel mai simplu exemplu de async ===</span>
+                <span class="function">console</span>.<span class="function">log</span>(<span class="string">"1.
+                    Start"</span>);
+
+                <span class="function">setTimeout</span>(() <span class="operator">=></span> {
+                <span class="function">console</span>.<span class="function">log</span>(<span class="string">"2. După 2
+                    secunde"</span>);
+                }, <span class="number">2000</span>);
+
+                <span class="function">console</span>.<span class="function">log</span>(<span class="string">"3.
+                    Imediat"</span>);
+
+                <span class="comment">// Ordinea OUTPUT: 1, 3, 2 (NU 1, 2, 3!)</span>
+                <span class="comment">// JS NU așteaptă — continuă și revine când timer-ul e gata</span>
+
+                <span class="comment">// === setInterval — repetă la fiecare X ms ===</span>
+                <span class="keyword">let</span> sec = <span class="number">0</span>;
+                <span class="keyword">const</span> timer = <span class="function">setInterval</span>(() <span
+                    class="operator">=></span> {
+                sec++;
+                <span class="function">console</span>.<span class="function">log</span>(<span class="string">`${sec}
+                    secunde`</span>);
+                <span class="keyword">if</span> (sec >= <span class="number">5</span>) <span
+                    class="function">clearInterval</span>(timer); <span class="comment">// STOP!</span>
+                }, <span class="number">1000</span>);
+            </div>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">🤝</span> Promises — "promisiunea" unui rezultat</h3>
+            <p>Un <strong>Promise</strong> e un obiect care spune: "Voi avea un rezultat în viitor — fie SUCCESS, fie
+                EROARE."</p>
+            <div class="code-block"><span class="lang-tag">javascript</span>
+                <span class="comment">// CREARE Promise</span>
+                <span class="keyword">const</span> promisiune = <span class="keyword">new</span> <span
+                    class="type">Promise</span>((resolve, reject) <span class="operator">=></span> {
+                <span class="keyword">const</span> succes = <span class="keyword">true</span>;
+                <span class="keyword">if</span> (succes) {
+                <span class="function">resolve</span>(<span class="string">"Datele au venit! ✅"</span>);
+                } <span class="keyword">else</span> {
+                <span class="function">reject</span>(<span class="string">"Eroare de rețea ❌"</span>);
+                }
+                });
+
+                <span class="comment">// CONSUMARE cu .then() / .catch()</span>
+                promisiune
+                .<span class="function">then</span>(rezultat <span class="operator">=></span> <span
+                    class="function">console</span>.<span class="function">log</span>(rezultat))
+                .<span class="function">catch</span>(eroare <span class="operator">=></span> <span
+                    class="function">console</span>.<span class="function">log</span>(eroare))
+                .<span class="function">finally</span>(() <span class="operator">=></span> <span
+                    class="function">console</span>.<span class="function">log</span>(<span
+                    class="string">"Gata!"</span>));
+
+                <span class="comment">// EXEMPLU REAL — simulăm un apel la server</span>
+                <span class="keyword">function</span> <span class="function">getUser</span>(id) {
+                <span class="keyword">return new</span> <span class="type">Promise</span>((resolve, reject) <span
+                    class="operator">=></span> {
+                <span class="function">setTimeout</span>(() <span class="operator">=></span> {
+                <span class="keyword">if</span> (id > <span class="number">0</span>) resolve({ id, nume: <span
+                    class="string">"Robert"</span> });
+                <span class="keyword">else</span> reject(<span class="string">"ID invalid!"</span>);
+                }, <span class="number">1000</span>);
+                });
+                }
+            </div>
+        </div>
+
+        <div class="card">
+            <h3><span class="icon">✨</span> Async/Await — Promises, dar MAI ELEGANT!</h3>
+            <p><code>async/await</code> = zahăr sintactic peste Promises. Codul ARATĂ sincron, dar e tot asincron!</p>
+            <div class="code-block"><span class="lang-tag">javascript</span>
+                <span class="comment">// CU .then() (greu de citit pe multiple apeluri)</span>
+                <span class="function">getUser</span>(<span class="number">1</span>)
+                .<span class="function">then</span>(user <span class="operator">=></span> <span
+                    class="function">console</span>.<span class="function">log</span>(user))
+                .<span class="function">catch</span>(err <span class="operator">=></span> <span
+                    class="function">console</span>.<span class="function">log</span>(err));
+
+                <span class="comment">// CU async/await (MULT mai curat!)</span>
+                <span class="keyword">async function</span> <span class="function">incarcaUser</span>() {
+                <span class="keyword">try</span> {
+                <span class="keyword">const</span> user = <span class="keyword">await</span> <span
+                    class="function">getUser</span>(<span class="number">1</span>);
+                <span class="function">console</span>.<span class="function">log</span>(user); <span class="comment">//
+                    { id: 1, nume: "Robert" }</span>
+                } <span class="keyword">catch</span> (err) {
+                <span class="function">console</span>.<span class="function">log</span>(<span
+                    class="string">"Eroare:"</span>, err);
+                }
+                }
+                <span class="function">incarcaUser</span>();
+
+                <span class="comment">// "await" = "AȘTEAPTĂ rezultatul Promise-ului"</span>
+                <span class="comment">// Poți folosi await DOAR în funcții marcate cu "async"</span>
+                <span class="comment">// try/catch funcționează normal cu async/await!</span>
+
+                <span class="comment">// MULTIPLE apeluri PARALELE</span>
+                <span class="keyword">async function</span> <span class="function">incarcaTot</span>() {
+                <span class="keyword">const</span> [user1, user2] = <span class="keyword">await</span> Promise.<span
+                    class="function">all</span>([
+                <span class="function">getUser</span>(<span class="number">1</span>),
+                <span class="function">getUser</span>(<span class="number">2</span>)
+                ]);
+                <span class="function">console</span>.<span class="function">log</span>(user1, user2);
+                }
+            </div>
+            <div class="prof-note">
+                <div class="prof-label">🎓 .then() vs async/await?</div>
+                Ambele fac ACELAȘI lucru — async/await e doar mai ușor de citit.<br>
+                <code>.then()</code> = bun pentru operații simple, într-o singură linie<br>
+                <code>async/await</code> = bun când ai MULTIPLE operații secvențiale<br><br>
+                ⚠️ Greșeala #1 a juniorilor: uită să pună <code>await</code>!<br>
+                Fără await, primești Promise-ul, NU rezultatul!
+            </div>
+        </div>
+
+        <!-- ============ LECȚIA 16: FETCH API ============ -->
+        <h2 class="section-title" id="fetch">🌍 Lecția 16 — Fetch API <span>apeluri HTTP, GET, POST, JSON</span></h2>
+
+        <div class="card">
+            <h3><span class="icon">🌍</span> Fetch — ia date de pe internet!</h3>
+            <p><code>fetch()</code> e funcția nativă JS pentru a face apeluri HTTP. Returnează un
+                <strong>Promise</strong>!
+            </p>
+            <div class="code-block"><span class="lang-tag">javascript</span>
+                <span class="comment">// === GET — ia date de la un API ===</span>
+                <span class="keyword">async function</span> <span class="function">getUsers</span>() {
+                <span class="keyword">try</span> {
+                <span class="comment">// Pas 1: fetch trimite cererea HTTP</span>
+                <span class="keyword">const</span> response = <span class="keyword">await</span> <span
+                    class="function">fetch</span>(
+                <span class="string">"https://jsonplaceholder.typicode.com/users"</span>
+                );
+
+                <span class="comment">// Pas 2: verifică dacă răspunsul e OK (status 200)</span>
+                <span class="keyword">if</span> (!response.ok) {
+                <span class="keyword">throw new</span> <span class="type">Error</span>(<span class="string">`HTTP
+                    ${response.status}`</span>);
+                }
+
+                <span class="comment">// Pas 3: convertește răspunsul din JSON în obiect JS</span>
+                <span class="keyword">const</span> users = <span class="keyword">await</span> response.<span
+                    class="function">json</span>();
+
+                <span class="comment">// Pas 4: folosește datele!</span>
+                users.<span class="function">forEach</span>(u <span class="operator">=></span> {
+                <span class="function">console</span>.<span class="function">log</span>(<span class="string">`${u.name}
+                    — ${u.email}`</span>);
+                });
+                } <span class="keyword">catch</span> (err) {
+                <span class="function">console</span>.<span class="function">log</span>(<span
+                    class="string">"Eroare:"</span>, err.message);
+                }
+                }
+
+                <span class="comment">// === POST — trimite date la un API ===</span>
+                <span class="keyword">async function</span> <span class="function">createUser</span>(nume, email) {
+                <span class="keyword">const</span> response = <span class="keyword">await</span> <span
+                    class="function">fetch</span>(
+                <span class="string">"https://jsonplaceholder.typicode.com/users"</span>,
+                {
+                method: <span class="string">"POST"</span>,
+                headers: { <span class="string">"Content-Type"</span>: <span class="string">"application/json"</span> },
+                body: JSON.<span class="function">stringify</span>({ name: nume, email: email })
+                }
+                );
+                <span class="keyword">const</span> data = <span class="keyword">await</span> response.<span
+                    class="function">json</span>();
+                <span class="function">console</span>.<span class="function">log</span>(<span
+                    class="string">"Creat:"</span>, data);
+                }
+            </div>
+            <div class="prof-note">
+                <div class="prof-label">🎓 Pasul clasic fetch</div>
+                1. <code>fetch(url)</code> → trimite cererea, returnează Promise<br>
+                2. <code>response.json()</code> → convertește răspunsul (tot Promise!)<br>
+                3. Folosește datele<br><br>
+                ⚠️ <code>fetch()</code> NU aruncă eroare la 404 sau 500! Doar la erori de rețea.<br>
+                De aceea verifici <code>response.ok</code> manual!<br><br>
+                💡 Încearcă în Playground:
+                <code>fetch("https://jsonplaceholder.typicode.com/todos/1").then(r => r.json()).then(d => console.log(d))</code>
+            </div>
+        </div>
+
+        <!-- ============ LECȚIA 17: DOM ============ -->
+        <h2 class="section-title" id="dom">🌐 Lecția 17 — DOM Manipulation <span>getElementById, querySelector,
+                textContent</span></h2>
+
+        <div class="card">
+            <h3><span class="icon">🌐</span> DOM-ul — "scheletul" paginii web</h3>
+            <p><strong>DOM</strong> = Document Object Model. Browser-ul transformă HTML-ul într-un arbore de obiecte
+                JavaScript pe care le poți modifica.</p>
+            <div class="code-block"><span class="lang-tag">javascript</span>
+                <span class="comment">// SELECTARE — găsești elementul</span>
+                <span class="keyword">const</span> el = document.<span class="function">getElementById</span>(<span
+                    class="string">"id"</span>);
+                <span class="keyword">const</span> el2 = document.<span class="function">querySelector</span>(<span
+                    class="string">".clasa"</span>);
+                <span class="keyword">const</span> all = document.<span class="function">querySelectorAll</span>(<span
+                    class="string">"div"</span>);
+
+                <span class="comment">// MODIFICARE — schimbi conținutul</span>
+                el.<span class="function">textContent</span> = <span class="string">"Text nou"</span>; <span
+                    class="comment">// safe</span>
+                el.<span class="function">innerHTML</span> = <span class="string">"&lt;b&gt;Bold&lt;/b&gt;"</span>;
+                <span class="comment">// permite HTML</span>
+
+                <span class="comment">// STIL — schimbi aspectul</span>
+                el.style.<span class="function">color</span> = <span class="string">"red"</span>;
+                el.style.<span class="function">fontSize</span> = <span class="string">"20px"</span>;
+
+                <span class="comment">// CLASE — gestionezi clase CSS</span>
+                el.classList.<span class="function">add</span>(<span class="string">"activ"</span>);
+                el.classList.<span class="function">remove</span>(<span class="string">"activ"</span>);
+                el.classList.<span class="function">toggle</span>(<span class="string">"activ"</span>);
+            </div>
+            <!-- Live DOM Demo -->
+            <div class="live-demo">
+                <div class="demo-label">Demo Live</div>
+                <p id="demoTarget" style="font-size: 1rem; transition: all 0.3s ease; padding: 10px 0;">Eu sunt un
+                    paragraf. Modifică-mă cu butoanele de mai jos!</p>
+                <button class="demo-btn" onclick="demoChangeText()">📝 Schimbă Text</button>
+                <button class="demo-btn" onclick="demoChangeStyle()">🎨 Schimbă Stil</button>
+                <button class="demo-btn" onclick="demoChangeHTML()">🔥 Schimbă HTML</button>
+                <button class="demo-btn secondary" onclick="demoReset()">↩️ Reset</button>
+            </div>
+            <div class="prof-note">
+                <div class="prof-label">⚠️ textContent vs innerHTML</div>
+                <code>textContent</code> = SAFE — tratează tot ca text simplu<br>
+                <code>innerHTML</code> = PERICULOS — poate executa HTML/script malițios!<br>
+                Folosește <code>textContent</code> de fiecare dată când poți.
+            </div>
+        </div>
+
+        <!-- ============ LECȚIA 18: EVENTS ============ -->
+        <h2 class="section-title" id="events">🎯 Lecția 18 — Events & Listeners <span>addEventListener, click, keydown,
+                input</span></h2>
+
+        <div class="card">
+            <h3><span class="icon">🎯</span> Cele 3 metode de a asculta evenimentele</h3>
+            <p>Un <strong>event</strong> = ceva ce se întâmplă pe pagină: click, tastă apăsată, mouse mișcat, form
+                trimis.</p>
+            <div class="code-block"><span class="lang-tag">javascript</span>
+                <span class="comment">// ❌ Metoda 1: INLINE (NU recomand)</span>
+                <span class="comment">// &lt;button onclick="alert('click')"&gt;</span>
+                <span class="comment">// Probleme: amesteci HTML cu JS, greu de depanat</span>
+
+                <span class="comment">// ⚠️ Metoda 2: PROPRIETATE (limitată)</span>
+                <span class="comment">// btn.onclick = function() { ... };</span>
+                <span class="comment">// Problemă: poți pune DOAR UN handler per event</span>
+
+                <span class="comment">// ✅ Metoda 3: addEventListener (RECOMANDATĂ!)</span>
+                btn.<span class="function">addEventListener</span>(<span class="string">"click"</span>, () <span
+                    class="operator">=></span> {
+                <span class="function">console</span>.<span class="function">log</span>(<span
+                    class="string">"Click!"</span>);
+                });
+                <span class="comment">// ✅ Poți pune MULTIPLE handlere pe același event</span>
+                <span class="comment">// ✅ Poți scoate handler-ul cu removeEventListener</span>
+
+                <span class="comment">// OBIECTUL EVENT (e)</span>
+                input.<span class="function">addEventListener</span>(<span class="string">"input"</span>, (e) <span
+                    class="operator">=></span> {
+                e.target <span class="comment">// elementul pe care s-a întâmplat</span>
+                e.target.value <span class="comment">// valoarea curentă a input-ului</span>
+                e.key <span class="comment">// tasta apăsată (la keydown)</span>
+                e.<span class="function">preventDefault</span>() <span class="comment">// oprește comportamentul
+                    default</span>
+                });
+            </div>
+            <div class="prof-note">
+                <div class="prof-label">🎓 De ce addEventListener e cea mai bună?</div>
+                Poți pune <em>mai mulți</em> listeneri pe același element. Poți <em>scoate</em> un listener specific.
+                Și cel mai important: <em>separi</em> complet JavaScript-ul de HTML. Deschide <code>script.js</code> și
+                caută <code>#ADDEVENTLISTENER</code>!
+            </div>
+        </div>
+
+        <!-- ============ LECȚIA 19: DEMO-URI LIVE ============ -->
+        <h2 class="section-title" id="events-demo">🎮 Lecția 19 — Demo-uri Live <span>vezi events în acțiune!</span>
+        </h2>
+
+        <div class="prof-note">
+            <div class="prof-label">🎓 Sfat de Prof</div>
+            Fiecare demo de mai jos folosește exact codul din <code>script.js</code>.
+            Deschide fișierul, caută hashtag-ul corespunzător (ex: <code>#DEMO_COUNTER</code>)
+            și urmărește cum funcționează codul linie cu linie!
+        </div>
+
+        <!-- Demo 1: Click Counter -->
+        <div class="card">
+            <h3><span class="icon">🖱️</span> Demo: Click Counter <span
+                    style="color: var(--text-secondary); font-size: 0.8rem; font-weight: 400;">→ caută #DEMO_COUNTER în
+                    script.js</span></h3>
+            <p>Fiecare click incrementează contorul. Codul folosește <code>addEventListener("click")</code>,
+                <code>classList</code>, și <code>setTimeout</code>.
+            </p>
+            <div class="live-demo">
+                <div class="demo-label">Demo Live — Click</div>
+                <div class="demo-counter">
+                    <button class="demo-btn" id="counterBtn">🖱️ Click!</button>
+                    <span class="count" id="counterDisplay">0</span>
+                </div>
+                <div class="demo-output" id="counterLog">Apasă butonul!</div>
+            </div>
+        </div>
+
+        <!-- Demo 2: Live Input -->
+        <div class="card">
+            <h3><span class="icon">⌨️</span> Demo: Input Live <span
+                    style="color: var(--text-secondary); font-size: 0.8rem; font-weight: 400;">→ caută #DEMO_INPUT în
+                    script.js</span></h3>
+            <p>Scrie ceva — textul se actualizează <strong>în timp real</strong> la fiecare caracter, folosind
+                <code>addEventListener("input")</code> și <code>e.target.value</code>.
+            </p>
+            <div class="live-demo">
+                <div class="demo-label">Demo Live — Input</div>
+                <input type="text" class="demo-input-box" id="liveInput" placeholder="Scrie ceva aici...">
+                <div class="demo-output" id="liveInputOutput">Textul tău: <em>nimic încă</em></div>
+            </div>
+        </div>
+
+        <!-- Demo 3: Keydown -->
+        <div class="card">
+            <h3><span class="icon">🎹</span> Demo: Keydown Detector <span
+                    style="color: var(--text-secondary); font-size: 0.8rem; font-weight: 400;">→ caută #DEMO_KEYDOWN în
+                    script.js</span></h3>
+            <p>Click pe zona de mai jos, apoi apasă orice tastă. Afișează <code>e.key</code>, <code>e.code</code>, și
+                <code>e.keyCode</code>.
+            </p>
+            <div class="live-demo">
+                <div class="demo-label">Demo Live — Keydown</div>
+                <div class="key-area-wrap" id="keyArea" tabindex="0">🎹 Click aici, apoi apasă o tastă</div>
+                <br>
+                <span class="key-display" id="keyDisplay">?</span>
+                <div class="demo-output" id="keyInfo">Apasă o tastă pentru a vedea informațiile</div>
+            </div>
+        </div>
+
+        <!-- Demo 4: Hover Box -->
+        <div class="card">
+            <h3><span class="icon">🎨</span> Demo: Hover (mouseover/mouseout) <span
+                    style="color: var(--text-secondary); font-size: 0.8rem; font-weight: 400;">→ caută #DEMO_HOVERBOX în
+                    script.js</span></h3>
+            <p>Treci cu mouse-ul peste pătrat — se schimbă culoarea, forma, și mărimea. Codul folosește
+                <code>mouseover</code>, <code>mouseout</code>, <code>style</code>, și <code>%</code> (modulo).
+            </p>
+            <div class="live-demo">
+                <div class="demo-label">Demo Live — Hover</div>
+                <div class="color-box" id="hoverBox"></div>
+                <div class="demo-output" id="hoverLog">Treci cu mouse-ul peste pătrat!</div>
+            </div>
+        </div>
+
+        <!-- preventDefault -->
+        <div class="card">
+            <h3><span class="icon">🛑</span> preventDefault() — Oprește browser-ul</h3>
+            <p>Uneori vrei să oprești ce face browser-ul automat (ex: submit reîncarcă pagina, link navighează).</p>
+            <div class="code-block"><span class="lang-tag">javascript</span>
+                <span class="comment">// Oprește un formular să reîncarce pagina</span>
+                form.<span class="function">addEventListener</span>(<span class="string">"submit"</span>, (e) <span
+                    class="operator">=></span> {
+                e.<span class="function">preventDefault</span>();
+                <span class="comment">// Acum procesezi datele cu JS, fără reload</span>
+                });
+
+                <span class="comment">// Oprește un link să navigheze</span>
+                link.<span class="function">addEventListener</span>(<span class="string">"click"</span>, (e) <span
+                    class="operator">=></span> {
+                e.<span class="function">preventDefault</span>();
+                <span class="function">console</span>.<span class="function">log</span>(<span class="string">"Link
+                    blocat!"</span>);
+                });
+            </div>
+            <div class="prof-note">
+                <div class="prof-label">🎓 Când folosești preventDefault?</div>
+                Cel mai des la <em>formulare</em> (să nu reîncarce pagina) și la <em>link-uri</em> (să faci altceva în
+                loc).
+                În <code>script.js</code>, caută <code>#PREVENTDEFAULT</code> — e folosit la navigarea cu ⬆️⬇️ în
+                consolă!
+            </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="card"
+            style="text-align: center; background: linear-gradient(135deg, rgba(233,69,96,0.15), rgba(83,52,131,0.15));">
+            <h3>🎉 Ai terminat lecțiile! Acum e timpul să practici!</h3>
+            <p style="margin-bottom: 20px;">Mergi la exerciții și testează-ți cunoștințele. Sau experimentează liber în
+                playground.</p>
+            <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+                <a href="exercitii.html" class="demo-btn">✏️ Exerciții</a>
+                <a href="playground.html" class="demo-btn secondary">💻 Playground</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>⚡ JavaScript Playground — Creat pentru a învăța prin practică</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

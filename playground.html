@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playground — Consolă JavaScript Interactivă</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Full-height console */
+        .playground-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .console-area {
+            margin-bottom: 24px;
+        }
+
+        #consoleOutput {
+            min-height: 250px;
+            max-height: 500px;
+        }
+
+        .quick-examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .quick-example {
+            padding: 14px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quick-example:hover {
+            border-color: var(--accent-4);
+            transform: translateY(-2px);
+        }
+
+        .quick-example h4 {
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .quick-example code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--accent-4);
+        }
+
+        .shortcuts {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .shortcut-key {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .shortcut-key kbd {
+            padding: 2px 6px;
+            background: var(--bg-code);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--accent-4);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo">⚡ JS Playground</div>
+        <div class="nav-links">
+            <a href="index.html">🏠 Acasă</a>
+            <a href="lectii.html">📖 Lecții</a>
+            <a href="exercitii.html">✏️ Exerciții</a>
+            <a href="quizuri.html">❓ Quiz</a>
+            <a href="cheatsheet.html">📋 Cheatsheet</a>
+            <a href="devtools.html">🔧 DevTools</a>
+            <a href="provocari.html">🎯 Provocări</a>
+            <a href="proiecte.html">🚀 Proiecte</a>
+            <a href="playground.html" class="active">💻 Playground</a>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <h1>💻 Playground</h1>
+        <p>Consolă JavaScript interactivă — scrie orice cod și vezi rezultatul instant!</p>
+        <span class="badge">Mod Liber — Experimentează!</span>
+    </div>
+
+    <main class="playground-wrapper">
+        <!-- Shortcuts -->
+        <div class="shortcuts">
+            <div class="shortcut-key"><kbd>Enter</kbd> Rulează codul</div>
+            <div class="shortcut-key"><kbd>↑</kbd> Comanda anterioară</div>
+            <div class="shortcut-key"><kbd>↓</kbd> Comanda următoare</div>
+            <div class="shortcut-key"><kbd>F12</kbd> DevTools (și mai multă putere!)</div>
+        </div>
+
+        <!-- Console -->
+        <div class="console-area">
+            <div class="console-header">
+                <div class="dot red"></div>
+                <div class="dot yellow"></div>
+                <div class="dot green"></div>
+                <span>console.js — Consolă Interactivă</span>
+            </div>
+            <div id="consoleOutput"></div>
+            <div class="console-input-area">
+                <span class="console-prompt">❯</span>
+                <input type="text" id="consoleInput" placeholder="Scrie cod JavaScript aici..." autocomplete="off"
+                    spellcheck="false">
+                <button id="runBtn">▶ RUN</button>
+            </div>
+        </div>
+
+        <!-- Prof Note -->
+        <div class="prof-note">
+            <div class="prof-label">🎓 Sfat de Prof</div>
+            Playground-ul e locul tău de experimentare. Nu poți strica nimic! Dacă primești o eroare,
+            citește mesajul — îți spune exact ce e greșit. Dacă primești <code>undefined</code>,
+            înseamnă că codul a rulat dar nu a returnat nimic (e normal pentru <code>console.log</code>).
+        </div>
+
+        <!-- Quick Examples -->
+        <h2 class="section-title">⚡ Exemple rapide <span>click = rulează</span></h2>
+
+        <div class="quick-examples">
+            <div class="quick-example" onclick="tryCode('2 + 2')">
+                <h4>📐 Matematică simplă</h4>
+                <code>2 + 2</code>
+            </div>
+            <div class="quick-example" onclick="tryCode('typeof &quot;salut&quot;')">
+                <h4>🏷️ Verifică tipul</h4>
+                <code>typeof "salut"</code>
+            </div>
+            <div class="quick-example" onclick='tryCode("\"salut\".toUpperCase()")'>
+                <h4>🔠 Text → MAJUSCULE</h4>
+                <code>"salut".toUpperCase()</code>
+            </div>
+            <div class="quick-example" onclick='tryCode("[1,2,3].map(n => n * 10)")'>
+                <h4>🗺️ Array .map()</h4>
+                <code>[1,2,3].map(n => n * 10)</code>
+            </div>
+            <div class="quick-example" onclick='tryCode("[5,12,8,3,17].filter(n => n > 10)")'>
+                <h4>🔍 Array .filter()</h4>
+                <code>[5,12,8,3,17].filter(n => n > 10)</code>
+            </div>
+            <div class="quick-example" onclick='tryCode("Math.random().toFixed(2)")'>
+                <h4>🎲 Număr random</h4>
+                <code>Math.random().toFixed(2)</code>
+            </div>
+            <div class="quick-example" onclick='tryCode("new Date().toLocaleString(\"ro-RO\")")'>
+                <h4>📅 Data curentă</h4>
+                <code>new Date().toLocaleString()</code>
+            </div>
+            <div class="quick-example" onclick='tryCode("console.log(\"Am \" + (2024+1) + \" motive sa invat JS\")")'>
+                <h4>💬 Console.log</h4>
+                <code>console.log("mesaj")</code>
+            </div>
+            <div class="quick-example" onclick='tryCode("const x = {a:1, b:2, c:3}; Object.keys(x)")'>
+                <h4>🔑 Chei obiect</h4>
+                <code>Object.keys({a:1, b:2})</code>
+            </div>
+            <div class="quick-example" onclick='tryCode("[1,2,3,4,5].reduce((s,n) => s+n, 0)")'>
+                <h4>📊 Reduce (suma)</h4>
+                <code>[1,2,3,4,5].reduce(sum)</code>
+            </div>
+            <div class="quick-example" onclick='tryCode("\"JavaScript\".split(\"\").reverse().join(\"\")")'>
+                <h4>🔄 Inversează text</h4>
+                <code>"text".split("").reverse()</code>
+            </div>
+            <div class="quick-example" onclick='tryCode("5 === \"5\" ? \"egal\" : \"diferit\"")'>
+                <h4>⚖️ === vs ==</h4>
+                <code>5 === "5" ? "..." : "..."</code>
+            </div>
+        </div>
+
+        <div class="prof-note">
+            <div class="prof-label">🔥 Challenge</div>
+            Încearcă să scrii o funcție direct în consolă! De exemplu:<br>
+            <code>function dublu(n) { return n * 2; }</code><br>
+            Apoi cheam-o: <code>dublu(21)</code><br>
+            Sau ca arrow: <code>const triplu = n => n * 3; triplu(7)</code>
+        </div>
+    </main>
+
+    <footer>
+        <p>⚡ JavaScript Playground — Creat pentru a învăța prin practică</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Proiecte — Aplică Ce Ai Învățat</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .project-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .project-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+        }
+
+        .project-card pre {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            color: var(--text-primary);
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin-bottom: 14px;
+        }
+
+        .project-label {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .label-beginner {
+            background: rgba(0, 230, 118, 0.15);
+            color: var(--success);
+        }
+
+        .label-medium {
+            background: rgba(255, 171, 64, 0.15);
+            color: var(--warning);
+        }
+
+        .label-advanced {
+            background: rgba(233, 69, 96, 0.15);
+            color: var(--accent-1);
+        }
+
+        /* To-Do App */
+        .todo-app {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            margin: 20px 0;
+        }
+
+        .todo-app h4 {
+            color: var(--accent-4);
+            margin-bottom: 14px;
+            font-size: 1.1rem;
+        }
+
+        .todo-input-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .todo-input-row input {
+            flex: 1;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .todo-input-row input:focus {
+            border-color: var(--accent-4);
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .todo-item.done {
+            opacity: 0.5;
+            text-decoration: line-through;
+        }
+
+        .todo-item .todo-text {
+            flex: 1;
+            color: var(--text-primary);
+        }
+
+        .todo-item .todo-delete {
+            background: none;
+            border: none;
+            color: var(--accent-1);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0 4px;
+        }
+
+        .todo-item .todo-check {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-4);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+            background: transparent;
+            color: transparent;
+            font-size: 0.8rem;
+        }
+
+        .todo-item.done .todo-check {
+            background: var(--accent-4);
+            color: var(--bg-primary);
+        }
+
+        .todo-stats {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 12px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Quiz Game */
+        .mini-quiz {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            margin: 20px 0;
+        }
+
+        .mini-quiz h4 {
+            color: var(--accent-4);
+            margin-bottom: 8px;
+        }
+
+        .mini-quiz .quiz-q {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin-bottom: 14px;
+            min-height: 30px;
+        }
+
+        .mini-quiz .quiz-answers {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .mini-quiz .quiz-answer-btn {
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mini-quiz .quiz-answer-btn:hover {
+            border-color: var(--accent-4);
+            background: rgba(0, 210, 255, 0.1);
+        }
+
+        .mini-quiz .quiz-answer-btn.correct-ans {
+            border-color: var(--success);
+            background: rgba(0, 230, 118, 0.2);
+        }
+
+        .mini-quiz .quiz-answer-btn.wrong-ans {
+            border-color: var(--accent-1);
+            background: rgba(233, 69, 96, 0.2);
+        }
+
+        .mini-quiz-score {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-4);
+            font-size: 1rem;
+        }
+
+        /* Weather App */
+        .weather-app {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .weather-app h4 {
+            color: var(--accent-4);
+            margin-bottom: 14px;
+        }
+
+        .weather-result {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            margin-top: 16px;
+        }
+
+        .weather-result .temp {
+            font-size: 3rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-4);
+        }
+
+        .weather-result .city-name {
+            font-size: 1.3rem;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .weather-result .weather-details {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo">⚡ JS Playground</div>
+        <div class="nav-links">
+            <a href="index.html">🏠 Acasă</a>
+            <a href="lectii.html">📖 Lecții</a>
+            <a href="exercitii.html">✏️ Exerciții</a>
+            <a href="quizuri.html">❓ Quiz</a>
+            <a href="cheatsheet.html">📋 Cheatsheet</a>
+            <a href="devtools.html">🔧 DevTools</a>
+            <a href="provocari.html">🎯 Provocări</a>
+            <a href="proiecte.html" class="active">🚀 Proiecte</a>
+            <a href="playground.html">💻 Playground</a>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <h1>🚀 Mini Proiecte</h1>
+        <p>3 proiecte funcționale care combină tot ce ai învățat. Fiecare e LIVE pe pagină + cod sursă explicat!</p>
+        <span class="badge">3 Proiecte • Cod complet</span>
+    </div>
+
+    <main>
+        <div class="prof-note">
+            <div class="prof-label">🎓 Sfat de Prof</div>
+            Fiecare proiect e funcțional CHIAR AICI pe pagină. Încearcă-l, apoi citește codul și încearcă să-l refaci
+            singur în Playground sau într-un fișier .html nou!
+        </div>
+
+        <!-- ============ PROJECT 1: TO-DO LIST ============ -->
+        <h2 class="section-title">📝 Proiect 1 — To-Do List</h2>
+
+        <div class="project-card">
+            <div class="project-label label-beginner">⭐ Beginner</div>
+            <h3>📝 To-Do List — Gestionează-ți sarcinile</h3>
+            <p>Ce vei folosi: <code>addEventListener</code>, <code>createElement</code>, <code>appendChild</code>,
+                <code>classList.toggle</code>, <code>removeChild</code>, <code>localStorage</code>
+            </p>
+
+            <!-- Live Demo -->
+            <div class="todo-app">
+                <h4>📝 To-Do List Live</h4>
+                <div class="todo-input-row">
+                    <input type="text" id="todoInput" placeholder="Ce ai de făcut?" autocomplete="off">
+                    <button class="demo-btn" id="todoAdd">➕ Adaugă</button>
+                </div>
+                <div id="todoList"></div>
+                <div class="todo-stats">
+                    <span id="todoCount">0 sarcini</span>
+                    <button class="demo-btn secondary" id="todoClear" style="padding: 6px 14px; font-size: 0.8rem;">🗑️
+                        Șterge completate</button>
+                </div>
+            </div>
+
+            <!-- Code -->
+            <h3>💻 Codul complet:</h3>
+            <pre>
+<span style="color:#5c6370">// === TO-DO LIST ===</span>
+<span style="color:#5c6370">// Selectăm elementele necesare</span>
+<span style="color:#c678dd">const</span> todoInput = document.getElementById(<span style="color:#98c379">"todoInput"</span>);
+<span style="color:#c678dd">const</span> todoList = document.getElementById(<span style="color:#98c379">"todoList"</span>);
+<span style="color:#c678dd">const</span> todoAdd = document.getElementById(<span style="color:#98c379">"todoAdd"</span>);
+
+<span style="color:#5c6370">// Array care ține toate sarcinile</span>
+<span style="color:#c678dd">let</span> todos = [];
+
+<span style="color:#5c6370">// Funcție: adaugă o sarcină nouă</span>
+<span style="color:#c678dd">function</span> <span style="color:#61afef">addTodo</span>() {
+    <span style="color:#c678dd">const</span> text = todoInput.value.trim();
+    <span style="color:#c678dd">if</span> (!text) <span style="color:#c678dd">return</span>;
+
+    todos.push({ text, done: <span style="color:#d19a66">false</span> });
+    todoInput.value = <span style="color:#98c379">""</span>;
+    renderTodos();
+}
+
+<span style="color:#5c6370">// Funcție: afișează toate sarcinile</span>
+<span style="color:#c678dd">function</span> <span style="color:#61afef">renderTodos</span>() {
+    todoList.innerHTML = <span style="color:#98c379">""</span>;
+    todos.forEach((todo, i) => {
+        <span style="color:#c678dd">const</span> div = document.createElement(<span style="color:#98c379">"div"</span>);
+        div.className = <span style="color:#98c379">`todo-item ${todo.done ? "done" : ""}`</span>;
+        div.innerHTML = <span style="color:#98c379">`
+            &lt;span class="todo-check" onclick="toggleTodo(${i})"&gt;✓&lt;/span&gt;
+            &lt;span class="todo-text"&gt;${todo.text}&lt;/span&gt;
+            &lt;button class="todo-delete" onclick="deleteTodo(${i})"&gt;✕&lt;/button&gt;
+        `</span>;
+        todoList.appendChild(div);
+    });
+    todoCount.textContent = <span style="color:#98c379">`${todos.length} sarcini (${todos.filter(t => t.done).length} complete)`</span>;
+}
+
+<span style="color:#5c6370">// Toggle done, delete, clear</span>
+<span style="color:#c678dd">function</span> <span style="color:#61afef">toggleTodo</span>(i) { todos[i].done = !todos[i].done; renderTodos(); }
+<span style="color:#c678dd">function</span> <span style="color:#61afef">deleteTodo</span>(i) { todos.splice(i, 1); renderTodos(); }
+
+todoAdd.addEventListener(<span style="color:#98c379">"click"</span>, addTodo);
+todoInput.addEventListener(<span style="color:#98c379">"keydown"</span>, (e) => { <span style="color:#c678dd">if</span> (e.key === <span style="color:#98c379">"Enter"</span>) addTodo(); });
+</pre>
+        </div>
+
+        <!-- ============ PROJECT 2: QUIZ GAME ============ -->
+        <h2 class="section-title">🎮 Proiect 2 — Quiz Game</h2>
+
+        <div class="project-card">
+            <div class="project-label label-medium">⭐⭐ Medium</div>
+            <h3>🎮 Quiz Game — Întrebări de cultură generală</h3>
+            <p>Ce vei folosi: <code>array de obiecte</code>, <code>Math.random</code>, <code>addEventListener</code>,
+                <code>async logic</code>, <code>classList</code>
+            </p>
+
+            <!-- Live Demo -->
+            <div class="mini-quiz">
+                <h4>🎮 Quiz Game Live</h4>
+                <div class="mini-quiz-score" id="miniQuizScore">Scor: 0 / 0</div>
+                <div class="quiz-q" id="miniQuizQ">Apasă "Start" pentru a începe!</div>
+                <div class="quiz-answers" id="miniQuizAnswers">
+                    <button class="quiz-answer-btn" id="mqA" onclick="miniQuizAnswer(0)">—</button>
+                    <button class="quiz-answer-btn" id="mqB" onclick="miniQuizAnswer(1)">—</button>
+                    <button class="quiz-answer-btn" id="mqC" onclick="miniQuizAnswer(2)">—</button>
+                    <button class="quiz-answer-btn" id="mqD" onclick="miniQuizAnswer(3)">—</button>
+                </div>
+                <button class="demo-btn" id="miniQuizStart" onclick="startMiniQuiz()">🚀 Start Quiz</button>
+            </div>
+
+            <!-- Code -->
+            <h3>💻 Codul complet:</h3>
+            <pre>
+<span style="color:#5c6370">// === QUIZ GAME ===</span>
+<span style="color:#c678dd">const</span> questions = [
+    { q: <span style="color:#98c379">"Câte continente sunt?"</span>, a: [<span style="color:#98c379">"5"</span>, <span style="color:#98c379">"6"</span>, <span style="color:#98c379">"7"</span>, <span style="color:#98c379">"8"</span>], c: <span style="color:#d19a66">2</span> },
+    { q: <span style="color:#98c379">"Ce limbaj rulează în browser?"</span>, a: [<span style="color:#98c379">"Python"</span>, <span style="color:#98c379">"JavaScript"</span>, <span style="color:#98c379">"C++"</span>, <span style="color:#98c379">"Java"</span>], c: <span style="color:#d19a66">1</span> },
+    { q: <span style="color:#98c379">"Ce returnează typeof []?"</span>, a: [<span style="color:#98c379">"array"</span>, <span style="color:#98c379">"object"</span>, <span style="color:#98c379">"list"</span>, <span style="color:#98c379">"undefined"</span>], c: <span style="color:#d19a66">1</span> },
+    <span style="color:#5c6370">// ... mai multe întrebări</span>
+];
+
+<span style="color:#c678dd">let</span> currentQ = 0, score = 0;
+
+<span style="color:#c678dd">function</span> <span style="color:#61afef">showQuestion</span>() {
+    <span style="color:#c678dd">const</span> q = questions[currentQ];
+    document.getElementById(<span style="color:#98c379">"miniQuizQ"</span>).textContent = q.q;
+    q.a.forEach((ans, i) => {
+        <span style="color:#c678dd">const</span> btn = document.getElementById([<span style="color:#98c379">"mqA"</span>,<span style="color:#98c379">"mqB"</span>,<span style="color:#98c379">"mqC"</span>,<span style="color:#98c379">"mqD"</span>][i]);
+        btn.textContent = ans;
+        btn.className = <span style="color:#98c379">"quiz-answer-btn"</span>;
+    });
+}
+
+<span style="color:#c678dd">function</span> <span style="color:#61afef">miniQuizAnswer</span>(idx) {
+    <span style="color:#c678dd">const</span> correct = questions[currentQ].c;
+    <span style="color:#5c6370">// Marchează corect/greșit cu classList</span>
+    <span style="color:#c678dd">if</span> (idx === correct) { score++; <span style="color:#5c6370">/* .correct-ans */</span> }
+    <span style="color:#5c6370">// Treci la următoarea întrebare</span>
+    currentQ++;
+    <span style="color:#c678dd">if</span> (currentQ < questions.length) showQuestion();
+    <span style="color:#c678dd">else</span> <span style="color:#5c6370">/* afișează scorul final */</span>;
+}
+</pre>
+        </div>
+
+        <!-- ============ PROJECT 3: WEATHER APP ============ -->
+        <h2 class="section-title">🌤️ Proiect 3 — Weather App</h2>
+
+        <div class="project-card">
+            <div class="project-label label-advanced">⭐⭐⭐ Advanced</div>
+            <h3>🌤️ Weather App — Folosește Fetch API</h3>
+            <p>Ce vei folosi: <code>fetch()</code>, <code>async/await</code>, <code>try/catch</code>, <code>JSON</code>,
+                <code>API externă</code>, <code>template literals</code>
+            </p>
+
+            <!-- Live Demo -->
+            <div class="weather-app">
+                <h4>🌤️ Weather App Live</h4>
+                <div class="todo-input-row">
+                    <input type="text" id="weatherInput" placeholder="Scrie un oraș (ex: Bucharest)" autocomplete="off">
+                    <button class="demo-btn" id="weatherBtn">🔍 Caută</button>
+                </div>
+                <div class="weather-result" id="weatherResult" style="display: none;">
+                    <div class="city-name" id="weatherCity">—</div>
+                    <div class="temp" id="weatherTemp">—°C</div>
+                    <div class="weather-details" id="weatherDetails">—</div>
+                </div>
+            </div>
+
+            <!-- Code -->
+            <h3>💻 Codul complet:</h3>
+            <pre>
+<span style="color:#5c6370">// === WEATHER APP cu Fetch API ===</span>
+<span style="color:#5c6370">// Folosim wttr.in — API gratis, fără API key!</span>
+
+<span style="color:#c678dd">async function</span> <span style="color:#61afef">getWeather</span>(city) {
+    <span style="color:#c678dd">try</span> {
+        <span style="color:#5c6370">// Fetch — face un request HTTP GET</span>
+        <span style="color:#c678dd">const</span> response = <span style="color:#c678dd">await</span> fetch(
+            <span style="color:#98c379">`https://wttr.in/${city}?format=j1`</span>
+        );
+
+        <span style="color:#5c6370">// Verifică dacă request-ul a reușit</span>
+        <span style="color:#c678dd">if</span> (!response.ok) {
+            <span style="color:#c678dd">throw new</span> Error(<span style="color:#98c379">"Orașul nu a fost găsit!"</span>);
+        }
+
+        <span style="color:#5c6370">// Parsează JSON din response</span>
+        <span style="color:#c678dd">const</span> data = <span style="color:#c678dd">await</span> response.json();
+
+        <span style="color:#5c6370">// Extrage datele din JSON (destructuring!)</span>
+        <span style="color:#c678dd">const</span> { temp_C, humidity, weatherDesc } =
+            data.current_condition[0];
+
+        <span style="color:#5c6370">// Afișează rezultatul</span>
+        document.getElementById(<span style="color:#98c379">"weatherTemp"</span>)
+            .textContent = <span style="color:#98c379">`${temp_C}°C`</span>;
+        document.getElementById(<span style="color:#98c379">"weatherCity"</span>)
+            .textContent = city;
+        document.getElementById(<span style="color:#98c379">"weatherDetails"</span>)
+            .textContent = <span style="color:#98c379">`${weatherDesc[0].value} • Umiditate: ${humidity}%`</span>;
+
+    } <span style="color:#c678dd">catch</span> (err) {
+        alert(<span style="color:#98c379">`Eroare: ${err.message}`</span>);
+    }
+}
+
+<span style="color:#5c6370">// Event listener pe buton</span>
+weatherBtn.addEventListener(<span style="color:#98c379">"click"</span>, () => {
+    <span style="color:#c678dd">const</span> city = weatherInput.value.trim();
+    <span style="color:#c678dd">if</span> (city) getWeather(city);
+});
+</pre>
+        </div>
+
+        <div class="prof-note">
+            <div class="prof-label">🏆 Challenge</div>
+            Creează-ți propriul proiect! Idei:<br>
+            • 🎨 Generrator de culori random<br>
+            • ⏱️ Cronometru / Timer<br>
+            • 🃏 Joc de memorie cu cărți<br>
+            • 💬 Chat simulator<br>
+            Fiecare proiect îți întărește cunoștințele!
+        </div>
+    </main>
+
+    <footer>
+        <p>⚡ JavaScript Playground — Creat pentru a învăța prin practică</p>
+    </footer>
+
+    <script>
+        // ============ TO-DO LIST ============
+        const todoInput = document.getElementById('todoInput');
+        const todoList = document.getElementById('todoList');
+        const todoAdd = document.getElementById('todoAdd');
+        const todoCount = document.getElementById('todoCount');
+        const todoClear = document.getElementById('todoClear');
+        let todos = [];
+
+        function addTodo() {
+            const text = todoInput.value.trim();
+            if (!text) return;
+            todos.push({ text, done: false });
+            todoInput.value = '';
+            renderTodos();
+            todoInput.focus();
+        }
+
+        function renderTodos() {
+            todoList.innerHTML = '';
+            todos.forEach((todo, i) => {
+                const div = document.createElement('div');
+                div.className = `todo-item ${todo.done ? 'done' : ''}`;
+                div.innerHTML = `
+                    <span class="todo-check" onclick="toggleTodo(${i})">✓</span>
+                    <span class="todo-text">${todo.text}</span>
+                    <button class="todo-delete" onclick="deleteTodo(${i})">✕</button>
+                `;
+                todoList.appendChild(div);
+            });
+            const doneCount = todos.filter(t => t.done).length;
+            todoCount.textContent = `${todos.length} sarcini (${doneCount} complete)`;
+        }
+
+        function toggleTodo(i) { todos[i].done = !todos[i].done; renderTodos(); }
+        function deleteTodo(i) { todos.splice(i, 1); renderTodos(); }
+
+        todoAdd.addEventListener('click', addTodo);
+        todoInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') addTodo(); });
+        todoClear.addEventListener('click', () => {
+            todos = todos.filter(t => !t.done);
+            renderTodos();
+        });
+
+        // ============ QUIZ GAME ============
+        const quizQuestions = [
+            { q: "Câte continente sunt pe Pământ?", a: ["5", "6", "7", "8"], c: 2 },
+            { q: "Ce limbaj de programare rulează nativ în browser?", a: ["Python", "JavaScript", "C++", "Java"], c: 1 },
+            { q: "Ce returnează typeof [] în JavaScript?", a: ["\"array\"", "\"object\"", "\"list\"", "\"undefined\""], c: 1 },
+            { q: "Ce an a fost creat JavaScript?", a: ["1991", "1995", "2000", "2005"], c: 1 },
+            { q: "Ce face .push() pe un array?", a: ["Scoate primul", "Adaugă la sfârșit", "Sortează", "Inversează"], c: 1 },
+            { q: "Ce e DOM în JavaScript?", a: ["O bază de date", "Un framework", "Reprezentarea HTML ca obiect", "Un protocol"], c: 2 },
+            { q: "Ce returnează 0.1 + 0.2 === 0.3?", a: ["true", "false", "Error", "undefined"], c: 1 },
+            { q: "Care metodă oprește propagarea unui event?", a: ["stopEvent()", "preventDefault()", "stopPropagation()", "cancelEvent()"], c: 2 },
+        ];
+
+        let miniQIdx = -1, miniScore = 0, miniTotal = 0;
+        let miniQuizActive = false;
+        const btnIds = ['mqA', 'mqB', 'mqC', 'mqD'];
+
+        function startMiniQuiz() {
+            miniQIdx = 0; miniScore = 0; miniTotal = 0;
+            miniQuizActive = true;
+            document.getElementById('miniQuizStart').textContent = '🔄 Restart';
+            showMiniQ();
+        }
+
+        function showMiniQ() {
+            if (miniQIdx >= quizQuestions.length) {
+                document.getElementById('miniQuizQ').textContent = `🏆 Terminat! Scor: ${miniScore}/${quizQuestions.length}`;
+                btnIds.forEach(id => { document.getElementById(id).textContent = '—'; document.getElementById(id).className = 'quiz-answer-btn'; });
+                miniQuizActive = false;
+                return;
+            }
+            const q = quizQuestions[miniQIdx];
+            document.getElementById('miniQuizQ').textContent = q.q;
+            q.a.forEach((ans, i) => {
+                const btn = document.getElementById(btnIds[i]);
+                btn.textContent = ans;
+                btn.className = 'quiz-answer-btn';
+            });
+            document.getElementById('miniQuizScore').textContent = `Scor: ${miniScore} / ${miniTotal}`;
+        }
+
+        function miniQuizAnswer(idx) {
+            if (!miniQuizActive || miniQIdx >= quizQuestions.length) return;
+            const correct = quizQuestions[miniQIdx].c;
+            miniTotal++;
+
+            btnIds.forEach((id, i) => {
+                const btn = document.getElementById(id);
+                if (i === correct) btn.classList.add('correct-ans');
+                if (i === idx && i !== correct) btn.classList.add('wrong-ans');
+            });
+
+            if (idx === correct) miniScore++;
+            document.getElementById('miniQuizScore').textContent = `Scor: ${miniScore} / ${miniTotal}`;
+
+            setTimeout(() => {
+                miniQIdx++;
+                showMiniQ();
+            }, 800);
+        }
+
+        // ============ WEATHER APP ============
+        const weatherBtn = document.getElementById('weatherBtn');
+        const weatherInput = document.getElementById('weatherInput');
+
+        async function getWeather(city) {
+            try {
+                const response = await fetch(`https://wttr.in/${encodeURIComponent(city)}?format=j1`);
+                if (!response.ok) throw new Error('Orașul nu a fost găsit!');
+                const data = await response.json();
+                const condition = data.current_condition[0];
+
+                document.getElementById('weatherResult').style.display = 'block';
+                document.getElementById('weatherCity').textContent = `📍 ${city}`;
+                document.getElementById('weatherTemp').textContent = `${condition.temp_C}°C`;
+                document.getElementById('weatherDetails').textContent =
+                    `${condition.weatherDesc[0].value} • Umiditate: ${condition.humidity}% • Vânt: ${condition.windspeedKmph} km/h`;
+            } catch (err) {
+                document.getElementById('weatherResult').style.display = 'block';
+                document.getElementById('weatherCity').textContent = '❌ Eroare';
+                document.getElementById('weatherTemp').textContent = '—';
+                document.getElementById('weatherDetails').textContent = err.message;
+            }
+        }
+
+        weatherBtn.addEventListener('click', () => {
+            const city = weatherInput.value.trim();
+            if (city) getWeather(city);
+        });
+        weatherInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const city = weatherInput.value.trim();
+                if (city) getWeather(city);
+            }
+        });
+    </script>
+</body>
+
+</html>

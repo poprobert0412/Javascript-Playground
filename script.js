@@ -1,5 +1,5 @@
 // ============================================================================
-// 📁 script.js — Fișierul JavaScript principal al paginii
+// 📁 script.js — Fișierul JavaScript principal (PARTAJAT pe toate paginile)
 // ============================================================================
 //
 // 🎓 DE CE E ÎNTR-UN FIȘIER SEPARAT?
@@ -15,8 +15,8 @@
 //   ✅ Browser-ul poate CACHE-ui fișierul JS (pagina se încarcă mai rapid)
 //   ✅ E mai ușor de citit și depanat (debug)
 //
-// În index.html, am pus doar: <script src="script.js"></script>
-// Asta îi spune browser-ului: "încarcă și execută codul din script.js"
+// Acest fișier e folosit de: playground.html, lectii.html, exercitii.html
+// Fiecare pagină are doar elementele de care are nevoie.
 //
 // ============================================================================
 
@@ -70,9 +70,10 @@
 //
 // Exemplu: dacă în HTML ai <input id="consoleInput">
 // Și în JS scrii: document.getElementById("consoleInput")
-// Primești acel element și poți face lucruri cu el! (citi textul, schimba stilul, etc.)
+// Primești acel element și poți face lucruri cu el!
 //
-// E ca și cum ai spune: "Hei document, dă-mi elementul care are id-ul consoleInput"
+// DACĂ ELEMENTUL NU EXISTĂ pe pagină, primești NULL
+// De aceea verificăm cu "if (element)" înainte de a-l folosi
 //
 // ============================================================================
 
@@ -80,18 +81,16 @@
 // ============================================================================
 // 🟢 SECȚIUNEA 1: CONSOLA INTERACTIVĂ
 // ============================================================================
-// Aceasta face ca input-ul din pagină să funcționeze ca o mini-consolă JS
+// Această secțiune rulează DOAR pe paginile care au consolă (playground.html)
+// Verificăm cu "if" dacă elementele există pe pagină
 
-// #CONST — Selectăm elementele din pagină și le salvăm în constante
-// De ce const? Pentru că aceste variabile vor referi MEREU aceleași elemente
-const consoleInput = document.getElementById('consoleInput');   // input-ul unde scrii cod
-const consoleOutput = document.getElementById('consoleOutput'); // zona unde apare rezultatul
-const runBtn = document.getElementById('runBtn');               // butonul "RUN"
+const consoleInput = document.getElementById('consoleInput');
+const consoleOutput = document.getElementById('consoleOutput');
+const runBtn = document.getElementById('runBtn');
 
-// #LET — Acestea se schimbă pe parcurs, deci folosim "let"
-let commandHistory = [];   // un ARRAY gol — aici salvăm comenzile anterioare
-// [] = array gol, ca o listă goală
-let historyIndex = -1;     // index-ul curent în istoric (-1 = nimic selectat)
+// Variabile pentru istoricul de comenzi
+let commandHistory = [];
+let historyIndex = -1;
 
 
 // ============================================================================
@@ -111,341 +110,126 @@ let historyIndex = -1;     // index-ul curent în istoric (-1 = nimic selectat)
 // ============================================================================
 
 
-// Funcție care adaugă o linie de text în zona de output (consola vizuală)
-//
-// PARAMETRI:
-//   text = ce text să afișeze
-//   type = tipul de mesaj: 'result' (verde), 'error' (roșu), 'info' (albastru)
-//          "= 'result'" înseamnă VALOARE DEFAULT — dacă nu specifici type, va fi 'result'
+// Funcție care adaugă o linie de text în consola vizuală
 function addOutput(text, type = 'result') {
+    // Dacă nu există consola pe pagină, ieși
+    if (!consoleOutput) return;
 
-    // document.createElement('div') = creează un element HTML nou: <div></div>
-    // Încă NU apare pe pagină — doar l-am creat în memorie
     const line = document.createElement('div');
-
-    // #CLASSNAME — setează clasele CSS ale elementului
-    // Backtick-urile `...` sunt TEMPLATE LITERALS — permit inserarea variabilelor cu ${...}
-    // Rezultat: class="output-line result" sau class="output-line error"
     line.className = `output-line ${type}`;
-
-    // #TEXTCONTENT — setează textul vizibil al elementului
-    // textContent e SAFE — tratează tot ca text simplu (nu execută HTML)
     line.textContent = text;
-
-    // #APPENDCHILD — adaugă elementul NOU ca ultimul copil al consoleOutput
-    // ACUM apare pe pagină! Înainte era doar în memorie, acum e în DOM
     consoleOutput.appendChild(line);
-
-    // #SCROLLTOP — derulează automat în jos ca să vezi ultimul mesaj
-    // scrollHeight = înălțimea totală a conținutului
     consoleOutput.scrollTop = consoleOutput.scrollHeight;
 }
 
 
 // ============================================================================
-// Funcția principală: EXECUTE CODE (execută codul scris de utilizator)
+// #EVAL — Funcția EXECUTE CODE
 // ============================================================================
 //
-// #EVAL — Ce face eval()?
 // eval() ia un STRING (text) și îl EXECUTĂ ca și cod JavaScript
-//
 //   eval("2 + 2")       → returnează 4
-//   eval("alert('Salut')")  → execută alert
+// ⚠️ eval() e PERICULOS în producție! Aici e OK pentru învățare locală.
 //
-// ⚠️ eval() e PERICULOS în producție! Poate executa cod malițios.
-// Aici e OK pentru că e o pagină de învățare locală, doar tu o folosești.
+// #ORIGINALLOG — De ce salvăm console.log?
+// Vrem ca console.log() să afișeze pe pagina noastră, nu în consola browser-ului.
+// Strategia: salvăm originalul → înlocuim → executăm → restaurăm
 //
 // ============================================================================
 function executeCode(code) {
-
-    // #TRIM — .trim() elimină spațiile de la început și sfârșit
-    // #NEGARE — "!" neagă valoarea: !true = false, !false = true
-    // Deci: dacă codul e gol (doar spații), ieși din funcție, nu face nimic
     if (!code.trim()) return;
 
-    // Afișează codul introdus (cu simbolul ❯ în față) ca linie de info
     addOutput(`❯ ${code}`, 'info');
-
-    // #UNSHIFT — .unshift() adaugă un element la ÎNCEPUTUL array-ului
-    // (opusul lui .push() care adaugă la SFÂRȘIT)
-    // Salvăm comanda în istoric ca să poți naviga cu ⬆️⬇️
     commandHistory.unshift(code);
-    historyIndex = -1;  // resetăm index-ul la "nimic selectat"
+    historyIndex = -1;
 
-
-    // ======================================================================
-    // #ORIGINALLOG — De ce salvăm console.log?
-    // ======================================================================
-    //
-    // Noi vrem ca atunci când utilizatorul scrie console.log("ceva")
-    // rezultatul să apară pe PAGINA noastră, nu în consola browser-ului.
-    //
-    // Strategia:
-    // 1. Salvăm console.log ORIGINAL într-o variabilă (originalLog)
-    // 2. Înlocuim console.log cu PROPRIA noastră funcție
-    //    (care salvează textul într-un array)
-    // 3. Executăm codul utilizatorului (eval) — acum console.log e al nostru
-    // 4. Afișăm rezultatele pe pagină
-    // 5. Restaurăm console.log ORIGINAL (punem la loc ce era)
-    //
-    // E ca și cum ai fura temporar telecomanda, schimbi canalul,
-    // și apoi o pui la loc exact unde era.
-    //
-    // ======================================================================
-    const originalLog = console.log;  // Pasul 1: Salvăm originalul
-
-    // #OUTPUTS — un array gol unde vom colecta mesajele
-    // De fiecare dată când codul cheamă console.log(), 
-    // mesajul ajunge AICI în loc de consola browser-ului
+    const originalLog = console.log;
     const outputs = [];
 
-
-    // ======================================================================
-    // #ARROW_FUNCTION — Ce e (...args) => { ... } ?
-    // ======================================================================
-    //
-    // E o ARROW FUNCTION (funcție săgeată) — sintaxă modernă pentru funcții
-    //
-    //   Forma clasică:    function(x) { return x * 2; }
-    //   Forma arrow:      (x) => x * 2
-    //
-    // Sunt echivalente! Arrow e doar o scriere mai scurtă.
-    //
-    // #SPREAD (...args) — "..." se numește SPREAD/REST operator
-    // Când e în parametri, înseamnă "captează TOATE argumentele într-un array"
-    //
-    //   console.log("a", "b", "c")  →  args = ["a", "b", "c"]
-    //   console.log(42)              →  args = [42]
-    //
-    // ======================================================================
-
-
-    // Pasul 2: Înlocuim console.log cu funcția noastră custom
+    // #ARROW_FUNCTION — (...args) => { ... } = funcție săgeată
+    // #SPREAD — ...args captează TOATE argumentele într-un array
     console.log = (...args) => {
-
-        // args.map() = trece prin fiecare argument și îl transformă
-        // #MAP — .map() creează un ARRAY NOU transformând fiecare element
-        //
-        //   [1, 2, 3].map(n => n * 2)  →  [2, 4, 6]
-        //
-        // Aici: transformăm fiecare argument în text (string)
+        // #MAP — transformă fiecare element, #TYPEOF — verifică tipul
+        // #TRIPLU_EGAL (===) — compară valoare + tip (strict equality)
         outputs.push(args.map(a => {
-
-            // #TYPEOF — typeof verifică TIPUL unei valori
-            //   typeof "salut"  → "string"
-            //   typeof 42       → "number"
-            //   typeof true     → "boolean"
-            //   typeof {}       → "object"
-            //   typeof []       → "object"  (da, array-urile sunt obiecte!)
-
-            // ================================================================
-            // #TRIPLU_EGAL (===) — Ce înseamnă === (strict equality)?
-            // ================================================================
-            //
-            // JavaScript are 2 moduri de comparare:
-            //
-            //   ==  (egal LAX)    — compară VALORI, convertind tipurile automat
-            //       "5" == 5      → TRUE (convertește string-ul în number)
-            //       0 == false    → TRUE (convertește false în 0)
-            //       null == undefined → TRUE
-            //
-            //   === (egal STRICT)  — compară VALOARE + TIP, fără conversie
-            //       "5" === 5     → FALSE (string vs number = tipuri diferite!)
-            //       0 === false   → FALSE (number vs boolean = tipuri diferite!)
-            //       5 === 5       → TRUE  (același tip, aceeași valoare)
-            //
-            // 🏆 REGULA DE AUR: Folosește MEREU === în loc de ==
-            //    Cu == poți avea surprize neplăcute!
-            //
-            // Opusul lui === e !== (strict NOT equal)
-            //    5 !== "5"  → TRUE (sunt diferite ca tip)
-            //
-            // ================================================================
-
             if (typeof a === 'object') return JSON.stringify(a, null, 2);
-            //   ↑ Dacă e obiect/array, îl transformă în text JSON frumos formatat
-            //   JSON.stringify(obiect, null, 2) = convertește obiect → string JSON
-            //     - null = nu filtrăm nimic
-            //     - 2 = indentare de 2 spații (formatare frumoasă)
-
             return String(a);
-            //   ↑ Pentru orice altceva (number, boolean, string), îl facem string
-            //   String(42) → "42", String(true) → "true"
-
         }).join(' '));
-        //   ↑ #JOIN — .join(' ') unește toate elementele dintr-un array cu un spațiu
-        //   ["Salut", "lume"].join(' ')  →  "Salut lume"
-        //   [1, 2, 3].join(', ')  →  "1, 2, 3"
     };
 
-
-    // ======================================================================
-    // #TRY_CATCH — Gestionarea erorilor
-    // ======================================================================
-    //
-    // try { ... } catch (err) { ... }
-    //
-    // "try" = ÎNCEARCĂ să execuți acest cod
-    // Dacă totul merge bine → continuă normal
-    // Dacă apare o EROARE → sare imediat în "catch"
-    //
-    //   try {
-    //       let x = cevaCeNuExista;  // ❌ eroare!
-    //   } catch (err) {
-    //       console.log(err.message);  // "cevaCeNuExista is not defined"
-    //   }
-    //
-    // fără try-catch, eroarea ar CRASHA toată pagina
-    // cu try-catch, o PRINDEM și o afișăm frumos
-    //
-    // "err" = obiectul de eroare, are proprietatea .message cu textul erorii
-    //
-    // ======================================================================
-
+    // #TRY_CATCH — prinde erorile fără să crape pagina
     try {
-        // Pasul 3: Executăm codul utilizatorului
         const result = eval(code);
-        // eval("2 + 2") → result = 4
-        // eval("console.log('salut')") → result = undefined (dar outputs[] are "salut")
-
-        // #FOREACH — trece prin fiecare element și apelează funcția
-        // Diferența față de .map(): forEach NU returnează un array nou
         outputs.forEach(o => addOutput(o, 'result'));
-
-        // #UNDEFINED — Ce e undefined?
-        // undefined = "valoarea lipsește" sau "nu a fost definită"
-        //   let x;           // x = undefined (declarat dar fără valoare)
-        //   function f() {}  // f() returnează undefined (nu are return)
-        //
-        // #AND (&&) — "și" logic
-        //   true && true   → true
-        //   true && false  → false
-        //   Ambele condiții trebuie să fie adevărate!
-        //
-        // !== = strict NOT equal (opusul lui ===)
         if (result !== undefined && outputs.length === 0) {
             addOutput(typeof result === 'object' ? JSON.stringify(result, null, 2) : String(result), 'result');
-            // ↑ #TERNARY OPERATOR — condiție ? dacă_da : dacă_nu
-            //   E un IF/ELSE scris pe o singură linie:
-            //   typeof result === 'object' ? JSON.stringify(...) : String(result)
-            //   Tradus: ESTE obiect? → transformă în JSON : altfel → transformă în String
         }
     } catch (err) {
-        // Dacă codul utilizatorului are o eroare, o afișăm frumos cu ❌
         addOutput(`❌ ${err.message}`, 'error');
     }
 
-    // Pasul 5: Restaurăm console.log ORIGINAL
-    // Acum console.log funcționează din nou normal
     console.log = originalLog;
 }
 
 
-// ============================================================================
-// Funcție: tryCode — apelată de butoanele "▶ Încearcă" din pagină
-// ============================================================================
-// Când apeși un buton "Încearcă", el apelează tryCode("codul de exemplu")
-// Funcția pune codul în input, îl execută, și apoi golește input-ul
+// Funcție pentru butoanele "▶ Încearcă"
 function tryCode(code) {
-    consoleInput.value = code;        // .value = valoarea curentă a input-ului
-    executeCode(code);                // execută codul
-    consoleInput.value = '';          // golește input-ul
-    consoleInput.focus();             // #FOCUS — mută cursorul pe input
+    if (!consoleInput) return;
+    consoleInput.value = code;
+    executeCode(code);
+    consoleInput.value = '';
+    consoleInput.focus();
 }
 
 
 // ============================================================================
-// #ADDEVENTLISTENER — Ascultăm evenimentele
-// ============================================================================
-//
-// element.addEventListener("tip_event", funcție_handler)
-//
-// TRADUCERE: "Hei element, ASCULTĂ pentru un EVENT de tip 'click'.
-//            Când se întâmplă, execută această FUNCȚIE."
-//
-// Tipuri de evenimente:
-//   "click"     — click pe element
-//   "keydown"   — o tastă e apăsată
-//   "keyup"     — o tastă e eliberată
-//   "input"     — text scris într-un input
-//   "mouseover" — mouse-ul intră pe element
-//   "mouseout"  — mouse-ul iese de pe element
-//   "submit"    — un formular e trimis
-//   "scroll"    — pagina e derulată
-//
+// #ADDEVENTLISTENER — Ascultăm evenimentele (DOAR dacă elementele există)
 // ============================================================================
 
-// Când apeși butonul RUN → execută codul din input
-runBtn.addEventListener('click', () => {
-    executeCode(consoleInput.value);  // ia valoarea din input și o execută
-    consoleInput.value = '';          // golește input-ul după
-});
-
-// Ascultăm tastatura pe input — pentru Enter și navigare istorie
-consoleInput.addEventListener('keydown', (e) => {
-    // "e" (sau "event") = OBIECTUL EVENT — conține info despre ce s-a întâmplat
-    // e.key = tasta apăsată ("Enter", "ArrowUp", "a", "Shift", etc.)
-
-    if (e.key === 'Enter') {
+if (runBtn) {
+    runBtn.addEventListener('click', () => {
         executeCode(consoleInput.value);
         consoleInput.value = '';
-    }
+    });
+}
 
-    if (e.key === 'ArrowUp') {
-        // #PREVENTDEFAULT — oprește comportamentul default al browser-ului
-        // Fără asta, ArrowUp ar muta cursorul la începutul textului
-        e.preventDefault();
-
-        // Navigăm ÎN SUS prin istoricul de comenzi
-        if (historyIndex < commandHistory.length - 1) {
-            historyIndex++;       // ++ = incrementare (adaugă 1)
-            consoleInput.value = commandHistory[historyIndex];
-            // commandHistory[0] = ultima comandă, [1] = penultima, etc.
+if (consoleInput) {
+    consoleInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            executeCode(consoleInput.value);
+            consoleInput.value = '';
         }
-    }
-
-    if (e.key === 'ArrowDown') {
-        e.preventDefault();
-
-        // Navigăm ÎN JOS prin istoricul de comenzi
-        if (historyIndex > 0) {
-            historyIndex--;       // -- = decrementare (scade 1)
-            consoleInput.value = commandHistory[historyIndex];
-        } else {
-            historyIndex = -1;    // am ajuns la capăt, resetăm
-            consoleInput.value = '';  // golim input-ul
+        if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (historyIndex < commandHistory.length - 1) {
+                historyIndex++;
+                consoleInput.value = commandHistory[historyIndex];
+            }
         }
-    }
-});
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (historyIndex > 0) {
+                historyIndex--;
+                consoleInput.value = commandHistory[historyIndex];
+            } else {
+                historyIndex = -1;
+                consoleInput.value = '';
+            }
+        }
+    });
+}
 
 
 // ============================================================================
-// 🟢 SECȚIUNEA 2: EXERCIȚII — Rulează codul scris de utilizator în textarea
+// 🟢 SECȚIUNEA 2: EXERCIȚII — Rulează codul din textarea
 // ============================================================================
 
 function runExercise(id) {
-    // #PARAMETER "id" — vine din HTML: onclick="runExercise('ex1')"
-    // Deci id = "ex1", "ex2", sau "ex3"
-
-    // Luăm textarea-ul cu id-ul respectiv și citim valoarea (codul scris)
     const code = document.getElementById(id).value;
-
-    // Construim id-ul elementului de output: "ex1" → "ex1-output"
-    // #TEMPLATE_LITERAL — `${id}-output` înlocuiește ${id} cu valoarea reală
     const outputEl = document.getElementById(`${id}-output`);
-
-    // #STYLE — accesăm și modificăm stilurile CSS direct din JS
-    // display: 'block' = arată elementul (inițial era ascuns cu display: none)
     outputEl.style.display = 'block';
-
-    // #INNERHTML — setează conținutul HTML al elementului
-    // '' = string gol → golim output-ul anterior
-    // ⚠ innerHTML e diferit de textContent:
-    //   textContent = text simplu (safe)
-    //   innerHTML = poate conține tag-uri HTML (<strong>, <em>, etc.)
     outputEl.innerHTML = '';
 
-    // Aceeași strategie ca mai sus: intercepăm console.log
     const originalLog = console.log;
     const outputs = [];
 
@@ -457,12 +241,8 @@ function runExercise(id) {
     };
 
     try {
-        eval(code);  // Rulăm codul din textarea
-
+        eval(code);
         if (outputs.length > 0) {
-            // #MAP + JOIN — transformăm array-ul de rezultate în HTML
-            // .map() creează un div pentru fiecare output
-            // .join('') le lipește laolaltă fără separator
             outputEl.innerHTML = outputs.map(o =>
                 `<div class="output-line result">✅ ${o}</div>`
             ).join('');
@@ -473,182 +253,127 @@ function runExercise(id) {
         outputEl.innerHTML = `<div class="output-line error">❌ ${err.message}</div>`;
     }
 
-    console.log = originalLog;  // restaurăm console.log original
+    console.log = originalLog;
 }
 
-
-// Funcție care arată/ascunde hint-ul unui exercițiu
+// Funcție: arată/ascunde hint-ul
 function showHint(id) {
     const hint = document.getElementById(id);
-
-    // #TERNARY pe display — dacă e 'block' (vizibil) → ascunde-l ('none')
-    //                        dacă nu e 'block' → arată-l ('block')
     hint.style.display = hint.style.display === 'block' ? 'none' : 'block';
 }
 
 
 // ============================================================================
-// 🟢 SECȚIUNEA 3: MESAJ DE BUN VENIT
+// 🟢 SECȚIUNEA 3: MESAJ DE BUN VENIT (doar pe paginile cu consolă)
 // ============================================================================
-addOutput('🚀 Bine ai venit! Scrie cod JavaScript și apasă Enter sau ▶ RUN.', 'info');
-addOutput('💡 Încearcă: 2 + 2, "salut".toUpperCase(), [1,2,3].map(n => n * 10)', 'info');
+if (consoleOutput) {
+    addOutput('🚀 Bine ai venit! Scrie cod JavaScript și apasă Enter sau ▶ RUN.', 'info');
+    addOutput('💡 Încearcă: 2 + 2, "salut".toUpperCase(), [1,2,3].map(n => n * 10)', 'info');
+}
 
 
 // ============================================================================
-// 🟢 SECȚIUNEA 4: DEMO-URI INTERACTIVE (Event Listeners în acțiune!)
+// 🟢 SECȚIUNEA 4: DEMO-URI INTERACTIVE (doar pe lectii.html)
 // ============================================================================
-//
-// Toate demo-urile de mai jos folosesc EXACT ceea ce ai învățat:
-// 1. SELECTEZI elementul → document.getElementById(...)
-// 2. ASCULȚI un event → element.addEventListener("tip", funcție)
-// 3. REACȚIONEZI → modifici DOM-ul în funcția handler
-//
-// ============================================================================
+// Toate demo-urile verifică dacă elementele există cu "if (element)"
+// Așa putem folosi ACELAȘI fișier JS pe TOATE paginile fără erori!
 
-
-// ======================================================================
 // #DEMO_COUNTER — Counter cu click
-// ======================================================================
-// Exemplu clasic: un buton pe care apeși și un număr crește
+const counterBtn = document.getElementById('counterBtn');
+if (counterBtn) {
+    let clickCount = 0;
+    const counterDisplay = document.getElementById('counterDisplay');
+    const counterLog = document.getElementById('counterLog');
 
-let clickCount = 0;  // let, nu const! Valoarea se schimbă la fiecare click
+    counterBtn.addEventListener('click', () => {
+        clickCount++;
+        counterDisplay.textContent = clickCount;
+        counterDisplay.classList.add('bump');
+        setTimeout(() => counterDisplay.classList.remove('bump'), 200);
+        counterLog.textContent = `Click #${clickCount} — addEventListener("click") a fost apelat!`;
+    });
+}
 
-const counterBtn = document.getElementById('counterBtn');         // butonul
-const counterDisplay = document.getElementById('counterDisplay'); // afișajul numărului
-const counterLog = document.getElementById('counterLog');         // mesajul explicativ
-
-// Ascultăm click-ul pe buton
-counterBtn.addEventListener('click', () => {
-    clickCount++;  // ++ = incrementare (clickCount = clickCount + 1)
-
-    // Actualizăm textul afișat cu noul număr
-    counterDisplay.textContent = clickCount;
-
-    // #CLASSLIST — gestionarea claselor CSS ale unui element
-    // .add('bump')    = adaugă clasa CSS 'bump' (face animația de mărire)
-    // .remove('bump') = scoate clasa 'bump' (revine la normal)
-    // .toggle('bump') = dacă o are o scoate, dacă n-o are o pune
-    counterDisplay.classList.add('bump');
-
-    // #SETTIMEOUT — execută ceva DUPĂ un delay (în milisecunde)
-    // setTimeout(funcție, milisecunde)
-    //   1000ms = 1 secundă
-    //   200ms = 0.2 secunde
-    // Aici: după 200ms, scoatem clasa 'bump' (animația se termină)
-    setTimeout(() => counterDisplay.classList.remove('bump'), 200);
-
-    // Afișăm un mesaj explicativ
-    counterLog.textContent = `Click #${clickCount} — addEventListener("click") a fost apelat!`;
-});
-
-
-// ======================================================================
 // #DEMO_INPUT — Input în timp real
-// ======================================================================
-// Detectează fiecare caracter tastat într-un input
-
 const liveInput = document.getElementById('liveInput');
-const liveInputOutput = document.getElementById('liveInputOutput');
+if (liveInput) {
+    const liveInputOutput = document.getElementById('liveInputOutput');
 
-// "input" event = se declanșează la FIECARE caracter tastat
-// NU la Enter (ca "keydown"), ci la orice modificare a textului
-liveInput.addEventListener('input', (e) => {
-    // #EVENT_TARGET — e.target = elementul pe care s-a întâmplat event-ul
-    // e.target.value = valoarea curentă a input-ului (textul scris)
-    const val = e.target.value;
+    liveInput.addEventListener('input', (e) => {
+        const val = e.target.value;
+        if (val.length === 0) {
+            liveInputOutput.innerHTML = 'Textul tău: <em>nimic încă</em>';
+        } else {
+            liveInputOutput.textContent = `Ai scris: "${val}" (${val.length} caractere)`;
+        }
+    });
+}
 
-    // #LENGTH — .length = numărul de caractere / elemente
-    //   "salut".length → 5
-    //   [1, 2, 3].length → 3
-    if (val.length === 0) {
-        liveInputOutput.innerHTML = 'Textul tău: <em>nimic încă</em>';
-    } else {
-        liveInputOutput.textContent = `Ai scris: "${val}" (${val.length} caractere)`;
-    }
-});
-
-
-// ======================================================================
 // #DEMO_KEYDOWN — Detector de taste
-// ======================================================================
-// Afișează ce tastă ai apăsat și informațiile despre ea
-
 const keyArea = document.getElementById('keyArea');
-const keyDisplay = document.getElementById('keyDisplay');
-const keyInfo = document.getElementById('keyInfo');
+if (keyArea) {
+    const keyDisplay = document.getElementById('keyDisplay');
+    const keyInfo = document.getElementById('keyInfo');
 
-// "keydown" = se declanșează când APEȘI o tastă
-keyArea.addEventListener('keydown', (e) => {
-    e.preventDefault();  // oprește comportamentul default (scroll, etc.)
+    keyArea.addEventListener('keydown', (e) => {
+        e.preventDefault();
+        keyDisplay.textContent = e.key === ' ' ? 'Space' : e.key;
+        keyDisplay.classList.add('pressed');
+        keyInfo.textContent = `key: "${e.key}" | code: "${e.code}" | keyCode: ${e.keyCode}`;
+    });
 
-    // e.key = caracterul vizual al tastei
-    //   Tasta A → e.key = "a"
-    //   Tasta Enter → e.key = "Enter"
-    //   Tasta Spațiu → e.key = " "
-    //   Tasta Shift → e.key = "Shift"
+    keyArea.addEventListener('keyup', () => {
+        keyDisplay.classList.remove('pressed');
+    });
+}
 
-    // #TERNARY — dacă tasta e spațiu, afișăm "Space" în loc de " " (gol)
-    keyDisplay.textContent = e.key === ' ' ? 'Space' : e.key;
-
-    // Adaugăm clasa 'pressed' pentru efect vizual (tasta se "apasă")
-    keyDisplay.classList.add('pressed');
-
-    // e.code = codul FIZIC al tastei (independent de limbă/layout)
-    //   Tasta A → e.code = "KeyA"
-    //   Tasta 1 → e.code = "Digit1"
-    // e.keyCode = cod numeric (deprecated, dar util pentru exemplu)
-    keyInfo.textContent = `key: "${e.key}" | code: "${e.code}" | keyCode: ${e.keyCode}`;
-});
-
-// "keyup" = se declanșează când ELIBEREZI tasta
-keyArea.addEventListener('keyup', () => {
-    keyDisplay.classList.remove('pressed');  // scoatem efectul vizual
-});
-
-
-// ======================================================================
-// #DEMO_HOVERBOX — Hover cu mouse-ul (mouseover / mouseout)
-// ======================================================================
-// Pătratul își schimbă culoarea și forma când treci cu mouse-ul peste el
-
+// #DEMO_HOVERBOX — Hover cu mouse-ul
 const hoverBox = document.getElementById('hoverBox');
-const hoverLog = document.getElementById('hoverLog');
+if (hoverBox) {
+    const hoverLog = document.getElementById('hoverLog');
+    const colors = ['#e94560', '#00d2ff', '#533483', '#00e676', '#ffab40', '#ff6b6b'];
+    let colorIndex = 0;
 
-// Un array de culori prin care ciclăm
-const colors = ['#e94560', '#00d2ff', '#533483', '#00e676', '#ffab40', '#ff6b6b'];
+    // #MODULO (%) — ciclăm prin array: (index + 1) % array.length
+    hoverBox.addEventListener('mouseover', () => {
+        colorIndex = (colorIndex + 1) % colors.length;
+        hoverBox.style.background = colors[colorIndex];
+        hoverBox.style.transform = 'scale(1.2) rotate(10deg)';
+        hoverBox.style.borderRadius = '20px';
+        hoverLog.textContent = `mouseover → culoare: ${colors[colorIndex]}, scale(1.2)`;
+    });
 
-let colorIndex = 0;  // let! se schimbă la fiecare hover
+    hoverBox.addEventListener('mouseout', () => {
+        hoverBox.style.background = '#e94560';
+        hoverBox.style.transform = 'scale(1)';
+        hoverBox.style.borderRadius = '12px';
+        hoverLog.textContent = 'mouseout → revenit la normal';
+    });
+}
 
-// "mouseover" = mouse-ul INTRĂ pe element
-hoverBox.addEventListener('mouseover', () => {
-
-    // #MODULO (%) — operatorul MODULO returnează RESTUL împărțirii
-    //   10 % 3 = 1  (10 / 3 = 3 rest 1)
-    //   6 % 6 = 0   (6 / 6 = 1 rest 0)
-    //
-    // Folosim % pentru a CICLA prin array:
-    //   Dacă colorIndex = 5 și colors.length = 6:
-    //   (5 + 1) % 6 = 0 → revine la început!
-    //   Fără %, ar ieși din array (index 6 nu există)
-    colorIndex = (colorIndex + 1) % colors.length;
-
-    // #STYLE — modificăm stilul CSS direct din JavaScript
-    // Notă: în CSS e "background-color", în JS e "backgroundColor" (camelCase)
-    //       în CSS e "border-radius", în JS e "borderRadius"
-    hoverBox.style.background = colors[colorIndex];
-    hoverBox.style.transform = 'scale(1.2) rotate(10deg)';
-    hoverBox.style.borderRadius = '20px';
-
-    hoverLog.textContent = `mouseover → culoare: ${colors[colorIndex]}, scale(1.2)`;
-});
-
-// "mouseout" = mouse-ul IESE de pe element
-hoverBox.addEventListener('mouseout', () => {
-    hoverBox.style.background = '#e94560';
-    hoverBox.style.transform = 'scale(1)';
-    hoverBox.style.borderRadius = '12px';
-    hoverLog.textContent = 'mouseout → revenit la normal';
-});
+// ============================================================================
+// 🟢 SECȚIUNEA 5: DOM DEMO (doar pe lectii.html)
+// ============================================================================
+const demoTarget = document.getElementById('demoTarget');
+if (demoTarget) {
+    window.demoChangeText = function () {
+        demoTarget.textContent = '✅ Textul a fost schimbat cu textContent!';
+    };
+    window.demoChangeStyle = function () {
+        demoTarget.style.color = '#00d2ff';
+        demoTarget.style.fontSize = '1.3rem';
+        demoTarget.style.fontWeight = '700';
+    };
+    window.demoChangeHTML = function () {
+        demoTarget.innerHTML = '🔥 Acum am <strong style="color:#e94560;">HTML</strong> înăuntru!';
+    };
+    window.demoReset = function () {
+        demoTarget.textContent = 'Eu sunt un paragraf. Modifică-mă cu butoanele de mai jos!';
+        demoTarget.style.color = '';
+        demoTarget.style.fontSize = '';
+        demoTarget.style.fontWeight = '';
+    };
+}
 
 
 // ============================================================================
@@ -688,3 +413,117 @@ hoverBox.addEventListener('mouseout', () => {
 // #SCROLLTOP   = controlează poziția de scroll
 //
 // ============================================================================
+
+
+// ============================================================================
+// 🟢 SECȚIUNEA 6: DARK/LIGHT MODE TOGGLE
+// ============================================================================
+// Salvăm preferința în localStorage ca să persisteze între sesiuni
+
+(function initTheme() {
+    const saved = localStorage.getItem('js-playground-theme');
+    if (saved === 'light') {
+        document.body.classList.add('light-mode');
+    }
+
+    // Adaugă butonul de toggle în navbar (dacă există)
+    const navbar = document.querySelector('.navbar');
+    if (navbar) {
+        const toggle = document.createElement('button');
+        toggle.className = 'theme-toggle';
+        toggle.id = 'themeToggle';
+        toggle.textContent = document.body.classList.contains('light-mode') ? '🌙' : '☀️';
+        toggle.title = 'Schimbă tema Dark/Light';
+        toggle.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            toggle.textContent = isLight ? '🌙' : '☀️';
+            localStorage.setItem('js-playground-theme', isLight ? 'light' : 'dark');
+        });
+        navbar.appendChild(toggle);
+    }
+})();
+
+
+// ============================================================================
+// 🟢 SECȚIUNEA 7: PROGRESS TRACKER (localStorage)
+// ============================================================================
+// Salvează ce lecții, exerciții și quiz-uri ai completat
+
+const JSProgress = {
+    getAll() {
+        const data = localStorage.getItem('js-playground-progress');
+        return data ? JSON.parse(data) : { lessons: [], exercises: [], quizzes: [], challenges: [] };
+    },
+    save(data) {
+        localStorage.setItem('js-playground-progress', JSON.stringify(data));
+    },
+    markDone(category, id) {
+        const data = this.getAll();
+        if (!data[category].includes(id)) {
+            data[category].push(id);
+            this.save(data);
+            Achievements.check(data);
+        }
+        return data;
+    },
+    isCompleted(category, id) {
+        return this.getAll()[category].includes(id);
+    },
+    getCount(category) {
+        return this.getAll()[category].length;
+    },
+    reset() {
+        localStorage.removeItem('js-playground-progress');
+        localStorage.removeItem('js-playground-achievements');
+    }
+};
+
+// Expune în window ca sa poata fi accesat de alte pagini
+window.JSProgress = JSProgress;
+
+
+// ============================================================================
+// 🟢 SECȚIUNEA 8: ACHIEVEMENTS SYSTEM
+// ============================================================================
+
+const Achievements = {
+    list: [
+        { id: 'first-lesson', name: '📖 Prima Lecție', desc: 'Ai completat prima lecție!', check: d => d.lessons.length >= 1 },
+        { id: 'five-lessons', name: '📚 Cititor Dedicat', desc: 'Ai completat 5 lecții!', check: d => d.lessons.length >= 5 },
+        { id: 'all-lessons', name: '🏆 Maestru Lecțiilor', desc: 'Ai completat TOATE lecțiile!', check: d => d.lessons.length >= 19 },
+        { id: 'first-exercise', name: '✏️ Primul Exercițiu', desc: 'Ai rezolvat primul exercițiu!', check: d => d.exercises.length >= 1 },
+        { id: 'ten-exercises', name: '💪 Antrenament Serios', desc: 'Ai rezolvat 10 exerciții!', check: d => d.exercises.length >= 10 },
+        { id: 'all-exercises', name: '🥇 Expert Exerciții', desc: 'Ai rezolvat TOATE exercițiile!', check: d => d.exercises.length >= 18 },
+        { id: 'first-quiz', name: '❓ Primul Quiz', desc: 'Ai răspuns la primul quiz!', check: d => d.quizzes.length >= 1 },
+        { id: 'all-quizzes', name: '🧠 Geniu la Quiz', desc: 'Ai terminat TOATE quiz-urile!', check: d => d.quizzes.length >= 15 },
+        { id: 'first-challenge', name: '🎯 Prima Provocare', desc: 'Ai rezolvat prima provocare!', check: d => d.challenges.length >= 1 },
+        { id: 'all-challenges', name: '🔥 Hacker Man', desc: 'Ai rezolvat TOATE provocările!', check: d => d.challenges.length >= 8 },
+    ],
+
+    getUnlocked() {
+        const data = localStorage.getItem('js-playground-achievements');
+        return data ? JSON.parse(data) : [];
+    },
+
+    check(progressData) {
+        const unlocked = this.getUnlocked();
+        this.list.forEach(a => {
+            if (!unlocked.includes(a.id) && a.check(progressData)) {
+                unlocked.push(a.id);
+                localStorage.setItem('js-playground-achievements', JSON.stringify(unlocked));
+                this.showToast(a);
+            }
+        });
+    },
+
+    showToast(achievement) {
+        const toast = document.createElement('div');
+        toast.className = 'achievement-toast';
+        toast.textContent = `🏅 Achievement: ${achievement.name} — ${achievement.desc}`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
+    }
+};
+
+window.Achievements = Achievements;

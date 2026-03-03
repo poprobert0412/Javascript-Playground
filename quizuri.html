@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz-uri — Testează-ți Cunoștințele JavaScript</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .quiz-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+
+        .quiz-card.completed-correct {
+            border-color: rgba(0, 230, 118, 0.4);
+        }
+
+        .quiz-card.completed-wrong {
+            border-color: rgba(233, 69, 96, 0.4);
+        }
+
+        .quiz-question {
+            font-size: 1.05rem;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        .quiz-question code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--accent-4);
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .quiz-option {
+            padding: 14px 18px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .quiz-option:hover:not(.disabled) {
+            border-color: var(--accent-4);
+            background: rgba(0, 210, 255, 0.08);
+            transform: translateX(4px);
+        }
+
+        .quiz-option .letter {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--accent-4);
+            flex-shrink: 0;
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success);
+            background: rgba(0, 230, 118, 0.15);
+        }
+
+        .quiz-option.correct .letter {
+            background: var(--success);
+            color: var(--bg-primary);
+        }
+
+        .quiz-option.wrong {
+            border-color: var(--accent-1);
+            background: rgba(233, 69, 96, 0.15);
+        }
+
+        .quiz-option.wrong .letter {
+            background: var(--accent-1);
+            color: white;
+        }
+
+        .quiz-option.disabled {
+            cursor: default;
+            opacity: 0.6;
+        }
+
+        .quiz-explanation {
+            margin-top: 14px;
+            padding: 14px 18px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            display: none;
+        }
+
+        .quiz-explanation.show {
+            display: block;
+        }
+
+        .quiz-explanation.correct-exp {
+            background: rgba(0, 230, 118, 0.1);
+            border-left: 3px solid var(--success);
+            color: var(--success);
+        }
+
+        .quiz-explanation.wrong-exp {
+            background: rgba(233, 69, 96, 0.1);
+            border-left: 3px solid var(--accent-1);
+            color: var(--accent-1);
+        }
+
+        .quiz-score {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .score-number {
+            font-size: 3rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            background: linear-gradient(135deg, var(--accent-4), var(--accent-1));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .score-label {
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        .quiz-category {
+            display: inline-block;
+            padding: 3px 10px;
+            background: rgba(83, 52, 131, 0.3);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: var(--accent-3);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            color: #b388ff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo">⚡ JS Playground</div>
+        <div class="nav-links">
+            <a href="index.html">🏠 Acasă</a>
+            <a href="lectii.html">📖 Lecții</a>
+            <a href="exercitii.html">✏️ Exerciții</a>
+            <a href="quizuri.html" class="active">❓ Quiz</a>
+            <a href="cheatsheet.html">📋 Cheatsheet</a>
+            <a href="devtools.html">🔧 DevTools</a>
+            <a href="provocari.html">🎯 Provocări</a>
+            <a href="proiecte.html">🚀 Proiecte</a>
+            <a href="playground.html">💻 Playground</a>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <h1>❓ Quiz-uri JavaScript</h1>
+        <p>Testează-ți cunoștințele! Alege răspunsul corect. După fiecare întrebare primești explicația.</p>
+        <span class="badge">15 Întrebări • Toate nivelurile</span>
+    </div>
+
+    <main>
+        <!-- Score -->
+        <div class="quiz-score">
+            <div class="score-number" id="scoreDisplay">0 / 15</div>
+            <div class="score-label">Răspunsuri corecte</div>
+        </div>
+
+        <!-- Q1 -->
+        <div class="quiz-card" id="q1">
+            <div class="quiz-category">📦 Variabile</div>
+            <div class="quiz-question">1. Ce se întâmplă dacă faci <code>const x = 5; x = 10;</code>?</div>
+            <div class="quiz-options">
+                <div class="quiz-option" onclick="answer('q1', this, 0)">
+                    <span class="letter">A</span> x devine 10
+                </div>
+                <div class="quiz-option" onclick="answer('q1', this, 1)">
+                    <span class="letter">B</span> TypeError — const nu poate fi reasignat
+                </div>
+                <div class="quiz-option" onclick="answer('q1', this, 2)">
+                    <span class="letter">C</span> x devine undefined
+                </div>
+                <div class="quiz-option" onclick="answer('q1', this, 3)">
+                    <span class="letter">D</span> Nu se întâmplă nimic
+                </div>
+            </div>
+            <div class="quiz-explanation correct-exp">✅ Corect! <code>const</code> nu permite reasignarea. Dacă vrei să
+                schimbi valoarea, folosește <code>let</code>.</div>
+            <div class="quiz-explanation wrong-exp">❌ Greșit! <code>const</code> = CONSTANT. Nu poți face
+                <code>x = 10</code> dacă l-ai declarat cu <code>const</code>. Ai primi TypeError!
+            </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-card" id="q2">
+            <div class="quiz-category">🏷️ Tipuri</div>
+            <div class="quiz-question">2. Ce returnează <code>typeof null</code>?</div>
+            <div class="quiz-options">
+                <div class="quiz-option" onclick="answer('q2', this, 0)">
+                    <span class="letter">A</span> "null"
+                </div>
+                <div class="quiz-option" onclick="answer('q2', this, 1)">
+                    <span class="letter">B</span> "undefined"
+                </div>
+                <div class="quiz-option" onclick="answer('q2', this, 2)">
+                    <span class="letter">C</span> "object"
+                </div>
+                <div class="quiz-option" onclick="answer('q2', this, 3)">
+                    <span class="letter">D</span> "boolean"
+                </div>
+            </div>
+            <div class="quiz-explanation correct-exp">✅ Corect! <code>typeof null</code> returnează
+                <code>"object"</code> — e un bug din 1995 care NU a fost reparat niciodată!
+            </div>
+            <div class="quiz-explanation wrong-exp">❌ Surpriză! <code>typeof null</code> returnează
+                <code>"object"</code>, NU "null". E un bug celebru din 1995!
+            </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-card" id="q3">
+            <div class="quiz-category">⚖️ Comparații</div>
+            <div class="quiz-question">3. Ce returnează <code>5 === "5"</code>?</div>
+            <div class="quiz-options">
+                <div class="quiz-option" onclick="answer('q3', this, 0)">
+                    <span class="letter">A</span> true
+                </div>
+                <div class="quiz-option" onclick="answer('q3', this, 1)">
+                    <span class="letter">B</span> false
+                </div>
+                <div class="quiz-option" onclick="answer('q3', this, 2)">
+                    <span class="letter">C</span> undefined
+                </div>
+                <div class="quiz-option" onclick="answer('q3', this, 3)">
+                    <span class="letter">D</span> Error
+                </div>
+            </div>
+            <div class="quiz-explanation correct-exp">✅ Corect! <code>===</code> (strict equality) compară ȘI tipul. 5
+                este number, "5" este string → false.</div>
+            <div class="quiz-explanation wrong-exp">❌ <code>===</code> verifică ȘI tipul! <code>5</code> (number) !==
+                <code>"5"</code> (string). Doar <code>==</code> ar da true (convertește tipurile).
+            </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-card" id="q4">
+            <div class="quiz-category">📋 Array-uri</div>
+            <div class="quiz-question">4. Ce returnează <code>[1,2,3].map(n => n * 2)</code>?</div>
+            <div class="quiz-options">
+                <div class="quiz-option" onclick="answer('q4', this, 0)">
+                    <span class="letter">A</span> [2, 4, 6]
+                </div>
+                <div class="quiz-option" onclick="answer('q4', this, 1)">
+                    <span class="letter">B</span> 12
+                </div>
+                <div class="quiz-option" onclick="answer('q4', this, 2)">
+                    <span class="letter">C</span> [1, 2, 3, 1, 2, 3]
+                </div>
+                <div class="quiz-option" onclick="answer('q4', this, 3)">
+                    <span class="letter">D</span> undefined
+                </div>
+            </div>
+            <div class="quiz-explanation correct-exp">✅ Corect! <code>.map()</code> aplică funcția pe FIECARE element și
+                returnează un array NOU: [1*2, 2*2, 3*2] = [2, 4, 6].</div>
+            <div class="quiz-explanation wrong-exp">❌ <code>.map()</code> transformă fiecare element: 1→2, 2→4, 3→6.
+                Rezultat: <code>[2, 4, 6]</code>.</div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="quiz-card" id="q5">
+            <div class="quiz-category">⚙️ Funcții</div>
+            <div class="quiz-question">5. Care e diferența dintre <code>function f() {}</code> și
+                <code>const f = () => {}</code>?
+            </div>
+            <div class="quiz-options">
+                <div class="quiz-option" onclick="answer('q5', this, 0)">
+                    <span class="letter">A</span> Nu e nicio diferență
+                </div>
+                <div class="quiz-option" onclick="answer('q5', this, 1)">
+                    <span class="letter">B</span> Arrow function nu are propriul "this"
+                </div>
+                <div class="quiz-option" onclick="answer('q5', this, 2)">
+                    <span class="letter">C</span> Arrow function e mai rapidă
+                </div>
+                <div class="quiz-option" onclick="answer('q5', this, 3)">
+                    <span class="letter">D</span> Arrow function nu poate avea parametri
+                </div>
+            </div>
+            <div class="quiz-explanation correct-exp">✅ Corect! Arrow functions NU au propriul <code>this</code> —
+                moștenesc <code>this</code> din contextul exterior. De aceea nu le folosești ca metode în obiecte.</div>
+            <div class="quiz-explanation wrong-exp">❌ Diferența principală: arrow functions NU au propriul
+                <code>this</code>. Moștenesc <code>this</code> din contextul unde au fost definite.
+            </div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="quiz-card" id="q6">
+            <div class="quiz-category">🔀 Condiții</div>
+            <div class="quiz-question">6. Ce afișează <code>console.log(true && "salut")</code>?</div>
+            <div class="quiz-options">
+                <div class="quiz-option" onclick="answer('q6', this, 0)">
+                    <span class="letter">A</span> true
+                </div>
+                <div class="quiz-option" onclick="answer('q6', this, 1)">
+                    <span class="letter">B</span> false
+                </div>
+                <div class="quiz-option" onclick="answer('q6', this, 2)">
+                    <span class="letter">C</span> "salut"
+                </div>
+                <div class="quiz-option" onclick="answer('q6', this, 3)">
+                    <span class="letter">D</span> undefined
+                </div>
+            </div>
+            <div class="quiz-explanation correct-exp">✅ Corect! <code>&&</code> returnează ULTIMA valoare dacă ambele
+                sunt truthy. <code>true && "salut"</code> → <code>"salut"</code>.</div>
+            <div class="quiz-explanation wrong-exp">❌ <code>&&</code> NU returnează true/false neapărat! Returnează
+                ultima valoare truthy dacă ambele sunt truthy: <code>true && "salut"</code> → <code>"salut"</code>.
+            </div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="quiz-card" id="q7">
+            <div class="quiz-category">🔄 Bucle</div>
+            <div class="quiz-question">7. De câte ori rulează <code>for (let i = 0; i < 3; i++) {}</code>?</div>
+            <div class="quiz-options">
+                <div class="quiz-option" onclick="answer('q7', this, 0)">
+                    <span class="letter">A</span> 2 ori (0, 1)
+                </div>
+                <div class="quiz-option" onclick="answer('q7', this, 1)">
+                    <span class="letter">B</span> 3 ori (0, 1, 2)
+                </div>
+                <div class="quiz-option" onclick="answer('q7', this, 2)">
+                    <span class="letter">C</span> 4 ori (0, 1, 2, 3)
+                </div>
+                <div class="quiz-option" onclick="answer('q7', this, 3)">
+                    <span class="letter">D</span> Infinit
+                </div>
+            </div>
+            <div class="quiz-explanation correct-exp">✅ Corect! i=0 ✓, i=1 ✓, i=2 ✓, i=3 ✗ (<code>3 < 3</code> e false).
+                Total: 3 iterații.</div>
+            <div class="quiz-explanation wrong-exp">❌ Condiția e <code>i < 3</code>: i=0 ✓, i=1 ✓, i=2 ✓, i=3 ✗ (stop).
+                Total: 3 ori.</div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="quiz-card" id="q8">
+            <div class="quiz-category">📝 String-uri</div>
+            <div class="quiz-question">8. Ce returnează <code>"JavaScript".slice(0, 4)</code>?</div>
+            <div class="quiz-options">
+                <div class="quiz-option" onclick="answer('q8', this, 0)">
+                    <span class="letter">A</span> "Java"
+                </div>
+                <div class="quiz-option" onclick="answer('q8', this, 1)">
+                    <span class="letter">B</span> "JavaS"
+                </div>
+                <div class="quiz-option" onclick="answer('q8', this, 2)">
+                    <span class="letter">C</span> "Jav"
+                </div>
+                <div class="quiz-option" onclick="answer('q8', this, 3)">
+                    <span class="letter">D</span> "Script"
+                </div>
+            </div>
+            <div class="quiz-explanation correct-exp">✅ Corect! <code>.slice(0, 4)</code> = de la index 0 la index 4
+                (exclusiv). J(0) a(1) v(2) a(3) = "Java".</div>
+            <div class="quiz-explanation wrong-exp">❌ <code>.slice(start, end)</code> — end e EXCLUSIV! Index 0,1,2,3 =
+                "Java" (4 caractere, se oprește ÎNAINTE de index 4).</div>
+        </div>
+
+        <!-- Q9 -->
+        <div class="quiz-card" id="q9">
+            <div class="quiz-category">🔒 Scope</div>
+            <div class="quiz-question">9. Ce se întâmplă cu variabila declarată cu <code>let</code> într-un
+                <code>if { }</code> block?
+            </div>
+            <div class="quiz-options">
+                <div class="quiz-option" onclick="answer('q9', this, 0)">
+                    <span class="letter">A</span> E vizibilă peste tot în fișier
+                </div>
+                <div class="quiz-option" onclick="answer('q9', this, 1)">
+                    <span class="letter">B</span> E vizibilă DOAR în acel { } block
+                </div>
+                <div class="quiz-option" onclick="answer('q9', this, 2)">
+                    <span class="letter">C</span> E vizibilă în toată funcția
+                </div>
+                <div class="quiz-option" onclick="answer('q9', this, 3)">
+                    <span class="letter">D</span> E vizibilă doar pe linia curentă
+                </div>
+            </div>
+            <div class="quiz-explanation correct-exp">✅ Corect! <code>let</code> și <code>const</code> au BLOCK SCOPE —
+                vizibile doar între <code>{ }</code>. Asta le face mai sigure ca <code>var</code>!</div>
+            <div class="quiz-explanation wrong-exp">❌ <code>let</code> are BLOCK SCOPE — vizibilă doar între
+                <code>{ }</code>. <code>var</code> ar fi vizibilă în toată funcția (function scope).
+            </div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="quiz-card" id="q10">
+            <div class="quiz-category">📦 Destructuring</div>
+            <div class="quiz-question">10. Ce face <code>const { name, age } = person;</code>?</div>
+            <div class="quiz-options">
+                <div class="quiz-option" onclick="answer('q10', this, 0)">
+                    <span class="letter">A</span> Creează un obiect nou
+                </div>
+                <div class="quiz-option" onclick="answer('q10', this, 1)">
+                    <span class="letter">B</span> Extrage name și age din obiectul person
+                </div>
+                <div class="quiz-option" onclick="answer('q10', this, 2)">
+                    <span class="letter">C</span> Șterge name și age din person
+                </div>
+                <div class="quiz-option" onclick="answer('q10', this, 3)">
+                    <span class="letter">D</span> Dă eroare de sintaxă
+                </div>
+            </div>
+            <div class="quiz-explanation correct-exp">✅ Corect! Destructuring extrage proprietăți din obiecte în
+                variabile separate. E ca și cum ai scrie: <code>const name = person.name; const age = person.age;</code>
+            </div>
+            <div class="quiz-explanation wrong-exp">❌ E DESTRUCTURING: extrage <code>name</code> și <code>age</code> din
+                <code>person</code> în variabile separate. Nu modifică și nu șterge nimic!
+            </div>
+        </div>
+
+        <!-- Q11 -->
+        <div class="quiz-card" id="q11">
+            <div class="quiz-category">⏳ Async</div>
+            <div class="quiz-question">11. Ce ordine afișează:
+                <code>console.log("A"); setTimeout(() => console.log("B"), 0); console.log("C");</code>
+            </div>
+            <div class="quiz-options">
+                <div class="quiz-option" onclick="answer('q11', this, 0)">
+                    <span class="letter">A</span> A, B, C
+                </div>
+                <div class="quiz-option" onclick="answer('q11', this, 1)">
+                    <span class="letter">B</span> A, C, B
+                </div>
+                <div class="quiz-option" onclick="answer('q11', this, 2)">
+                    <span class="letter">C</span> B, A, C
+                </div>
+                <div class="quiz-option" onclick="answer('q11', this, 3)">
+                    <span class="letter">D</span> C, B, A
+                </div>
+            </div>
+            <div class="quiz-explanation correct-exp">✅ Corect! setTimeout pune callback-ul la COADĂ, chiar și cu delay
+                0. JS execută mai întâi tot codul sincron (A, C), apoi cele din coadă (B).</div>
+            <div class="quiz-explanation wrong-exp">❌ Chiar și cu delay 0ms, setTimeout e ASINCRON! JS execută: A
+                (sincron), C (sincron), apoi B (din coadă). Ordinea: A, C, B.</div>
+        </div>
+
+        <!-- Q12 -->
+        <div class="quiz-card" id="q12">
+            <div class="quiz-category">🏛️ Classes</div>
+            <div class="quiz-question">12. Ce face <code>super()</code> într-o clasă copil?</div>
+            <div class="quiz-options">
+                <div class="quiz-option" onclick="answer('q12', this, 0)">
+                    <span class="letter">A</span> Creează un obiect complet diferit
+                </div>
+                <div class="quiz-option" onclick="answer('q12', this, 1)">
+                    <span class="letter">B</span> Apelează constructor-ul clasei PĂRINTE
+                </div>
+                <div class="quiz-option" onclick="answer('q12', this, 2)">
+                    <span class="letter">C</span> Șterge clasa copil
+                </div>
+                <div class="quiz-option" onclick="answer('q12', this, 3)">
+                    <span class="letter">D</span> Dă eroare mereu
+                </div>
+            </div>
+            <div class="quiz-explanation correct-exp">✅ Corect! <code>super()</code> apelează constructorul clasei
+                părinte, transmițându-i parametrii. E OBLIGATORIU dacă folosești <code>extends</code>!</div>
+            <div class="quiz-explanation wrong-exp">❌ <code>super()</code> = apelează constructor-ul clasei PĂRINTE. E
+                obligatoriu în clase copil care folosesc <code>extends</code>!</div>
+        </div>
+
+        <!-- Q13 -->
+        <div class="quiz-card" id="q13">
+            <div class="quiz-category">🛡️ Error Handling</div>
+            <div class="quiz-question">13. Ce se întâmplă în blocul <code>finally</code>?</div>
+            <div class="quiz-options">
+                <div class="quiz-option" onclick="answer('q13', this, 0)">
+                    <span class="letter">A</span> Se execută DOAR dacă e eroare
+                </div>
+                <div class="quiz-option" onclick="answer('q13', this, 1)">
+                    <span class="letter">B</span> Se execută DOAR dacă NU e eroare
+                </div>
+                <div class="quiz-option" onclick="answer('q13', this, 2)">
+                    <span class="letter">C</span> Se execută MEREU, indiferent de rezultat
+                </div>
+                <div class="quiz-option" onclick="answer('q13', this, 3)">
+                    <span class="letter">D</span> Nu se execută niciodată
+                </div>
+            </div>
+            <div class="quiz-explanation correct-exp">✅ Corect! <code>finally</code> se execută MEREU — și la succes, și
+                la eroare. Perfect pentru cleanup (închidere fișiere, conexiuni, etc.).</div>
+            <div class="quiz-explanation wrong-exp">❌ <code>finally</code> se execută MEREU! Indiferent dacă try
+                reușește sau catch prinde o eroare. E perfect pentru cleanup.</div>
+        </div>
+
+        <!-- Q14 -->
+        <div class="quiz-card" id="q14">
+            <div class="quiz-category">🌍 Fetch</div>
+            <div class="quiz-question">14. Ce returnează <code>fetch(url)</code>?</div>
+            <div class="quiz-options">
+                <div class="quiz-option" onclick="answer('q14', this, 0)">
+                    <span class="letter">A</span> Un obiect JSON direct
+                </div>
+                <div class="quiz-option" onclick="answer('q14', this, 1)">
+                    <span class="letter">B</span> Un string cu datele
+                </div>
+                <div class="quiz-option" onclick="answer('q14', this, 2)">
+                    <span class="letter">C</span> Un Promise
+                </div>
+                <div class="quiz-option" onclick="answer('q14', this, 3)">
+                    <span class="letter">D</span> Un array
+                </div>
+            </div>
+            <div class="quiz-explanation correct-exp">✅ Corect! <code>fetch()</code> returnează un Promise! De aceea
+                trebuie <code>.then()</code> sau <code>await</code>. Și <code>response.json()</code> returnează tot un
+                Promise!</div>
+            <div class="quiz-explanation wrong-exp">❌ <code>fetch()</code> returnează un PROMISE! Nu primești datele
+                direct — trebuie <code>await fetch()</code> sau <code>.then()</code> pentru a obține răspunsul.</div>
+        </div>
+
+        <!-- Q15 -->
+        <div class="quiz-card" id="q15">
+            <div class="quiz-category">🌐 DOM</div>
+            <div class="quiz-question">15. Care e diferența dintre <code>textContent</code> și <code>innerHTML</code>?
+            </div>
+            <div class="quiz-options">
+                <div class="quiz-option" onclick="answer('q15', this, 0)">
+                    <span class="letter">A</span> Nu e nicio diferență
+                </div>
+                <div class="quiz-option" onclick="answer('q15', this, 1)">
+                    <span class="letter">B</span> textContent = text simplu, innerHTML = permite HTML
+                </div>
+                <div class="quiz-option" onclick="answer('q15', this, 2)">
+                    <span class="letter">C</span> innerHTML e mai rapid
+                </div>
+                <div class="quiz-option" onclick="answer('q15', this, 3)">
+                    <span class="letter">D</span> textContent nu funcționează în Chrome
+                </div>
+            </div>
+            <div class="quiz-explanation correct-exp">✅ Corect! <code>textContent</code> = text simplu (SAFE).
+                <code>innerHTML</code> = HTML (tag-uri funcționează, dar atenție la XSS!).
+            </div>
+            <div class="quiz-explanation wrong-exp">❌ <code>textContent</code> = text simplu (sigur).
+                <code>innerHTML</code> = interpretează HTML (tag-uri ca &lt;b&gt; funcționează). Folosește
+                <code>textContent</code> pentru securitate!
+            </div>
+        </div>
+
+        <div class="prof-note">
+            <div class="prof-label">🎓 Sfat de Prof</div>
+            Dacă ai greșit întrebări, re-citește lecțiile legate de subiect. Fiecare greșeală e o oportunitate de a
+            învăța! 💪<br>
+            Poți reîncărca pagina (F5) pentru a relua quiz-ul de la zero.
+        </div>
+    </main>
+
+    <footer>
+        <p>⚡ JavaScript Playground — Creat pentru a învăța prin practică</p>
+    </footer>
+
+    <script>
+        const answers = {
+            q1: 1, q2: 2, q3: 1, q4: 0, q5: 1,
+            q6: 2, q7: 1, q8: 0, q9: 1, q10: 1,
+            q11: 1, q12: 1, q13: 2, q14: 2, q15: 1
+        };
+        let score = 0;
+        let answered = new Set();
+
+        function answer(qId, el, idx) {
+            if (answered.has(qId)) return;
+            answered.add(qId);
+
+            const card = document.getElementById(qId);
+            const options = card.querySelectorAll('.quiz-option');
+            const explanations = card.querySelectorAll('.quiz-explanation');
+            const isCorrect = idx === answers[qId];
+
+            options.forEach(o => o.classList.add('disabled'));
+
+            if (isCorrect) {
+                el.classList.add('correct');
+                card.classList.add('completed-correct');
+                explanations[0].classList.add('show');
+                score++;
+            } else {
+                el.classList.add('wrong');
+                options[answers[qId]].classList.add('correct');
+                card.classList.add('completed-wrong');
+                explanations[1].classList.add('show');
+            }
+
+            document.getElementById('scoreDisplay').textContent = `${score} / 15`;
+        }
+    </script>
+</body>
+
+</html>

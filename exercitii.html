@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exerciții — Practică JavaScript</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .difficulty {
+            display: inline-flex;
+            gap: 2px;
+            margin-left: 8px;
+        }
+
+        .difficulty .star {
+            color: var(--warning);
+            font-size: 0.8rem;
+        }
+
+        .difficulty .star.dim {
+            opacity: 0.25;
+        }
+
+        .progress-bar {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .progress-track {
+            flex: 1;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent-4), var(--accent-1));
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            min-width: 60px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo">⚡ JS Playground</div>
+        <div class="nav-links">
+            <a href="index.html">🏠 Acasă</a>
+            <a href="lectii.html">📖 Lecții</a>
+            <a href="exercitii.html" class="active">✏️ Exerciții</a>
+            <a href="quizuri.html">❓ Quiz</a>
+            <a href="cheatsheet.html">📋 Cheatsheet</a>
+            <a href="devtools.html">🔧 DevTools</a>
+            <a href="provocari.html">🎯 Provocări</a>
+            <a href="proiecte.html">🚀 Proiecte</a>
+            <a href="playground.html">💻 Playground</a>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <h1>✏️ Exerciții Practice</h1>
+        <p>18 exerciții ordonate de la simplu la complex. Fiecare are buton de rulare și hint dacă te blochezi!</p>
+        <span class="badge">De la ⭐ la 🏆 Boss Final</span>
+    </div>
+
+    <main>
+        <!-- Progress -->
+        <div class="progress-bar">
+            <span style="font-size: 1.2rem;">📊</span>
+            <div class="progress-track">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <span class="progress-text" id="progressText">0 / 18</span>
+        </div>
+
+        <div class="prof-note">
+            <div class="prof-label">🎓 Sfat de Prof</div>
+            Fă exercițiile <em>în ordine</em> — fiecare se bazează pe ce ai învățat la cele anterioare.
+            Dacă te blochezi, apasă 💡 Hint. Dar încearcă SINGUR mai întâi — așa înveți cel mai bine!
+        </div>
+
+        <!-- Ex 1 -->
+        <div class="card exercise-card">
+            <div class="exercise-label">Exercițiu 1 <span class="difficulty"><span class="star">⭐</span><span
+                        class="star dim">⭐</span><span class="star dim">⭐</span><span class="star dim">⭐</span></span>
+            </div>
+            <h3><span class="icon">➕</span> Calculează suma unui array</h3>
+            <p>Scrie o funcție <code>suma</code> care primește un array de numere și returnează suma lor.</p>
+            <textarea id="ex1" spellcheck="false">function suma(numere) {
+    // Folosește .reduce() pentru a calcula suma
+    // reduce((total, numar) => total + numar, 0)
+}
+
+console.log(suma([1, 2, 3, 4, 5])); // 15
+console.log(suma([10, 20, 30]));     // 60</textarea>
+            <div class="exercise-actions">
+                <button class="btn-run" onclick="runExercise('ex1')">▶ Rulează</button>
+                <button class="btn-hint" onclick="showHint('hint1')">💡 Hint</button>
+            </div>
+            <div class="hint-text" id="hint1">Folosește <code>return numere.reduce((total, n) => total + n, 0);</code>
+            </div>
+            <div class="exercise-output" id="ex1-output"></div>
+        </div>
+
+        <!-- Ex 2 -->
+        <div class="card exercise-card">
+            <div class="exercise-label">Exercițiu 2 <span class="difficulty"><span class="star">⭐</span><span
+                        class="star dim">⭐</span><span class="star dim">⭐</span><span class="star dim">⭐</span></span>
+            </div>
+            <h3><span class="icon">🔍</span> Filtrează numerele pare</h3>
+            <p>Scrie o funcție <code>numPare</code> care returnează doar numerele pare dintr-un array.</p>
+            <textarea id="ex2" spellcheck="false">function numPare(numere) {
+    // Folosește .filter() cu operatorul % (modulo)
+    // Un număr e par dacă n % 2 === 0
+}
+
+console.log(numPare([1, 2, 3, 4, 5, 6, 7, 8])); // [2, 4, 6, 8]</textarea>
+            <div class="exercise-actions">
+                <button class="btn-run" onclick="runExercise('ex2')">▶ Rulează</button>
+                <button class="btn-hint" onclick="showHint('hint2')">💡 Hint</button>
+            </div>
+            <div class="hint-text" id="hint2"><code>return numere.filter(n => n % 2 === 0);</code> — % returnează
+                restul: 4%2=0 (par), 5%2=1 (impar)</div>
+            <div class="exercise-output" id="ex2-output"></div>
+        </div>
+
+        <!-- Ex 3 -->
+        <div class="card exercise-card">
+            <div class="exercise-label">Exercițiu 3 <span class="difficulty"><span class="star">⭐</span><span
+                        class="star dim">⭐</span><span class="star dim">⭐</span><span class="star dim">⭐</span></span>
+            </div>
+            <h3><span class="icon">🏗️</span> Creează un obiect</h3>
+            <p>Creează un obiect <code>masina</code> cu proprietățile: marca, model, an, și o metodă
+                <code>descriere()</code>.
+            </p>
+            <textarea id="ex3" spellcheck="false">const masina = {
+    // marca: "...",
+    // model: "...",
+    // an: 2024,
+    // descriere() { return `...`; }
+};
+
+console.log(masina.descriere());</textarea>
+            <div class="exercise-actions">
+                <button class="btn-run" onclick="runExercise('ex3')">▶ Rulează</button>
+                <button class="btn-hint" onclick="showHint('hint3')">💡 Hint</button>
+            </div>
+            <div class="hint-text" id="hint3">
+                <code>descriere() { return `${this.marca} ${this.model} (${this.an})`; }</code> — <code>this</code> se
+                referă la obiectul curent
+            </div>
+            <div class="exercise-output" id="ex3-output"></div>
+        </div>
+
+        <!-- Ex 4 -->
+        <div class="card exercise-card">
+            <div class="exercise-label">Exercițiu 4 <span class="difficulty"><span class="star">⭐</span><span
+                        class="star dim">⭐</span><span class="star dim">⭐</span><span class="star dim">⭐</span></span>
+            </div>
+            <h3><span class="icon">📦</span> Variabile — let vs const</h3>
+            <p>Declară <code>scor</code> cu let (valoare 0), incrementeaz-o de 3 ori. Declară <code>nume</code> cu
+                const. Afișează ambele.</p>
+            <textarea id="ex4" spellcheck="false">// Pasul 1: let scor = ???
+// Pasul 2: scor++ (de 3 ori)
+// Pasul 3: const nume = ???
+// Pasul 4: console.log cu template literal
+
+console.log(`${nume} are scorul: ${scor}`);</textarea>
+            <div class="exercise-actions">
+                <button class="btn-run" onclick="runExercise('ex4')">▶ Rulează</button>
+                <button class="btn-hint" onclick="showHint('hint4')">💡 Hint</button>
+            </div>
+            <div class="hint-text" id="hint4"><code>let scor = 0; scor++; scor++; scor++; const nume = "Robert";</code>
+                — scor va fi 3!</div>
+            <div class="exercise-output" id="ex4-output"></div>
+        </div>
+
+        <!-- Ex 5 -->
+        <div class="card exercise-card">
+            <div class="exercise-label">Exercițiu 5 <span class="difficulty"><span class="star">⭐</span><span
+                        class="star dim">⭐</span><span class="star dim">⭐</span><span class="star dim">⭐</span></span>
+            </div>
+            <h3><span class="icon">🏷️</span> typeof — Ce tip are?</h3>
+            <p>Declară 5 variabile de tipuri diferite și afișează <code>typeof</code> pentru fiecare.</p>
+            <textarea id="ex5" spellcheck="false">let text = "Salut";
+let numar = 42;
+let eAdevarat = true;
+let nimic = null;
+let nedefinit;
+
+console.log("text:", typeof text);
+// Completează restul...
+// SURPRIZĂ: typeof null e "object" (bug din 1995!)</textarea>
+            <div class="exercise-actions">
+                <button class="btn-run" onclick="runExercise('ex5')">▶ Rulează</button>
+                <button class="btn-hint" onclick="showHint('hint5')">💡 Hint</button>
+            </div>
+            <div class="hint-text" id="hint5"><code>console.log("numar:", typeof numar);</code> — repetă pentru fiecare.
+                typeof null = "object" (bug celebru!)</div>
+            <div class="exercise-output" id="ex5-output"></div>
+        </div>
+
+        <!-- Ex 6 -->
+        <div class="card exercise-card">
+            <div class="exercise-label">Exercițiu 6 <span class="difficulty"><span class="star">⭐</span><span
+                        class="star dim">⭐</span><span class="star dim">⭐</span><span class="star dim">⭐</span></span>
+            </div>
+            <h3><span class="icon">✨</span> Template Literals</h3>
+            <p>Declară <code>nume</code>, <code>varsta</code>, <code>oras</code> și construiește un mesaj cu backticks.
+            </p>
+            <textarea id="ex6" spellcheck="false">const nume = "???";
+const varsta = 0;
+const oras = "???";
+
+console.log(`Mă numesc ${???}, am ${???} ani și locuiesc în ${???}.`);</textarea>
+            <div class="exercise-actions">
+                <button class="btn-run" onclick="runExercise('ex6')">▶ Rulează</button>
+                <button class="btn-hint" onclick="showHint('hint6')">💡 Hint</button>
+            </div>
+            <div class="hint-text" id="hint6">Completează cu datele tale: <code>const nume = "Robert";</code> și
+                <code>${nume}</code> în template literal.
+            </div>
+            <div class="exercise-output" id="ex6-output"></div>
+        </div>
+
+        <!-- Ex 7 -->
+        <div class="card exercise-card">
+            <div class="exercise-label">Exercițiu 7 <span class="difficulty"><span class="star">⭐</span><span
+                        class="star">⭐</span><span class="star dim">⭐</span><span class="star dim">⭐</span></span></div>
+            <h3><span class="icon">🔢</span> Aritmetică și Modulo (%)</h3>
+            <p>Calculează suma, diferența, produsul, câtul și restul împărțirii lui 17 și 5.</p>
+            <textarea id="ex7" spellcheck="false">const a = 17, b = 5;
+
+console.log("Suma:", a + b);
+console.log("Diferența:", a - b);
+console.log("Produsul:", a * b);
+console.log("Câtul:", ???);       // a / b
+console.log("Restul (%):", ???);  // a % b
+// BONUS: Math.floor(a / b) = ?</textarea>
+            <div class="exercise-actions">
+                <button class="btn-run" onclick="runExercise('ex7')">▶ Rulează</button>
+                <button class="btn-hint" onclick="showHint('hint7')">💡 Hint</button>
+            </div>
+            <div class="hint-text" id="hint7"><code>a / b</code> = 3.4, <code>a % b</code> = 2 (rest: 17÷5 = 3 rest 2).
+                <code>Math.floor(a/b)</code> = 3
+            </div>
+            <div class="exercise-output" id="ex7-output"></div>
+        </div>
+
+        <!-- Ex 8 -->
+        <div class="card exercise-card">
+            <div class="exercise-label">Exercițiu 8 <span class="difficulty"><span class="star">⭐</span><span
+                        class="star">⭐</span><span class="star dim">⭐</span><span class="star dim">⭐</span></span></div>
+            <h3><span class="icon">⚙️</span> Funcții — Return vs No Return</h3>
+            <p>Scrie 2 funcții: una care returnează aria dreptunghiului, una care doar afișează un mesaj.</p>
+            <textarea id="ex8" spellcheck="false">function ariadreptunghi(lungime, latime) {
+    // Scrie return lungime * latime
+}
+
+function afiseaza(text) {
+    // Folosește console.log(text)
+}
+
+const aria = ariadreptunghi(5, 3);
+console.log("Aria:", aria);        // 15
+afiseaza("Salut din funcție!");</textarea>
+            <div class="exercise-actions">
+                <button class="btn-run" onclick="runExercise('ex8')">▶ Rulează</button>
+                <button class="btn-hint" onclick="showHint('hint8')">💡 Hint</button>
+            </div>
+            <div class="hint-text" id="hint8"><code>return lungime * latime;</code> vs <code>console.log(text);</code> —
+                prima RETURNEAZĂ, a doua AFIȘEAZĂ</div>
+            <div class="exercise-output" id="ex8-output"></div>
+        </div>
+
+        <!-- Ex 9 -->
+        <div class="card exercise-card">
+            <div class="exercise-label">Exercițiu 9 <span class="difficulty"><span class="star">⭐</span><span
+                        class="star">⭐</span><span class="star dim">⭐</span><span class="star dim">⭐</span></span></div>
+            <h3><span class="icon">➡️</span> Arrow Functions</h3>
+            <p>Rescrie funcțiile clasice ca arrow functions cu forma scurtă.</p>
+            <textarea id="ex9" spellcheck="false">// Rescrie ca arrow:
+// function dublu(n) { return n * 2; }
+const dubluArrow = ???;
+
+// function salut(nume) { return `Bună, ${nume}!`; }
+const salutArrow = ???;
+
+// function aduna(a, b) { return a + b; }
+const adunaArrow = ???;
+
+console.log(dubluArrow(5));         // 10
+console.log(salutArrow("Robert"));  // "Bună, Robert!"
+console.log(adunaArrow(3, 7));      // 10</textarea>
+            <div class="exercise-actions">
+                <button class="btn-run" onclick="runExercise('ex9')">▶ Rulează</button>
+                <button class="btn-hint" onclick="showHint('hint9')">💡 Hint</button>
+            </div>
+            <div class="hint-text" id="hint9"><code>const dubluArrow = (n) => n * 2;</code> — fără {} și fără return pe
+                o linie!</div>
+            <div class="exercise-output" id="ex9-output"></div>
+        </div>
+
+        <!-- Ex 10 -->
+        <div class="card exercise-card">
+            <div class="exercise-label">Exercițiu 10 <span class="difficulty"><span class="star">⭐</span><span
+                        class="star">⭐</span><span class="star dim">⭐</span><span class="star dim">⭐</span></span></div>
+            <h3><span class="icon">🔀</span> if / else — Verifică un număr</h3>
+            <p>Scrie o funcție care returnează "pozitiv", "negativ", sau "zero".</p>
+            <textarea id="ex10" spellcheck="false">function verificaNumar(n) {
+    // if (n > 0) → "pozitiv"
+    // else if (n < 0) → "negativ"  
+    // else → "zero"
+}
+
+console.log(verificaNumar(5));   // "pozitiv"
+console.log(verificaNumar(-3));  // "negativ"
+console.log(verificaNumar(0));   // "zero"</textarea>
+            <div class="exercise-actions">
+                <button class="btn-run" onclick="runExercise('ex10')">▶ Rulează</button>
+                <button class="btn-hint" onclick="showHint('hint10')">💡 Hint</button>
+            </div>
+            <div class="hint-text" id="hint10">
+                <code>if (n > 0) return "pozitiv"; else if (n < 0) return "negativ"; else return "zero";</code>
+            </div>
+            <div class="exercise-output" id="ex10-output"></div>
+        </div>
+
+        <!-- Ex 11 -->
+        <div class="card exercise-card">
+            <div class="exercise-label">Exercițiu 11 <span class="difficulty"><span class="star">⭐</span><span
+                        class="star">⭐</span><span class="star dim">⭐</span><span class="star dim">⭐</span></span></div>
+            <h3><span class="icon">❓</span> Ternary Operator</h3>
+            <p>Rescrie <code>if/else</code> folosind operatorul ternary <code>? :</code></p>
+            <textarea id="ex11" spellcheck="false">const varsta = 20;
+
+// Rescrie cu ternary pe O linie:
+const mesaj = ???;  // varsta >= 18 ? "major" : "minor"
+
+console.log(`La ${varsta} ani ești: ${mesaj}`);</textarea>
+            <div class="exercise-actions">
+                <button class="btn-run" onclick="runExercise('ex11')">▶ Rulează</button>
+                <button class="btn-hint" onclick="showHint('hint11')">💡 Hint</button>
+            </div>
+            <div class="hint-text" id="hint11"><code>const mesaj = varsta >= 18 ? "major" : "minor";</code></div>
+            <div class="exercise-output" id="ex11-output"></div>
+        </div>
+
+        <!-- Ex 12 -->
+        <div class="card exercise-card">
+            <div class="exercise-label">Exercițiu 12 <span class="difficulty"><span class="star">⭐</span><span
+                        class="star">⭐</span><span class="star dim">⭐</span><span class="star dim">⭐</span></span></div>
+            <h3><span class="icon">🔄</span> For Loop</h3>
+            <p>Afișează numerele 1-10 și calculează suma lor cu <code>for</code> loop.</p>
+            <textarea id="ex12" spellcheck="false">let suma = 0;
+
+for (let i = 1; i <= 10; i++) {
+    // Adaugă i la sumă (suma += i)
+    // Afișează i (console.log)
+}
+
+console.log("Suma 1-10:", suma); // 55</textarea>
+            <div class="exercise-actions">
+                <button class="btn-run" onclick="runExercise('ex12')">▶ Rulează</button>
+                <button class="btn-hint" onclick="showHint('hint12')">💡 Hint</button>
+            </div>
+            <div class="hint-text" id="hint12"><code>suma += i; console.log(i);</code> — <code>+=</code> e scurtătura pt
+                <code>suma = suma + i</code>
+            </div>
+            <div class="exercise-output" id="ex12-output"></div>
+        </div>
+
+        <!-- Ex 13 -->
+        <div class="card exercise-card">
+            <div class="exercise-label">Exercițiu 13 <span class="difficulty"><span class="star">⭐</span><span
+                        class="star">⭐</span><span class="star">⭐</span><span class="star dim">⭐</span></span></div>
+            <h3><span class="icon">🗺️</span> Array .map() — EUR → RON</h3>
+            <p>Convertește prețuri din EUR în RON (1 EUR = 5 RON) cu <code>.map()</code></p>
+            <textarea id="ex13" spellcheck="false">const preturiEUR = [10, 25, 50, 100, 7.5];
+const preturiRON = preturiEUR.map(???);
+
+console.log("EUR:", preturiEUR);
+console.log("RON:", preturiRON); // [50, 125, 250, 500, 37.5]</textarea>
+            <div class="exercise-actions">
+                <button class="btn-run" onclick="runExercise('ex13')">▶ Rulează</button>
+                <button class="btn-hint" onclick="showHint('hint13')">💡 Hint</button>
+            </div>
+            <div class="hint-text" id="hint13"><code>preturiEUR.map(pret => pret * 5)</code></div>
+            <div class="exercise-output" id="ex13-output"></div>
+        </div>
+
+        <!-- Ex 14 -->
+        <div class="card exercise-card">
+            <div class="exercise-label">Exercițiu 14 <span class="difficulty"><span class="star">⭐</span><span
+                        class="star">⭐</span><span class="star">⭐</span><span class="star dim">⭐</span></span></div>
+            <h3><span class="icon">🔍</span> Array .filter() — Doar majori</h3>
+            <p>Filtrează din array-ul de vârste doar persoanele >= 18 ani.</p>
+            <textarea id="ex14" spellcheck="false">const varste = [12, 25, 17, 30, 15, 42, 8, 19, 16, 21];
+const majori = varste.filter(???);
+
+console.log("Majori:", majori);         // [25, 30, 42, 19, 21]
+console.log("Câți:", majori.length);</textarea>
+            <div class="exercise-actions">
+                <button class="btn-run" onclick="runExercise('ex14')">▶ Rulează</button>
+                <button class="btn-hint" onclick="showHint('hint14')">💡 Hint</button>
+            </div>
+            <div class="hint-text" id="hint14"><code>varste.filter(v => v >= 18)</code> — returnează true/false pt
+                fiecare element</div>
+            <div class="exercise-output" id="ex14-output"></div>
+        </div>
+
+        <!-- Ex 15 -->
+        <div class="card exercise-card">
+            <div class="exercise-label">Exercițiu 15 <span class="difficulty"><span class="star">⭐</span><span
+                        class="star">⭐</span><span class="star">⭐</span><span class="star dim">⭐</span></span></div>
+            <h3><span class="icon">📊</span> Array .reduce() — Coș cumpărături</h3>
+            <p>Calculează prețul total din coșul de cumpărături cu <code>.reduce()</code></p>
+            <textarea id="ex15" spellcheck="false">const cos = [
+    { produs: "Laptop", pret: 3000 },
+    { produs: "Mouse", pret: 150 },
+    { produs: "Tastatură", pret: 250 },
+    { produs: "Monitor", pret: 1200 }
+];
+
+const total = cos.reduce(???);
+console.log("Total:", total, "RON"); // 4600</textarea>
+            <div class="exercise-actions">
+                <button class="btn-run" onclick="runExercise('ex15')">▶ Rulează</button>
+                <button class="btn-hint" onclick="showHint('hint15')">💡 Hint</button>
+            </div>
+            <div class="hint-text" id="hint15"><code>cos.reduce((total, item) => total + item.pret, 0)</code> — start de
+                la 0, adaugă .pret</div>
+            <div class="exercise-output" id="ex15-output"></div>
+        </div>
+
+        <!-- Ex 16 -->
+        <div class="card exercise-card">
+            <div class="exercise-label">Exercițiu 16 <span class="difficulty"><span class="star">⭐</span><span
+                        class="star">⭐</span><span class="star">⭐</span><span class="star dim">⭐</span></span></div>
+            <h3><span class="icon">🧱</span> Obiecte — Profil complet</h3>
+            <p>Creează un obiect <code>profil</code> cu proprietăți, un array de hobby-uri, și o metodă
+                <code>prezentare()</code>.
+            </p>
+            <textarea id="ex16" spellcheck="false">const profil = {
+    // nume: "..."
+    // varsta: number
+    // hobbyuri: ["...", "...", "..."]
+    // eStudent: true/false
+    // prezentare() { return `...folosește this...`; }
+};
+
+console.log(profil.prezentare());
+console.log("Primul hobby:", profil.hobbyuri[0]);</textarea>
+            <div class="exercise-actions">
+                <button class="btn-run" onclick="runExercise('ex16')">▶ Rulează</button>
+                <button class="btn-hint" onclick="showHint('hint16')">💡 Hint</button>
+            </div>
+            <div class="hint-text" id="hint16">
+                <code>prezentare() { return `${this.nume}, ${this.varsta}. Hobby: ${this.hobbyuri.join(", ")}`; }</code>
+            </div>
+            <div class="exercise-output" id="ex16-output"></div>
+        </div>
+
+        <!-- Ex 17 -->
+        <div class="card exercise-card">
+            <div class="exercise-label">Exercițiu 17 <span class="difficulty"><span class="star">⭐</span><span
+                        class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span></span></div>
+            <h3><span class="icon">🔗</span> Chaining — .filter() + .map()</h3>
+            <p>Filtrează studenții promovați (nota >= 5) și transformă-i în mesaje formatate.</p>
+            <textarea id="ex17" spellcheck="false">const studenti = [
+    { nume: "Ana", nota: 9 },
+    { nume: "Ion", nota: 4 },
+    { nume: "Maria", nota: 7 },
+    { nume: "Vlad", nota: 3 },
+    { nume: "Elena", nota: 10 },
+    { nume: "Alex", nota: 5 }
+];
+
+const promovati = studenti
+    .filter(???)
+    .map(???);
+
+promovati.forEach(m => console.log(m));</textarea>
+            <div class="exercise-actions">
+                <button class="btn-run" onclick="runExercise('ex17')">▶ Rulează</button>
+                <button class="btn-hint" onclick="showHint('hint17')">💡 Hint</button>
+            </div>
+            <div class="hint-text" id="hint17">
+                <code>.filter(s => s.nota >= 5).map(s => `${s.nume} — Nota: ${s.nota}`)</code>
+            </div>
+            <div class="exercise-output" id="ex17-output"></div>
+        </div>
+
+        <!-- Ex 18 BOSS -->
+        <div class="card exercise-card"
+            style="border-color: rgba(233,69,96,0.4); background: linear-gradient(135deg, rgba(233,69,96,0.15), rgba(83,52,131,0.2));">
+            <div class="exercise-label" style="background: rgba(233,69,96,0.3); color: #ff6b6b;">🏆 EXERCIȚIU 18 — BOSS
+                FINAL</div>
+            <h3><span class="icon">🏆</span> Magazin de Produse — Combini TOTUL!</h3>
+            <p>Folosește <strong>tot</strong> ce ai învățat: variabile, funcții, .filter, .map, .reduce, template
+                literals, spread operator!</p>
+            <textarea id="ex18" spellcheck="false">const produse = [
+    { nume: "Laptop", pret: 3000, inStoc: true },
+    { nume: "Telefon", pret: 2500, inStoc: false },
+    { nume: "Căști", pret: 200, inStoc: true },
+    { nume: "Tabletă", pret: 1800, inStoc: true },
+    { nume: "Cameră", pret: 4000, inStoc: false },
+    { nume: "Ceas Smart", pret: 800, inStoc: true }
+];
+
+// PASUL 1: .filter() — doar produsele IN STOC
+const inStoc = produse.filter(???);
+
+// PASUL 2: .map() — adaugă pretNou cu 10% reducere
+const cuReducere = inStoc.map(p => ({
+    ...p,
+    pretNou: ???  // pret * 0.9
+}));
+
+// PASUL 3: .reduce() — totalul
+const total = cuReducere.reduce(???);
+
+// PASUL 4: Afișează
+console.log("=== PRODUSE DISPONIBILE ===");
+cuReducere.forEach(p => {
+    console.log(`${p.nume}: ${p.pret} → ${p.pretNou} RON (-10%)`);
+});
+console.log(`TOTAL: ${total} RON`);</textarea>
+            <div class="exercise-actions">
+                <button class="btn-run" onclick="runExercise('ex18')">▶ Rulează</button>
+                <button class="btn-hint" onclick="showHint('hint18')">💡 Hint</button>
+            </div>
+            <div class="hint-text" id="hint18"><code>.filter(p => p.inStoc)</code> | <code>pretNou: p.pret * 0.9</code>
+                | <code>.reduce((sum, p) => sum + p.pretNou, 0)</code></div>
+            <div class="exercise-output" id="ex18-output"></div>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>⚡ JavaScript Playground — Creat pentru a învăța prin practică</p>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // === Progress tracking ===
+        // Ascultăm click-urile pe "Rulează" pentru a actualiza bara de progres
+        let completedExercises = new Set();
+
+        const originalRunExercise = runExercise;
+        runExercise = function (id) {
+            originalRunExercise(id);
+            // Marchează ca rezolvat după rulare reușită
+            setTimeout(() => {
+                const output = document.getElementById(`${id}-output`);
+                if (output && output.querySelector('.result')) {
+                    completedExercises.add(id);
+                    updateProgress();
+                }
+            }, 100);
+        };
+
+        function updateProgress() {
+            const total = 18;
+            const done = completedExercises.size;
+            const fill = document.getElementById('progressFill');
+            const text = document.getElementById('progressText');
+            if (fill) fill.style.width = `${(done / total) * 100}%`;
+            if (text) text.textContent = `${done} / ${total}`;
+        }
+    </script>
+</body>
+
+</html>

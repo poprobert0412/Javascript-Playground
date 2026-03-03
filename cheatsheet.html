@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cheatsheet — Toate Conceptele JavaScript pe Scurt</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .cheat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .cheat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 22px;
+            transition: all 0.3s ease;
+        }
+
+        .cheat-card:hover {
+            border-color: rgba(0, 210, 255, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .cheat-card h3 {
+            font-size: 1rem;
+            color: var(--accent-4);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cheat-card pre {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin: 0;
+        }
+
+        .cheat-card .tip {
+            margin-top: 10px;
+            font-size: 0.82rem;
+            color: var(--warning);
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo">⚡ JS Playground</div>
+        <div class="nav-links">
+            <a href="index.html">🏠 Acasă</a>
+            <a href="lectii.html">📖 Lecții</a>
+            <a href="exercitii.html">✏️ Exerciții</a>
+            <a href="quizuri.html">❓ Quiz</a>
+            <a href="cheatsheet.html" class="active">📋 Cheatsheet</a>
+            <a href="devtools.html">🔧 DevTools</a>
+            <a href="provocari.html">🎯 Provocări</a>
+            <a href="proiecte.html">🚀 Proiecte</a>
+            <a href="playground.html">💻 Playground</a>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <h1>📋 JavaScript Cheatsheet</h1>
+        <p>Toate conceptele pe o singură pagină — referință rapidă când ai nevoie!</p>
+        <span class="badge">Printează-mă! Ctrl+P</span>
+    </div>
+
+    <main>
+        <div class="cheat-grid">
+            <!-- Variables -->
+            <div class="cheat-card">
+                <h3>📦 Variabile</h3>
+                <pre>const x = 5;      // NU se reasignează
+let y = 10;        // se poate reasigna
+var z = 15;        // ❌ vechi, nu folosi
+
+y = 20;            // ✅ OK
+// x = 10;         // ❌ ERROR!</pre>
+                <div class="tip">💡 Folosește const mereu. let doar când valoarea se schimbă.</div>
+            </div>
+
+            <!-- Types -->
+            <div class="cheat-card">
+                <h3>🏷️ Tipuri de Date</h3>
+                <pre>"text"             // string
+42                 // number
+true / false       // boolean
+null               // nimic (intenționat)
+undefined          // nedefinit
+[1, 2, 3]          // array (object)
+{a: 1}             // object
+
+typeof "text"      // "string"
+typeof null        // "object" (bug!)</pre>
+            </div>
+
+            <!-- Conditionals -->
+            <div class="cheat-card">
+                <h3>🔀 Condiții</h3>
+                <pre>if (x > 0) {
+    // pozitiv
+} else if (x < 0) {
+    // negativ
+} else {
+    // zero
+}
+
+// Ternary (pe o linie)
+const r = x > 0 ? "da" : "nu";
+
+// Switch
+switch(zi) {
+    case "Luni": /*...*/ break;
+    default: /*...*/
+}</pre>
+            </div>
+
+            <!-- Loops -->
+            <div class="cheat-card">
+                <h3>🔄 Bucle</h3>
+                <pre>// FOR — știi câte iterații
+for (let i = 0; i < 5; i++) {}
+
+// WHILE — condiție
+while (x > 0) { x--; }
+
+// FOR...OF — array
+for (const item of array) {}
+
+// FOR...IN — chei obiect
+for (const key in obj) {}
+
+// break = STOP | continue = SKIP</pre>
+            </div>
+
+            <!-- Functions -->
+            <div class="cheat-card">
+                <h3>⚙️ Funcții</h3>
+                <pre>// Clasică
+function suma(a, b) {
+    return a + b;
+}
+
+// Arrow (scurtă)
+const suma = (a, b) => a + b;
+
+// Arrow (cu body)
+const salut = (n) => {
+    return `Bună, ${n}!`;
+};
+
+// Default params
+function f(x = 10) {}</pre>
+            </div>
+
+            <!-- Arrays -->
+            <div class="cheat-card">
+                <h3>📋 Array Methods</h3>
+                <pre>arr.push(x)        // adaugă la sfârșit
+arr.pop()           // scoate ultimul
+arr.unshift(x)      // adaugă la început
+arr.length          // câte elemente
+
+arr.map(n => n * 2)    // transformă
+arr.filter(n => n > 5) // filtrează
+arr.reduce((s,n) => s+n, 0) // reduce
+arr.forEach(n => {})   // parcurge
+arr.find(n => n > 5)   // primul match
+arr.includes(5)        // conține?</pre>
+            </div>
+
+            <!-- Strings -->
+            <div class="cheat-card">
+                <h3>📝 String Methods</h3>
+                <pre>str.length           // lungime
+str.toUpperCase()    // MAJUSCULE
+str.toLowerCase()    // minuscule
+str.includes("x")   // conține?
+str.startsWith("x") // începe cu?
+str.indexOf("x")    // poziția
+str.slice(0, 5)     // taie
+str.replace("a","b")// înlocuiește
+str.split(",")      // → array
+str.trim()          // taie spații
+`${var}`             // template literal</pre>
+            </div>
+
+            <!-- Objects -->
+            <div class="cheat-card">
+                <h3>🧱 Obiecte</h3>
+                <pre>const obj = {
+    name: "Robert",
+    age: 25,
+    greet() {
+        return `Salut, ${this.name}!`;
+    }
+};
+
+obj.name            // "Robert"
+obj["age"]          // 25
+Object.keys(obj)    // ["name","age"]
+Object.values(obj)  // ["Robert", 25]
+Object.entries(obj) // perechi</pre>
+            </div>
+
+            <!-- Comparisons -->
+            <div class="cheat-card">
+                <h3>⚖️ Comparații & Logică</h3>
+                <pre>===  strict egal (tip + valoare)
+!==  strict diferit
+==   egal (convertește tipuri) ❌
+>  <  >=  <=
+
+&&   AND (ambele true)
+||   OR (cel puțin unul true)
+!    NOT (neagă)
+
+x ?? "default"   // nullish coal.
+obj?.prop         // optional chain</pre>
+                <div class="tip">💡 Folosește MEREU === în loc de ==</div>
+            </div>
+
+            <!-- Error Handling -->
+            <div class="cheat-card">
+                <h3>🛡️ Error Handling</h3>
+                <pre>try {
+    // cod riscant
+    JSON.parse("invalid");
+} catch (err) {
+    console.log(err.message);
+} finally {
+    // se execută MEREU
+}
+
+// Aruncă eroare custom
+throw new Error("Mesaj!");</pre>
+            </div>
+
+            <!-- Built-ins -->
+            <div class="cheat-card">
+                <h3>🧰 Built-in Objects</h3>
+                <pre>// Math
+Math.random()      // 0-1
+Math.floor(4.7)    // 4
+Math.ceil(4.2)     // 5
+Math.max(3, 7)     // 7
+
+// Date
+new Date()
+date.getFullYear()
+
+// JSON
+JSON.stringify(obj) // obj → string
+JSON.parse(str)     // string → obj
+
+// localStorage
+localStorage.setItem("k", "v")
+localStorage.getItem("k")</pre>
+            </div>
+
+            <!-- Scope & Closures -->
+            <div class="cheat-card">
+                <h3>🔒 Scope & Closures</h3>
+                <pre>// Global — vizibil oriunde
+const g = "global";
+
+function f() {
+    // Local — doar în funcție
+    const l = "local";
+}
+
+// Block scope (let/const)
+if (true) {
+    let b = "block only";
+}
+
+// Closure — funcție cu "memorie"
+function contor() {
+    let n = 0;
+    return () => ++n;
+}</pre>
+            </div>
+
+            <!-- Destructuring -->
+            <div class="cheat-card">
+                <h3>📦 Destructuring & Spread</h3>
+                <pre>// Obiect
+const {name, age} = person;
+const {name: n} = person; // redenumire
+
+// Array
+const [a, b, c] = [1, 2, 3];
+const [first, ...rest] = arr;
+
+// Spread
+const arr2 = [...arr, 4, 5];
+const obj2 = {...obj, new: "prop"};
+
+// Rest params
+function f(...args) {}</pre>
+            </div>
+
+            <!-- Classes -->
+            <div class="cheat-card">
+                <h3>🏛️ Classes</h3>
+                <pre>class Animal {
+    constructor(name) {
+        this.name = name;
+    }
+    speak() {
+        return `${this.name} vorbește`;
+    }
+}
+
+class Dog extends Animal {
+    constructor(name, breed) {
+        super(name);
+        this.breed = breed;
+    }
+}
+const r = new Dog("Rex", "Husky");</pre>
+            </div>
+
+            <!-- Async -->
+            <div class="cheat-card">
+                <h3>⏳ Async/Await</h3>
+                <pre>// Promise
+const p = new Promise((res, rej) => {
+    res("done");
+});
+p.then(r => console.log(r));
+
+// Async/Await
+async function getData() {
+    try {
+        const r = await fetch(url);
+        const data = await r.json();
+        return data;
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+// Parallel
+await Promise.all([f1(), f2()]);</pre>
+            </div>
+
+            <!-- DOM -->
+            <div class="cheat-card">
+                <h3>🌐 DOM</h3>
+                <pre>// Selectare
+document.getElementById("id")
+document.querySelector(".class")
+document.querySelectorAll("div")
+
+// Modificare
+el.textContent = "text"
+el.innerHTML = "&lt;b&gt;html&lt;/b&gt;"
+el.style.color = "red"
+el.classList.add("cls")
+el.classList.toggle("cls")
+
+// Creare
+const div = document.createElement("div")
+parent.appendChild(div)</pre>
+            </div>
+
+            <!-- Events -->
+            <div class="cheat-card">
+                <h3>🎯 Events</h3>
+                <pre>// Adaugă listener
+el.addEventListener("click", (e) => {
+    console.log("Click!", e.target);
+});
+
+// Evenimente comune
+"click"      // click
+"input"      // tastare în input
+"keydown"    // apasare tastă
+"mouseover"  // hover
+"submit"     // formular trimis
+"DOMContentLoaded" // pagina ready
+
+e.preventDefault() // oprește default
+e.target           // elementul click-uit</pre>
+            </div>
+
+            <!-- Fetch -->
+            <div class="cheat-card">
+                <h3>🌍 Fetch API</h3>
+                <pre>// GET
+const r = await fetch(url);
+const data = await r.json();
+
+// POST
+await fetch(url, {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({key: "val"})
+});
+
+// Verificare
+if (!response.ok) {
+    throw new Error(`HTTP ${r.status}`);
+}</pre>
+            </div>
+        </div>
+
+        <div class="prof-note">
+            <div class="prof-label">🎓 Sfat de Prof</div>
+            Printează această pagină (<strong>Ctrl + P</strong>) și ține-o lângă tine când codezi!<br>
+            Nu trebuie să memorezi totul — trebuie doar să știi UNDE să cauți. Cheatsheet-ul e arma ta secretă! 💪
+        </div>
+    </main>
+
+    <footer>
+        <p>⚡ JavaScript Playground — Creat pentru a învăța prin practică</p>
+    </footer>
+</body>
+
+</html>
