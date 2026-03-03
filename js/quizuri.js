@@ -26,11 +26,16 @@ function answer(qId, el, idx) {
         card.classList.add('completed-correct');
         explanations[0].classList.add('show');
         score++;
+        // 🎊 Confetti + Sound on correct
+        if (window.launchConfetti) window.launchConfetti();
+        if (window.SoundFX) window.SoundFX.play('correct');
     } else {
         el.classList.add('wrong');
         options[answers[qId]].classList.add('correct');
         card.classList.add('completed-wrong');
         explanations[1].classList.add('show');
+        // 🔊 Sound on wrong
+        if (window.SoundFX) window.SoundFX.play('wrong');
     }
 
     document.getElementById('scoreDisplay').textContent = `${score} / 15`;
