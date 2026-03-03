@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debugging — Cele Mai Comune Erori JavaScript</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .bug-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        .bug-card .bug-number {
+            position: absolute;
+            top: -12px;
+            left: 20px;
+            background: var(--accent-1);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 14px;
+            border-radius: 20px;
+        }
+
+        .bug-card h3 {
+            margin-top: 8px;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .bug-card pre {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin-bottom: 14px;
+        }
+
+        .error-msg {
+            background: rgba(233, 69, 96, 0.12);
+            border-left: 3px solid var(--accent-1);
+            border-radius: 0 10px 10px 0;
+            padding: 12px 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent-1);
+            margin-bottom: 14px;
+        }
+
+        .fix-msg {
+            background: rgba(0, 230, 118, 0.1);
+            border-left: 3px solid var(--success);
+            border-radius: 0 10px 10px 0;
+            padding: 12px 16px;
+            font-size: 0.9rem;
+            color: var(--success);
+            margin-bottom: 14px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+    <nav class="navbar">
+        <div class="logo">⚡ JS Playground</div>
+        <div class="nav-links">
+            <a href="index.html">🏠 Acasă</a>
+            <a href="lectii.html">📖 Lecții</a>
+            <a href="exercitii.html">✏️ Exerciții</a>
+            <a href="quizuri.html">❓ Quiz</a>
+            <a href="cheatsheet.html">📋 Cheatsheet</a>
+            <a href="devtools.html">🔧 DevTools</a>
+            <a href="provocari.html">🎯 Provocări</a>
+            <a href="proiecte.html">🚀 Proiecte</a>
+            <a href="debugging.html" class="active">🐛 Debug</a>
+            <a href="search.html">🔍 Caută</a>
+            <a href="playground.html">💻 Playground</a>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <h1>🐛 Debugging Tutorial</h1>
+        <p>Cele 10 cele mai comune erori JavaScript — cum arată, de ce apar, și cum le repari.</p>
+        <span class="badge">10 Erori Comune</span>
+    </div>
+
+    <main>
+        <div class="prof-note">
+            <div class="prof-label">🎓 Sfat de Prof</div>
+            Erorile NU sunt dușmanul tău — sunt <em>profesorul</em> tău! Fiecare eroare îți spune exact ce e greșit.
+            Citește mesajul de eroare cu atenție, conține TOATĂ informația de care ai nevoie.
+        </div>
+
+        <!-- Bug 1 -->
+        <div class="bug-card">
+            <div class="bug-number">Bug #1</div>
+            <h3>❌ ReferenceError: x is not defined</h3>
+            <div class="error-msg">❌ Uncaught ReferenceError: myVariable is not defined</div>
+            <pre>// ❌ COD GREȘIT
+console.log(myVariable); // variabila nu există!</pre>
+            <pre>// ✅ COD CORECT
+const myVariable = "Salut!";
+console.log(myVariable); // → "Salut!"</pre>
+            <div class="fix-msg">🔧 <strong>Cauza:</strong> Folosești o variabilă care nu a fost declarată. Verifică: 1)
+                Ai declarat-o cu let/const? 2) Ai scris numele corect (case-sensitive)? 3) E în scope-ul potrivit?</div>
+        </div>
+
+        <!-- Bug 2 -->
+        <div class="bug-card">
+            <div class="bug-number">Bug #2</div>
+            <h3>❌ TypeError: Cannot read properties of null</h3>
+            <div class="error-msg">❌ Uncaught TypeError: Cannot read properties of null (reading 'textContent')</div>
+            <pre>// ❌ COD GREȘIT
+const el = document.getElementById("inexistent");
+el.textContent = "test"; // el este NULL!</pre>
+            <pre>// ✅ COD CORECT
+const el = document.getElementById("inexistent");
+if (el) {
+    el.textContent = "test";
+} else {
+    console.log("Elementul nu există!");
+}</pre>
+            <div class="fix-msg">🔧 <strong>Cauza:</strong> getElementById returnează NULL dacă ID-ul nu există.
+                Verifică MEREU cu if(el) înainte de a-l folosi! Sau verifică dacă id-ul din HTML se potrivește exact.
+            </div>
+        </div>
+
+        <!-- Bug 3 -->
+        <div class="bug-card">
+            <div class="bug-number">Bug #3</div>
+            <h3>❌ TypeError: x is not a function</h3>
+            <div class="error-msg">❌ Uncaught TypeError: myVar is not a function</div>
+            <pre>// ❌ COD GREȘIT
+const myVar = "text";
+myVar(); // un string NU e funcție!</pre>
+            <pre>// ✅ COD CORECT
+const myFunc = () => "text";
+myFunc(); // → "text"</pre>
+            <div class="fix-msg">🔧 <strong>Cauza:</strong> Încerci să apelezi cu () ceva ce NU e funcție. Verifică: 1)
+                Tipul variabilei (typeof x). 2) Ai scris numele corect? 3) Ai pus paranteze unde nu trebuia?</div>
+        </div>
+
+        <!-- Bug 4 -->
+        <div class="bug-card">
+            <div class="bug-number">Bug #4</div>
+            <h3>❌ SyntaxError: Unexpected token</h3>
+            <div class="error-msg">❌ Uncaught SyntaxError: Unexpected token '}'</div>
+            <pre>// ❌ COD GREȘIT
+function salut(name {  // lipsește )
+    return "Bună, " + name;
+}</pre>
+            <pre>// ✅ COD CORECT
+function salut(name) {  // ) adăugat
+    return "Bună, " + name;
+}</pre>
+            <div class="fix-msg">🔧 <strong>Cauza:</strong> Cod invalid sintactic. Cele mai comune: 1) Paranteze ( )
+                lipsă sau nepereche. 2) Acolade { } nepereche. 3) Virgule , lipsă. 4) Ghilimele " " neînchise.</div>
+        </div>
+
+        <!-- Bug 5 -->
+        <div class="bug-card">
+            <div class="bug-number">Bug #5</div>
+            <h3>⚠️ == vs === (bug silențios!)</h3>
+            <div class="error-msg">⚠️ Nu e eroare, dar dă rezultate neașteptate!</div>
+            <pre>// ⚠️ COD PERICULOS
+5 == "5"     // true (convertește tipuri!)
+0 == ""      // true (?!)
+null == undefined // true (?!?!)</pre>
+            <pre>// ✅ COD SIGUR
+5 === "5"    // false (tip diferit!)
+0 === ""     // false
+null === undefined // false</pre>
+            <div class="fix-msg">🔧 <strong>Regulă:</strong> Folosește MEREU === (strict equality). == face conversii
+                automate de tip care pot cauza bug-uri subtile și greu de găsit.</div>
+        </div>
+
+        <!-- Bug 6 -->
+        <div class="bug-card">
+            <div class="bug-number">Bug #6</div>
+            <h3>❌ Infinite Loop — Pagina se blochează</h3>
+            <div class="error-msg">⚠️ Pagina nu mai răspunde (browser-ul se blochează)</div>
+            <pre>// ❌ COD GREȘIT — BUCLĂ INFINITĂ!
+let i = 0;
+while (i < 10) {
+    console.log(i);
+    // LIPSEȘTE i++ !!
+}</pre>
+            <pre>// ✅ COD CORECT
+let i = 0;
+while (i < 10) {
+    console.log(i);
+    i++; // incrementează!
+}</pre>
+            <div class="fix-msg">🔧 <strong>Cauza:</strong> while/for fără condiție de ieșire. Verifică: 1) while are
+                condiție care devine false? 2) for are incrementare (i++)? 3) Ai break unde trebuie?</div>
+        </div>
+
+        <!-- Bug 7 -->
+        <div class="bug-card">
+            <div class="bug-number">Bug #7</div>
+            <h3>⚠️ Async/Await fără await</h3>
+            <div class="error-msg">⚠️ Primești Promise {&lt;pending&gt;} în loc de date!</div>
+            <pre>// ❌ COD GREȘIT
+const data = fetch("https://api.example.com");
+console.log(data); // Promise {&lt;pending&gt;} !</pre>
+            <pre>// ✅ COD CORECT
+const response = await fetch("https://api.example.com");
+const data = await response.json();
+console.log(data); // Datele reale!</pre>
+            <div class="fix-msg">🔧 <strong>Cauza:</strong> fetch() returnează un Promise, nu datele direct. Trebuie: 1)
+                await fetch() 2) await response.json() 3) Funcția trebuie să fie async.</div>
+        </div>
+
+        <!-- Bug 8 -->
+        <div class="bug-card">
+            <div class="bug-number">Bug #8</div>
+            <h3>⚠️ this în arrow functions</h3>
+            <div class="error-msg">⚠️ this e undefined sau window în loc de obiectul tău!</div>
+            <pre>// ❌ COD GREȘIT
+const obj = {
+    name: "Robert",
+    greet: () => {
+        console.log(this.name); // undefined!
+    }
+};</pre>
+            <pre>// ✅ COD CORECT
+const obj = {
+    name: "Robert",
+    greet() {  // metoda normală
+        console.log(this.name); // "Robert"
+    }
+};</pre>
+            <div class="fix-msg">🔧 <strong>Cauza:</strong> Arrow functions NU au propriul this — moștenesc pe cel din
+                context. Pentru metode de obiect, folosește funcții normale (nu arrow).</div>
+        </div>
+
+        <!-- Bug 9 -->
+        <div class="bug-card">
+            <div class="bug-number">Bug #9</div>
+            <h3>⚠️ Array mutation fără să vrei</h3>
+            <div class="error-msg">⚠️ Array-ul original e modificat când nu voiai!</div>
+            <pre>// ❌ COD PERICULOS
+const orig = [3, 1, 2];
+const sorted = orig.sort(); // ATENȚIE!
+console.log(orig); // [1, 2, 3] — MODIFICAT!</pre>
+            <pre>// ✅ COD CORECT
+const orig = [3, 1, 2];
+const sorted = [...orig].sort(); // copie!
+console.log(orig);   // [3, 1, 2] — neatins!
+console.log(sorted); // [1, 2, 3]</pre>
+            <div class="fix-msg">🔧 <strong>Cauza:</strong> .sort(), .reverse(), .splice() MODIFICĂ array-ul original!
+                Folosește [...arr] (spread) pentru a face o copie înainte de modificare.</div>
+        </div>
+
+        <!-- Bug 10 -->
+        <div class="bug-card">
+            <div class="bug-number">Bug #10</div>
+            <h3>⚠️ 0.1 + 0.2 !== 0.3 (floating point)</h3>
+            <div class="error-msg">⚠️ 0.1 + 0.2 = 0.30000000000000004 (?!)</div>
+            <pre>// ⚠️ CIUDAT DAR ADEVĂRAT
+console.log(0.1 + 0.2);         // 0.30000000000000004
+console.log(0.1 + 0.2 === 0.3); // false! 😱</pre>
+            <pre>// ✅ SOLUȚIE
+// Rotunjește la N zecimale
+console.log((0.1 + 0.2).toFixed(1)); // "0.3"
+// Sau compară cu toleranță
+Math.abs(0.1 + 0.2 - 0.3) < 0.0001  // true</pre>
+            <div class="fix-msg">🔧 <strong>Cauza:</strong> Numerele cu virgulă (float) NU sunt exacte în computere — e
+                o limitare IEEE 754 care apare în TOATE limbajele, nu doar JS!</div>
+        </div>
+
+        <div class="prof-note">
+            <div class="prof-label">🏆 Sfat Final</div>
+            Când primești o eroare, CITEȘTE MESAJUL! Conține:
+            <strong>Tipul erorii</strong> (ReferenceError, TypeError, etc.) +
+            <strong>Descrierea</strong> (ce e greșit) +
+            <strong>Linia</strong> (unde e greșit).
+            Cu aceste 3 informații, 90% din erori se rezolvă singure! 🔧
+        </div>
+    </main>
+    <footer>
+        <p>⚡ JavaScript Playground — Creat pentru a învăța prin practică</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+
+</html>
