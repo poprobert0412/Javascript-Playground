@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcards — Memorează JavaScript Rapid</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .flashcard-controls {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .fc-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        .fc-badge.count {
+            background: rgba(0, 210, 255, 0.12);
+            color: var(--accent-4);
+            border: 1px solid rgba(0, 210, 255, 0.25);
+        }
+
+        .fc-badge.known {
+            background: rgba(0, 230, 118, 0.12);
+            color: var(--success);
+            border: 1px solid rgba(0, 230, 118, 0.25);
+        }
+
+        .fc-badge.remaining {
+            background: rgba(233, 69, 96, 0.12);
+            color: var(--accent-1);
+            border: 1px solid rgba(233, 69, 96, 0.25);
+        }
+
+        /* Category filter */
+        .fc-categories {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .fc-cat-btn {
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--text-secondary);
+        }
+
+        .fc-cat-btn:hover,
+        .fc-cat-btn.active {
+            border-color: var(--accent-4);
+            color: var(--accent-4);
+            background: rgba(0, 210, 255, 0.12);
+        }
+
+        /* Card container */
+        .flashcard-container {
+            perspective: 1200px;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+
+        .flashcard {
+            position: relative;
+            width: 100%;
+            min-height: 300px;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-face {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .flashcard-front {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .flashcard-front::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-4), var(--accent-1));
+            border-radius: 20px 20px 0 0;
+        }
+
+        .flashcard-back {
+            background: linear-gradient(135deg, var(--bg-card), rgba(0, 210, 255, 0.05));
+            border: 2px solid rgba(0, 210, 255, 0.2);
+            box-shadow: 0 12px 40px rgba(0, 210, 255, 0.1);
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front .fc-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-4);
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .flashcard-front .fc-term {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .flashcard-front .fc-category {
+            margin-top: 16px;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            background: rgba(0, 210, 255, 0.08);
+            color: var(--accent-4);
+            border: 1px solid rgba(0, 210, 255, 0.15);
+        }
+
+        .flashcard-front .fc-hint {
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+
+        .flashcard-back .fc-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--success);
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        .flashcard-back .fc-definition {
+            font-size: 1.05rem;
+            color: var(--text-primary);
+            line-height: 1.7;
+        }
+
+        .flashcard-back .fc-example {
+            margin-top: 16px;
+            padding: 12px 18px;
+            background: var(--bg-code);
+            border-radius: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent-4);
+            text-align: left;
+            width: 100%;
+        }
+
+        /* Navigation buttons */
+        .fc-nav {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .fc-btn {
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border: none;
+        }
+
+        .fc-btn.prev,
+        .fc-btn.next {
+            background: transparent;
+            border: 1px solid var(--accent-4);
+            color: var(--accent-4);
+        }
+
+        .fc-btn.prev:hover,
+        .fc-btn.next:hover {
+            background: rgba(0, 210, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .fc-btn.know {
+            background: linear-gradient(135deg, #00e676, #00c853);
+            color: #1a1a2e;
+        }
+
+        .fc-btn.know:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 230, 118, 0.3);
+        }
+
+        .fc-btn.dont-know {
+            background: linear-gradient(135deg, #e94560, #533483);
+            color: white;
+        }
+
+        .fc-btn.dont-know:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(233, 69, 96, 0.3);
+        }
+
+        .fc-btn.shuffle {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .fc-btn.shuffle:hover {
+            border-color: var(--accent-4);
+            color: var(--accent-4);
+        }
+
+        /* Keyboard hint */
+        .keyboard-hint {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            opacity: 0.5;
+        }
+
+        .keyboard-hint kbd {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 2px 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.72rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo">⚡ JS Playground</div>
+        <div class="nav-links">
+            <a href="index.html">🏠 Acasă</a>
+            <a href="lectii.html">📖 Lecții</a>
+            <a href="exercitii.html">✏️ Exerciții</a>
+            <a href="quizuri.html">❓ Quiz</a>
+            <a href="cheatsheet.html">📋 Cheatsheet</a>
+            <a href="devtools.html">🔧 DevTools</a>
+            <a href="provocari.html">🎯 Provocări</a>
+            <a href="proiecte.html">🚀 Proiecte</a>
+            <a href="debugging.html">🐛 Debug</a>
+            <a href="glosar.html">📖 Glosar</a>
+            <a href="search.html">🔍 Caută</a>
+            <a href="playground.html">💻 Playground</a>
+            <a href="achievements.html">🏆 Achievements</a>
+            <a href="dashboard.html">📊 Dashboard</a>
+            <a href="puzzle.html">🧩 Code Puzzle</a>
+            <a href="flashcards.html" class="active">🃏 Flashcards</a>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <h1>🃏 Flashcards JavaScript</h1>
+        <p>Învață rapid — vezi termenul, dă flip, citește definiția. Marchează ce știi și ce nu!</p>
+    </div>
+
+    <main>
+        <div class="flashcard-controls">
+            <span class="fc-badge count" id="countBadge">1 / 40</span>
+            <span class="fc-badge known" id="knownBadge">✅ Știu: 0</span>
+            <span class="fc-badge remaining" id="remainingBadge">❌ Nu știu: 0</span>
+        </div>
+
+        <div class="fc-categories" id="categories"></div>
+
+        <div class="flashcard-container">
+            <div class="flashcard" id="flashcard">
+                <div class="flashcard-face flashcard-front">
+                    <div class="fc-label">📌 Termen</div>
+                    <div class="fc-term" id="fcTerm">Loading...</div>
+                    <div class="fc-category" id="fcCategory"></div>
+                    <div class="fc-hint">👆 Click pentru a vedea definiția</div>
+                </div>
+                <div class="flashcard-face flashcard-back">
+                    <div class="fc-label">💡 Definiție</div>
+                    <div class="fc-definition" id="fcDefinition"></div>
+                    <div class="fc-example" id="fcExample"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="fc-nav">
+            <button class="fc-btn prev" id="prevBtn">⬅️ Anterior</button>
+            <button class="fc-btn dont-know" id="dontKnowBtn">❌ Nu știu</button>
+            <button class="fc-btn know" id="knowBtn">✅ Știu!</button>
+            <button class="fc-btn next" id="nextBtn">Următor ➡️</button>
+            <button class="fc-btn shuffle" id="shuffleBtn">🔀 Amestecă</button>
+        </div>
+
+        <div class="keyboard-hint">
+            <kbd>Space</kbd> Flip &nbsp;|&nbsp; <kbd>←</kbd> Anterior &nbsp;|&nbsp; <kbd>→</kbd> Următor &nbsp;|&nbsp;
+            <kbd>1</kbd> Știu &nbsp;|&nbsp; <kbd>2</kbd> Nu știu
+        </div>
+    </main>
+
+    <footer>
+        <p>⚡ JavaScript Playground — Creat pentru a învăța prin practică</p>
+        <div class="footer-author">
+            <div class="author-name">Creat de poprobert0412</div>
+            <div class="social-links">
+                <a href="https://github.com/poprobert0412" target="_blank">🐙 GitHub</a>
+                <a href="https://www.linkedin.com/in/poprobert1999" target="_blank">💼 LinkedIn</a>
+            </div>
+        </div>
+        <p class="footer-license">© 2026 poprobert0412. Toate drepturile rezervate. Licență MIT.</p>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script src="js/flashcards.js"></script>
+</body>
+
+</html>

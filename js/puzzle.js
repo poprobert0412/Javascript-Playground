@@ -140,6 +140,56 @@
     let draggedEl = null;
     let solvedPuzzles = new Set();
 
+    // Timer
+    let timeLeft = 60;
+    let timerInterval = null;
+
+    function startTimer() {
+        clearInterval(timerInterval);
+        timeLeft = 60;
+        updateTimerDisplay();
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            updateTimerDisplay();
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                timerTimeout();
+            }
+        }, 1000);
+    }
+
+    function stopTimer() {
+        clearInterval(timerInterval);
+    }
+
+    function updateTimerDisplay() {
+        const el = document.getElementById('timerBadge');
+        if (!el) return;
+        el.textContent = `⏱️ ${timeLeft}s`;
+        if (timeLeft <= 10) {
+            el.style.color = '#e94560';
+            el.style.borderColor = '#e94560';
+            el.style.background = 'rgba(233, 69, 96, 0.12)';
+        } else {
+            el.style.color = '';
+            el.style.borderColor = '';
+            el.style.background = '';
+        }
+    }
+
+    function timerTimeout() {
+        const result = document.getElementById('puzzleResult');
+        const resultIcon = document.getElementById('resultIcon');
+        const resultText = document.getElementById('resultText');
+        const resultDesc = document.getElementById('resultDesc');
+        streak = 0;
+        result.className = 'puzzle-result show wrong-result';
+        resultIcon.textContent = '⏰';
+        resultText.textContent = 'Timpul a expirat!';
+        resultDesc.textContent = 'Ai depășit 60 de secunde. Încearcă din nou!';
+        document.getElementById('streakBadge').textContent = `🔥 Streak: ${streak}`;
+    }
+
     // Fisher-Yates shuffle
     function shuffle(arr) {
         const a = [...arr];
@@ -185,6 +235,9 @@
         const shuffled = shuffle(puzzle.lines);
         renderLines(shuffled);
         renderPuzzleSelector();
+
+        // Start timer
+        startTimer();
     }
 
     function renderLines(lines) {
@@ -354,14 +407,16 @@
         const resultDesc = document.getElementById('resultDesc');
 
         if (allCorrect) {
-            score += (streak + 1) * 10;
+            stopTimer();
+            const timeBonus = timeLeft > 0 ? timeLeft : 0;
+            score += (streak + 1) * 10 + timeBonus;
             streak++;
             solvedPuzzles.add(currentPuzzle);
 
             result.className = 'puzzle-result show correct-result';
             resultIcon.textContent = '🎉';
             resultText.textContent = 'PERFECT!';
-            resultDesc.textContent = `+${(streak) * 10} puncte! Streak: ${streak} 🔥`;
+            resultDesc.textContent = `+${(streak) * 10} puncte + ${timeBonus}s bonus timp! Streak: ${streak} 🔥`;
 
             document.getElementById('nextBtn').style.display = '';
             document.getElementById('checkBtn').style.display = 'none';

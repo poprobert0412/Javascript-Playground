@@ -25,6 +25,7 @@
 | 🚀 **3 Mini-Proiecte** | To-Do List, Quiz Game, Weather App |
 | 💻 **Playground** | Consolă JS interactivă cu autocomplete |
 | 🧩 **Code Puzzle** | Drag & drop — aranjează codul corect |
+| 🎴 **Flashcards** | Memorare rapidă cu 44 termeni + flip 3D |
 | 📊 **Dashboard Progres** | Vizualizează-ți progresul cu grafice |
 | 🏆 **10 Achievements** | Colecționează badge-uri pe parcurs! |
 | 📋 **Cheatsheet** | Toate conceptele pe o pagină |
@@ -58,6 +59,7 @@
 ├── 📄 proiecte.html           # 3 mini-proiecte
 ├── 📄 playground.html         # Consolă JS interactivă
 ├── 📄 puzzle.html             # 10 code puzzle-uri
+├── 📄 flashcards.html          # 44 flashcards JavaScript
 ├── 📄 achievements.html       # Pagina achievements
 ├── 📄 dashboard.html          # Dashboard progres
 ├── 📄 cheatsheet.html         # Referință rapidă
@@ -77,7 +79,8 @@
 │   ├── 📄 search.js           # Logica căutare
 │   ├── 📄 achievements.js     # Logica achievements
 │   ├── 📄 dashboard.js        # Logica dashboard
-│   └── 📄 puzzle.js           # Logica code puzzle
+│   ├── 📄 puzzle.js           # Logica code puzzle
+│   └── 📄 flashcards.js       # Logica flashcards
 ├── 📄 LICENSE                 # Licență MIT
 ├── 📄 README.md               # Acest fișier
 └── 🖼️ screenshot.png          # Preview homepage
