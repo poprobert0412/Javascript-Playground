@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="ro">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JavaScript & TypeScript Playground</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --bg-primary: #0f0f1a;
@@ -20,8 +23,8 @@
             --text-accent: #00d2ff;
             --success: #00e676;
             --warning: #ffab40;
-            --border: rgba(255,255,255,0.08);
-            --shadow: 0 8px 32px rgba(0,0,0,0.4);
+            --border: rgba(255, 255, 255, 0.08);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
 
         * {
@@ -41,8 +44,10 @@
         /* === Animated Background === */
         .bg-animation {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: 0;
             pointer-events: none;
             overflow: hidden;
@@ -57,32 +62,51 @@
         }
 
         .bg-animation .orb:nth-child(1) {
-            width: 400px; height: 400px;
+            width: 400px;
+            height: 400px;
             background: var(--accent-1);
-            top: -100px; left: -100px;
+            top: -100px;
+            left: -100px;
             animation-delay: 0s;
         }
 
         .bg-animation .orb:nth-child(2) {
-            width: 500px; height: 500px;
+            width: 500px;
+            height: 500px;
             background: var(--accent-3);
-            bottom: -150px; right: -150px;
+            bottom: -150px;
+            right: -150px;
             animation-delay: -7s;
         }
 
         .bg-animation .orb:nth-child(3) {
-            width: 300px; height: 300px;
+            width: 300px;
+            height: 300px;
             background: var(--accent-4);
-            top: 50%; left: 50%;
+            top: 50%;
+            left: 50%;
             transform: translate(-50%, -50%);
             animation-delay: -14s;
         }
 
         @keyframes float {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            25% { transform: translate(50px, -30px) scale(1.1); }
-            50% { transform: translate(-20px, 50px) scale(0.9); }
-            75% { transform: translate(30px, 20px) scale(1.05); }
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            25% {
+                transform: translate(50px, -30px) scale(1.1);
+            }
+
+            50% {
+                transform: translate(-20px, 50px) scale(0.9);
+            }
+
+            75% {
+                transform: translate(30px, 20px) scale(1.05);
+            }
         }
 
         /* === Header === */
@@ -201,7 +225,8 @@
 
         .code-block .lang-tag {
             position: absolute;
-            top: 8px; right: 12px;
+            top: 8px;
+            right: 12px;
             font-size: 0.7rem;
             color: var(--text-secondary);
             text-transform: uppercase;
@@ -209,13 +234,34 @@
             opacity: 0.6;
         }
 
-        .code-block .keyword { color: #c678dd; }
-        .code-block .string { color: #98c379; }
-        .code-block .number { color: #d19a66; }
-        .code-block .comment { color: #5c6370; font-style: italic; }
-        .code-block .function { color: #61afef; }
-        .code-block .type { color: #e5c07b; }
-        .code-block .operator { color: #56b6c2; }
+        .code-block .keyword {
+            color: #c678dd;
+        }
+
+        .code-block .string {
+            color: #98c379;
+        }
+
+        .code-block .number {
+            color: #d19a66;
+        }
+
+        .code-block .comment {
+            color: #5c6370;
+            font-style: italic;
+        }
+
+        .code-block .function {
+            color: #61afef;
+        }
+
+        .code-block .type {
+            color: #e5c07b;
+        }
+
+        .code-block .operator {
+            color: #56b6c2;
+        }
 
         /* === Interactive Console === */
         .console-area {
@@ -232,18 +278,27 @@
             align-items: center;
             gap: 8px;
             padding: 12px 18px;
-            background: rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.3);
             border-bottom: 1px solid var(--border);
         }
 
         .console-header .dot {
-            width: 12px; height: 12px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
         }
 
-        .console-header .dot.red { background: #ff5f57; }
-        .console-header .dot.yellow { background: #ffbd2e; }
-        .console-header .dot.green { background: #28c840; }
+        .console-header .dot.red {
+            background: #ff5f57;
+        }
+
+        .console-header .dot.yellow {
+            background: #ffbd2e;
+        }
+
+        .console-header .dot.green {
+            background: #28c840;
+        }
 
         .console-header span {
             margin-left: 10px;
@@ -295,7 +350,9 @@
             letter-spacing: 0.5px;
         }
 
-        #runBtn:hover { opacity: 0.85; }
+        #runBtn:hover {
+            opacity: 0.85;
+        }
 
         #consoleOutput {
             padding: 16px 18px;
@@ -312,13 +369,28 @@
             animation: fadeIn 0.3s ease;
         }
 
-        .output-line.result { color: var(--success); }
-        .output-line.error { color: var(--accent-1); }
-        .output-line.info { color: var(--accent-4); }
+        .output-line.result {
+            color: var(--success);
+        }
+
+        .output-line.error {
+            color: var(--accent-1);
+        }
+
+        .output-line.info {
+            color: var(--accent-4);
+        }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* === Try It Buttons === */
@@ -453,6 +525,184 @@
             margin-bottom: 20px;
         }
 
+        /* === Teacher Notes === */
+        .prof-note {
+            margin: 14px 0;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, rgba(0, 210, 255, 0.08), rgba(83, 52, 131, 0.08));
+            border-left: 3px solid var(--accent-4);
+            border-radius: 0 12px 12px 0;
+            font-size: 0.92rem;
+            line-height: 1.7;
+            color: var(--text-primary);
+        }
+
+        .prof-note .prof-label {
+            display: inline-block;
+            font-weight: 700;
+            color: var(--accent-4);
+            margin-bottom: 4px;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .prof-note code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent-4);
+        }
+
+        .prof-note em {
+            color: var(--warning);
+            font-style: normal;
+            font-weight: 600;
+        }
+
+        /* === Live Demo Areas === */
+        .live-demo {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 14px 0;
+            position: relative;
+        }
+
+        .live-demo .demo-label {
+            position: absolute;
+            top: -10px;
+            left: 16px;
+            background: var(--accent-1);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .demo-btn {
+            padding: 10px 22px;
+            background: linear-gradient(135deg, #e94560, #533483);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            margin: 6px 4px;
+        }
+
+        .demo-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 20px rgba(233, 69, 96, 0.35);
+        }
+
+        .demo-btn:active {
+            transform: scale(0.97);
+        }
+
+        .demo-btn.secondary {
+            background: transparent;
+            border: 1px solid var(--accent-4);
+            color: var(--accent-4);
+        }
+
+        .demo-btn.secondary:hover {
+            background: rgba(0, 210, 255, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.2);
+        }
+
+        .demo-output {
+            margin-top: 12px;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--success);
+            min-height: 36px;
+            transition: all 0.3s ease;
+        }
+
+        .demo-counter {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+        }
+
+        .demo-counter .count {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-4);
+            font-family: 'JetBrains Mono', monospace;
+            min-width: 60px;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+
+        .demo-counter .count.bump {
+            transform: scale(1.3);
+            color: var(--accent-1);
+        }
+
+        .demo-input-box {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+            margin: 8px 0;
+        }
+
+        .demo-input-box:focus {
+            border-color: var(--accent-4);
+        }
+
+        .color-box {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            background: var(--accent-1);
+            transition: all 0.4s ease;
+            display: inline-block;
+            margin: 10px 0;
+        }
+
+        .key-display {
+            display: inline-block;
+            padding: 8px 18px;
+            background: var(--bg-card);
+            border: 2px solid var(--accent-4);
+            border-radius: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent-4);
+            min-width: 50px;
+            text-align: center;
+            transition: all 0.15s ease;
+            margin: 8px 4px;
+        }
+
+        .key-display.pressed {
+            background: var(--accent-4);
+            color: var(--bg-primary);
+            transform: scale(0.95);
+        }
+
         /* === Footer === */
         footer {
             position: relative;
@@ -468,266 +718,709 @@
             text-decoration: none;
         }
 
-        footer a:hover { text-decoration: underline; }
+        footer a:hover {
+            text-decoration: underline;
+        }
 
         /* === Scrollbar === */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--accent-2); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent-3); }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-2);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-3);
+        }
 
         /* === Responsive === */
         @media (max-width: 768px) {
-            header h1 { font-size: 2rem; }
-            main { padding: 12px; }
-            .card { padding: 20px; }
-            .concept-grid { grid-template-columns: 1fr; }
+            header h1 {
+                font-size: 2rem;
+            }
+
+            main {
+                padding: 12px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .concept-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
+
 <body>
 
-<div class="bg-animation">
-    <div class="orb"></div>
-    <div class="orb"></div>
-    <div class="orb"></div>
-</div>
-
-<header>
-    <h1>⚡ JS & TS Playground</h1>
-    <p>Învață JavaScript și TypeScript pas cu pas, cu exemple interactive și exerciții practice.</p>
-    <div class="badge">📚 Ghid Interactiv pentru Începători</div>
-</header>
-
-<main>
-
-    <!-- ========== CONSOLĂ INTERACTIVĂ ========== -->
-    <h2 class="section-title">Consolă Interactivă <span>// scrie cod JS aici</span></h2>
-
-    <div class="console-area">
-        <div class="console-header">
-            <div class="dot red"></div>
-            <div class="dot yellow"></div>
-            <div class="dot green"></div>
-            <span>console.js</span>
-        </div>
-        <div id="consoleOutput"></div>
-        <div class="console-input-area">
-            <div class="console-prompt">❯</div>
-            <input type="text" id="consoleInput" placeholder="Scrie cod JavaScript... (ex: 2 + 2)" autocomplete="off">
-            <button id="runBtn">▶ RUN</button>
-        </div>
+    <div class="bg-animation">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
     </div>
 
-    <!-- ========== VARIABILE ========== -->
-    <h2 class="section-title">1. Variabile <span>// let, const, var</span></h2>
+    <header>
+        <h1>⚡ JS & TS Playground</h1>
+        <p>Învață JavaScript și TypeScript pas cu pas, cu exemple interactive și exerciții practice.</p>
+        <div class="badge">📚 Ghid Interactiv pentru Începători</div>
+    </header>
 
-    <div class="concept-grid">
+    <main>
+
+        <!-- ========== CONSOLĂ INTERACTIVĂ ========== -->
+        <h2 class="section-title">Consolă Interactivă <span>// scrie cod JS aici</span></h2>
+
+        <div class="console-area">
+            <div class="console-header">
+                <div class="dot red"></div>
+                <div class="dot yellow"></div>
+                <div class="dot green"></div>
+                <span>console.js</span>
+            </div>
+            <div id="consoleOutput"></div>
+            <div class="console-input-area">
+                <div class="console-prompt">❯</div>
+                <input type="text" id="consoleInput" placeholder="Scrie cod JavaScript... (ex: 2 + 2)"
+                    autocomplete="off">
+                <button id="runBtn">▶ RUN</button>
+            </div>
+        </div>
+
+        <!-- ========== VARIABILE ========== -->
+        <h2 class="section-title">1. Variabile <span>// let, const, var</span></h2>
+
+        <div class="prof-note">
+            <div class="prof-label">🎓 Sfat de Prof</div>
+            Deschide <em>DevTools</em> în browser (apasă <code>F12</code> → tab-ul „Console"). Scrie
+            <code>let x = 10</code> și apoi <code>x</code> — vezi cum îți returnează valoarea? Asta e <em>consola
+                reală</em> — cel mai bun prieten al unui developer. Tot ce vezi mai jos poți testa și acolo!
+        </div>
+
+        <div class="concept-grid">
+            <div class="card">
+                <h3><span class="icon">📦</span> let & const</h3>
+                <p><strong>let</strong> — variabilă care poate fi reasignată.<br>
+                    <strong>const</strong> — valoare constantă, nu poate fi schimbată.
+                </p>
+                <div class="code-block">
+                    <span class="lang-tag">js</span>
+                    <span class="keyword">let</span> varsta = <span class="number">25</span>;
+                    varsta = <span class="number">26</span>; <span class="comment">// ✅ OK</span>
+
+                    <span class="keyword">const</span> nume = <span class="string">"Robert"</span>;
+                    <span class="comment">// nume = "Ion"; ❌ Error!</span>
+                </div>
+                <button class="try-btn"
+                    onclick="tryCode('let varsta = 25; varsta = 26; console.log(`Varsta: ${varsta}`)') ">▶
+                    Încearcă</button>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">🏷️</span> Tipuri de date</h3>
+                <p>JavaScript are tipuri primitive: <strong>string</strong>, <strong>number</strong>,
+                    <strong>boolean</strong>, <strong>null</strong>, <strong>undefined</strong>.
+                </p>
+                <div class="code-block">
+                    <span class="lang-tag">js</span>
+                    <span class="keyword">let</span> text = <span class="string">"Salut"</span>; <span
+                        class="comment">// string</span>
+                    <span class="keyword">let</span> nr = <span class="number">42</span>; <span class="comment">//
+                        number</span>
+                    <span class="keyword">let</span> activ = <span class="keyword">true</span>; <span class="comment">//
+                        boolean</span>
+                    <span class="keyword">let</span> gol = <span class="keyword">null</span>; <span class="comment">//
+                        null</span>
+                    <span class="keyword">let</span> x; <span class="comment">// undefined</span>
+                </div>
+                <button class="try-btn"
+                    onclick="tryCode('let text = &quot;Salut&quot;; console.log(typeof text); let nr = 42; console.log(typeof nr); let activ = true; console.log(typeof activ);')">▶
+                    Încearcă typeof</button>
+            </div>
+        </div>
+
+        <!-- ========== FUNCȚII ========== -->
+        <h2 class="section-title">2. Funcții <span>// function, arrow =></span></h2>
+
+        <div class="concept-grid">
+            <div class="card">
+                <h3><span class="icon">⚙️</span> Funcție clasică</h3>
+                <p>Funcțiile sunt blocuri de cod reutilizabile. Se declară cu <code>function</code>.</p>
+                <div class="code-block">
+                    <span class="lang-tag">js</span>
+                    <span class="keyword">function</span> <span class="function">salut</span>(nume) {
+                    <span class="keyword">return</span> <span class="string">`Bună, ${</span>nume<span
+                        class="string">}!`</span>;
+                    }
+
+                    <span class="function">console.log</span>(<span class="function">salut</span>(<span
+                        class="string">"Robert"</span>));
+                </div>
+                <button class="try-btn"
+                    onclick="tryCode('function salut(nume) { return `Bună, ${nume}!`; } console.log(salut(&quot;Robert&quot;));')">▶
+                    Încearcă</button>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">➡️</span> Arrow Function</h3>
+                <p>Sintaxă modernă și concisă, introdusă în ES6. Perfectă pentru funcții scurte.</p>
+                <div class="code-block">
+                    <span class="lang-tag">js</span>
+                    <span class="keyword">const</span> <span class="function">dublu</span> = (n) <span
+                        class="operator">=></span> n * <span class="number">2</span>;
+
+                    <span class="function">console.log</span>(<span class="function">dublu</span>(<span
+                        class="number">7</span>)); <span class="comment">// 14</span>
+
+                    <span class="keyword">const</span> <span class="function">sumă</span> = (a, b) <span
+                        class="operator">=></span> a + b;
+                    <span class="function">console.log</span>(<span class="function">sumă</span>(<span
+                        class="number">3</span>, <span class="number">5</span>)); <span class="comment">// 8</span>
+                </div>
+                <button class="try-btn"
+                    onclick="tryCode('const dublu = (n) => n * 2; console.log(dublu(7)); const sumă = (a, b) => a + b; console.log(sumă(3, 5));')">▶
+                    Încearcă</button>
+            </div>
+        </div>
+
+        <!-- ========== ARRAYS ========== -->
+        <h2 class="section-title">3. Arrays <span>// liste de elemente</span></h2>
+
         <div class="card">
-            <h3><span class="icon">📦</span> let & const</h3>
-            <p><strong>let</strong> — variabilă care poate fi reasignată.<br>
-               <strong>const</strong> — valoare constantă, nu poate fi schimbată.</p>
+            <h3><span class="icon">📋</span> Operații cu Arrays</h3>
+            <p>Array-urile sunt colecții ordonate. Poți adăuga, șterge, filtra și transforma elementele.</p>
             <div class="code-block">
                 <span class="lang-tag">js</span>
-<span class="keyword">let</span> varsta = <span class="number">25</span>;
-varsta = <span class="number">26</span>;  <span class="comment">// ✅ OK</span>
+                <span class="keyword">const</span> fructe = [<span class="string">"măr"</span>, <span
+                    class="string">"banană"</span>, <span class="string">"portocală"</span>];
 
-<span class="keyword">const</span> nume = <span class="string">"Robert"</span>;
-<span class="comment">// nume = "Ion"; ❌ Error!</span>
+                fructe.<span class="function">push</span>(<span class="string">"kiwi"</span>); <span class="comment">//
+                    adaugă la sfârșit</span>
+                fructe.<span class="function">pop</span>(); <span class="comment">// șterge ultimul</span>
+
+                <span class="comment">// Iterare cu forEach</span>
+                fructe.<span class="function">forEach</span>(f <span class="operator">=></span> <span
+                    class="function">console.log</span>(f));
+
+                <span class="comment">// Map — transformă fiecare element</span>
+                <span class="keyword">const</span> mari = fructe.<span class="function">map</span>(f <span
+                    class="operator">=></span> f.<span class="function">toUpperCase</span>());
+
+                <span class="comment">// Filter — filtrează</span>
+                <span class="keyword">const</span> scurte = fructe.<span class="function">filter</span>(f <span
+                    class="operator">=></span> f.length <= <span class="number">5</span>);
             </div>
-            <button class="try-btn" onclick="tryCode('let varsta = 25; varsta = 26; console.log(`Varsta: ${varsta}`)') ">▶ Încearcă</button>
+            <button class="try-btn"
+                onclick="tryCode('const fructe = [&quot;măr&quot;, &quot;banană&quot;, &quot;portocală&quot;]; fructe.push(&quot;kiwi&quot;); console.log(&quot;Lista:&quot;, fructe); const mari = fructe.map(f => f.toUpperCase()); console.log(&quot;Uppercase:&quot;, mari); const scurte = fructe.filter(f => f.length <= 5); console.log(&quot;Scurte:&quot;, scurte);')">▶
+                Încearcă</button>
         </div>
+
+        <!-- ========== OBIECTE ========== -->
+        <h2 class="section-title">4. Obiecte <span>// { key: value }</span></h2>
 
         <div class="card">
-            <h3><span class="icon">🏷️</span> Tipuri de date</h3>
-            <p>JavaScript are tipuri primitive: <strong>string</strong>, <strong>number</strong>, <strong>boolean</strong>, <strong>null</strong>, <strong>undefined</strong>.</p>
+            <h3><span class="icon">🧱</span> Obiecte JavaScript</h3>
+            <p>Obiectele stochează date în perechi <strong>cheie: valoare</strong>. Sunt fundamentale în JS.</p>
             <div class="code-block">
                 <span class="lang-tag">js</span>
-<span class="keyword">let</span> text = <span class="string">"Salut"</span>;      <span class="comment">// string</span>
-<span class="keyword">let</span> nr = <span class="number">42</span>;              <span class="comment">// number</span>
-<span class="keyword">let</span> activ = <span class="keyword">true</span>;        <span class="comment">// boolean</span>
-<span class="keyword">let</span> gol = <span class="keyword">null</span>;          <span class="comment">// null</span>
-<span class="keyword">let</span> x;                    <span class="comment">// undefined</span>
+                <span class="keyword">const</span> student = {
+                nume: <span class="string">"Robert"</span>,
+                varsta: <span class="number">25</span>,
+                limbaje: [<span class="string">"JavaScript"</span>, <span class="string">"TypeScript"</span>],
+                <span class="function">prezentare</span>() {
+                <span class="keyword">return</span> <span class="string">`${</span><span
+                    class="keyword">this</span>.nume<span class="string">} știe ${</span><span
+                    class="keyword">this</span>.limbaje.<span class="function">join</span>(<span class="string">" și
+                    "</span>)<span class="string">}`</span>;
+                }
+                };
+
+                <span class="function">console.log</span>(student.nume);
+                <span class="function">console.log</span>(student.<span class="function">prezentare</span>());
             </div>
-            <button class="try-btn" onclick="tryCode('let text = &quot;Salut&quot;; console.log(typeof text); let nr = 42; console.log(typeof nr); let activ = true; console.log(typeof activ);')">▶ Încearcă typeof</button>
+            <button class="try-btn"
+                onclick="tryCode('const student = { nume: &quot;Robert&quot;, varsta: 25, limbaje: [&quot;JavaScript&quot;, &quot;TypeScript&quot;], prezentare() { return `${this.nume} știe ${this.limbaje.join(&quot; și &quot;)}`; } }; console.log(student.nume); console.log(student.prezentare());')">▶
+                Încearcă</button>
         </div>
-    </div>
 
-    <!-- ========== FUNCȚII ========== -->
-    <h2 class="section-title">2. Funcții <span>// function, arrow =></span></h2>
+        <!-- ========== TYPESCRIPT BASICS ========== -->
+        <h2 class="section-title">5. TypeScript Basics <span>// tipuri statice</span></h2>
 
-    <div class="concept-grid">
+        <div class="concept-grid">
+            <div class="card" style="border-left: 3px solid var(--accent-4);">
+                <h3><span class="icon">🔷</span> De ce TypeScript?</h3>
+                <p>TypeScript adaugă <strong>tipuri statice</strong> peste JavaScript. Asta înseamnă că prinzi erorile
+                    <em>înainte</em> să rulezi codul!
+                </p>
+                <div class="code-block">
+                    <span class="lang-tag">ts</span>
+                    <span class="comment">// TypeScript — tipuri explicite</span>
+                    <span class="keyword">let</span> nume: <span class="type">string</span> = <span
+                        class="string">"Robert"</span>;
+                    <span class="keyword">let</span> varsta: <span class="type">number</span> = <span
+                        class="number">25</span>;
+                    <span class="keyword">let</span> activ: <span class="type">boolean</span> = <span
+                        class="keyword">true</span>;
+
+                    <span class="comment">// Funcție cu tipuri</span>
+                    <span class="keyword">function</span> <span class="function">salut</span>(nume: <span
+                        class="type">string</span>): <span class="type">string</span> {
+                    <span class="keyword">return</span> <span class="string">`Salut, ${</span>nume<span
+                        class="string">}!`</span>;
+                    }
+                </div>
+            </div>
+
+            <div class="card" style="border-left: 3px solid var(--accent-4);">
+                <h3><span class="icon">📐</span> Interfaces</h3>
+                <p>Interfețele definesc <strong>forma</strong> unui obiect — ce proprietăți are și ce tipuri au.</p>
+                <div class="code-block">
+                    <span class="lang-tag">ts</span>
+                    <span class="keyword">interface</span> <span class="type">Student</span> {
+                    nume: <span class="type">string</span>;
+                    varsta: <span class="type">number</span>;
+                    limbaje: <span class="type">string</span>[];
+                    activ?: <span class="type">boolean</span>; <span class="comment">// opțional</span>
+                    }
+
+                    <span class="keyword">const</span> eu: <span class="type">Student</span> = {
+                    nume: <span class="string">"Robert"</span>,
+                    varsta: <span class="number">25</span>,
+                    limbaje: [<span class="string">"JS"</span>, <span class="string">"TS"</span>]
+                    };
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== DOM MANIPULATION ========== -->
+        <h2 class="section-title">6. DOM — Document Object Model <span>// controlează pagina</span></h2>
+
+        <div class="prof-note">
+            <div class="prof-label">🎓 Sfat de Prof</div>
+            DOM-ul e <em>scheletul</em> paginii tale HTML, dar în formă de obiect JavaScript. Fiecare tag
+            (<code>&lt;div&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;button&gt;</code>) devine un <em>nod</em> pe
+            care îl poți modifica din JS. Deschide <code>F12</code> → „Elements" și dă hover pe elemente — vezi cum se
+            evidențiază pe pagină? Asta e DOM-ul!
+        </div>
+
+        <div class="concept-grid">
+            <div class="card">
+                <h3><span class="icon">🔎</span> Selectare elemente</h3>
+                <p>Ca să modifici ceva pe pagină, <strong>întâi trebuie să-l găsești</strong>. Ai mai multe metode:</p>
+                <div class="code-block">
+                    <span class="lang-tag">js</span>
+                    <span class="comment">// După ID — returnează UN singur element</span>
+                    <span class="keyword">const</span> titlu = document.<span
+                        class="function">getElementById</span>(<span class="string">"titlu"</span>);
+
+                    <span class="comment">// După selector CSS — primul găsit</span>
+                    <span class="keyword">const</span> btn = document.<span class="function">querySelector</span>(<span
+                        class="string">".btn"</span>);
+
+                    <span class="comment">// Toate elementele care se potrivesc</span>
+                    <span class="keyword">const</span> paragrafe = document.<span
+                        class="function">querySelectorAll</span>(<span class="string">"p"</span>);
+                </div>
+                <div class="prof-note">
+                    <div class="prof-label">👀 Uită-te în cod</div>
+                    Observă: <code>getElementById</code> returnează <em>un singur element</em>, dar
+                    <code>querySelectorAll</code> returnează o <em>listă</em> (NodeList). E ca diferența dintre „dă-mi
+                    cartea aia" vs „dă-mi toate cărțile albastre".
+                </div>
+            </div>
+
+            <div class="card">
+                <h3><span class="icon">✏️</span> Modificare elemente</h3>
+                <p>Odată selectat un element, poți schimba <strong>textul</strong>, <strong>stilul</strong> sau
+                    <strong>atributele</strong>.
+                </p>
+                <div class="code-block">
+                    <span class="lang-tag">js</span>
+                    <span class="comment">// Schimbă textul</span>
+                    titlu.<span class="function">textContent</span> = <span class="string">"Text nou!"</span>;
+
+                    <span class="comment">// Schimbă HTML-ul interior</span>
+                    titlu.<span class="function">innerHTML</span> = <span
+                        class="string">"&lt;em&gt;Italic!&lt;/em&gt;"</span>;
+
+                    <span class="comment">// Schimbă stilul CSS</span>
+                    titlu.style.<span class="function">color</span> = <span class="string">"#00d2ff"</span>;
+                    titlu.style.<span class="function">fontSize</span> = <span class="string">"2rem"</span>;
+
+                    <span class="comment">// Adaugă/scoate clase CSS</span>
+                    titlu.classList.<span class="function">add</span>(<span class="string">"activ"</span>);
+                    titlu.classList.<span class="function">toggle</span>(<span class="string">"vizibil"</span>);
+                </div>
+                <div class="prof-note">
+                    <div class="prof-label">⚠️ Atenție</div>
+                    <code>textContent</code> e safe — pune text simplu. <code>innerHTML</code> interpretează HTML —
+                    poate fi periculos dacă vine de la utilizator (XSS). Începe cu <code>textContent</code> mereu!
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Demo DOM -->
         <div class="card">
-            <h3><span class="icon">⚙️</span> Funcție clasică</h3>
-            <p>Funcțiile sunt blocuri de cod reutilizabile. Se declară cu <code>function</code>.</p>
-            <div class="code-block">
-                <span class="lang-tag">js</span>
-<span class="keyword">function</span> <span class="function">salut</span>(nume) {
-    <span class="keyword">return</span> <span class="string">`Bună, ${</span>nume<span class="string">}!`</span>;
-}
-
-<span class="function">console.log</span>(<span class="function">salut</span>(<span class="string">"Robert"</span>));
+            <h3><span class="icon">🎮</span> Demo Live — Modifică DOM-ul</h3>
+            <p>Apasă butoanele de mai jos și <strong>uită-te ce se întâmplă cu textul</strong>. Apoi deschide codul
+                sursă (Ctrl+U) și caută funcțiile!</p>
+            <div class="live-demo">
+                <div class="demo-label">Live Demo</div>
+                <p id="domTarget" style="font-size:1.2rem; padding: 10px 0; transition: all 0.3s ease;">Eu sunt un
+                    paragraf. Modifică-mă! 👋</p>
+                <button class="demo-btn"
+                    onclick="document.getElementById('domTarget').textContent = '✅ Textul a fost schimbat cu textContent!'">Schimbă
+                    Text</button>
+                <button class="demo-btn secondary"
+                    onclick="document.getElementById('domTarget').style.color = '#e94560'; document.getElementById('domTarget').style.fontSize = '1.5rem'">Schimbă
+                    Stil</button>
+                <button class="demo-btn secondary"
+                    onclick="document.getElementById('domTarget').innerHTML = '<strong style=\'color:#00e676\'>HTML injection!</strong> 🚀'">Schimbă
+                    innerHTML</button>
+                <button class="demo-btn"
+                    onclick="document.getElementById('domTarget').textContent = 'Eu sunt un paragraf. Modifică-mă! 👋'; document.getElementById('domTarget').style.color = ''; document.getElementById('domTarget').style.fontSize = '1.2rem'">🔄
+                    Reset</button>
             </div>
-            <button class="try-btn" onclick="tryCode('function salut(nume) { return `Bună, ${nume}!`; } console.log(salut(&quot;Robert&quot;));')">▶ Încearcă</button>
+            <div class="prof-note">
+                <div class="prof-label">🎓 De ce funcționează?</div>
+                Fiecare buton are un atribut <code>onclick="..."</code> care execută cod JS. Ăsta e un <em>inline event
+                    handler</em> — varianta cea mai simplă. Dar <em>nu e cea mai bună</em>! Mai jos vei vedea
+                <code>addEventListener</code> — varianta profesională. 👇
+            </div>
         </div>
 
+        <!-- ========== EVENT HANDLERS & LISTENERS ========== -->
+        <h2 class="section-title">7. Events — Handlers & Listeners <span>// reacționează la utilizator</span></h2>
+
+        <div class="prof-note">
+            <div class="prof-label">🎓 Sfat de Prof</div>
+            Un <em>event</em> e orice acțiune: click, hover, tastare, scroll, resize. JavaScript poate <em>asculta</em>
+            aceste evenimente și <em>reacționa</em>. Gândește-te la asta ca la un recepționer la hotel: stă și
+            <em>ascultă</em> (listener), iar când cineva vine (event), <em>reacționează</em> (handler). Sunt 3 moduri de
+            a face asta — de la simplu la profesional:
+        </div>
+
+        <!-- Metoda 1: Inline -->
         <div class="card">
-            <h3><span class="icon">➡️</span> Arrow Function</h3>
-            <p>Sintaxă modernă și concisă, introdusă în ES6. Perfectă pentru funcții scurte.</p>
+            <h3><span class="icon">1️⃣</span> Inline Event Handler <span
+                    style="color:var(--accent-1); font-size:0.8rem; margin-left:8px;">— evită pe cât posibil</span></h3>
+            <p>Pui codul direct în HTML, în atributul <code>onclick</code>. E simplu dar <strong>amestecă HTML cu
+                    JS</strong> — nu e clean!</p>
+            <div class="code-block">
+                <span class="lang-tag">html</span>
+                <span class="comment">&lt;!-- ❌ Nu e ideal — amesteci HTML cu logica --&gt;</span>
+                &lt;<span class="keyword">button</span> <span class="function">onclick</span>=<span
+                    class="string">"alert('Ai dat click!')"</span>&gt;Click&lt;/<span class="keyword">button</span>&gt;
+            </div>
+            <div class="prof-note">
+                <div class="prof-label">👀 Uită-te în cod</div>
+                Butoanele de mai sus (din demo-ul DOM) folosesc exact asta — <code>onclick="..."</code>. Funcționează,
+                dar imaginează-ți 50 de butoane, fiecare cu cod inline... Dezastru! De-aia avem metode mai bune. 👇
+            </div>
+        </div>
+
+        <!-- Metoda 2: on-property -->
+        <div class="card">
+            <h3><span class="icon">2️⃣</span> Event Handler Property <span
+                    style="color:var(--warning); font-size:0.8rem; margin-left:8px;">— OK pentru cazuri simple</span>
+            </h3>
+            <p>Setezi proprietatea <code>.onclick</code> direct pe element din JavaScript. Mai curat, dar <strong>poți
+                    pune doar UN handler per event</strong>.</p>
             <div class="code-block">
                 <span class="lang-tag">js</span>
-<span class="keyword">const</span> <span class="function">dublu</span> = (n) <span class="operator">=></span> n * <span class="number">2</span>;
+                <span class="keyword">const</span> btn = document.<span class="function">querySelector</span>(<span
+                    class="string">"#myBtn"</span>);
 
-<span class="function">console.log</span>(<span class="function">dublu</span>(<span class="number">7</span>));  <span class="comment">// 14</span>
+                btn.<span class="function">onclick</span> = <span class="keyword">function</span>() {
+                <span class="function">console.log</span>(<span class="string">"Click!"</span>);
+                };
 
-<span class="keyword">const</span> <span class="function">sumă</span> = (a, b) <span class="operator">=></span> a + b;
-<span class="function">console.log</span>(<span class="function">sumă</span>(<span class="number">3</span>, <span class="number">5</span>)); <span class="comment">// 8</span>
+                <span class="comment">// ⚠️ Atenție: asta ÎNLOCUIEȘTE handler-ul de sus!</span>
+                btn.<span class="function">onclick</span> = <span class="keyword">function</span>() {
+                <span class="function">console.log</span>(<span class="string">"Alt click!"</span>);
+                };
+                <span class="comment">// Doar "Alt click!" va rula</span>
             </div>
-            <button class="try-btn" onclick="tryCode('const dublu = (n) => n * 2; console.log(dublu(7)); const sumă = (a, b) => a + b; console.log(sumă(3, 5));')">▶ Încearcă</button>
         </div>
-    </div>
 
-    <!-- ========== ARRAYS ========== -->
-    <h2 class="section-title">3. Arrays <span>// liste de elemente</span></h2>
-
-    <div class="card">
-        <h3><span class="icon">📋</span> Operații cu Arrays</h3>
-        <p>Array-urile sunt colecții ordonate. Poți adăuga, șterge, filtra și transforma elementele.</p>
-        <div class="code-block">
-            <span class="lang-tag">js</span>
-<span class="keyword">const</span> fructe = [<span class="string">"măr"</span>, <span class="string">"banană"</span>, <span class="string">"portocală"</span>];
-
-fructe.<span class="function">push</span>(<span class="string">"kiwi"</span>);          <span class="comment">// adaugă la sfârșit</span>
-fructe.<span class="function">pop</span>();                   <span class="comment">// șterge ultimul</span>
-
-<span class="comment">// Iterare cu forEach</span>
-fructe.<span class="function">forEach</span>(f <span class="operator">=></span> <span class="function">console.log</span>(f));
-
-<span class="comment">// Map — transformă fiecare element</span>
-<span class="keyword">const</span> mari = fructe.<span class="function">map</span>(f <span class="operator">=></span> f.<span class="function">toUpperCase</span>());
-
-<span class="comment">// Filter — filtrează</span>
-<span class="keyword">const</span> scurte = fructe.<span class="function">filter</span>(f <span class="operator">=></span> f.length <= <span class="number">5</span>);
-        </div>
-        <button class="try-btn" onclick="tryCode('const fructe = [&quot;măr&quot;, &quot;banană&quot;, &quot;portocală&quot;]; fructe.push(&quot;kiwi&quot;); console.log(&quot;Lista:&quot;, fructe); const mari = fructe.map(f => f.toUpperCase()); console.log(&quot;Uppercase:&quot;, mari); const scurte = fructe.filter(f => f.length <= 5); console.log(&quot;Scurte:&quot;, scurte);')">▶ Încearcă</button>
-    </div>
-
-    <!-- ========== OBIECTE ========== -->
-    <h2 class="section-title">4. Obiecte <span>// { key: value }</span></h2>
-
-    <div class="card">
-        <h3><span class="icon">🧱</span> Obiecte JavaScript</h3>
-        <p>Obiectele stochează date în perechi <strong>cheie: valoare</strong>. Sunt fundamentale în JS.</p>
-        <div class="code-block">
-            <span class="lang-tag">js</span>
-<span class="keyword">const</span> student = {
-    nume: <span class="string">"Robert"</span>,
-    varsta: <span class="number">25</span>,
-    limbaje: [<span class="string">"JavaScript"</span>, <span class="string">"TypeScript"</span>],
-    <span class="function">prezentare</span>() {
-        <span class="keyword">return</span> <span class="string">`${</span><span class="keyword">this</span>.nume<span class="string">} știe ${</span><span class="keyword">this</span>.limbaje.<span class="function">join</span>(<span class="string">" și "</span>)<span class="string">}`</span>;
-    }
-};
-
-<span class="function">console.log</span>(student.nume);
-<span class="function">console.log</span>(student.<span class="function">prezentare</span>());
-        </div>
-        <button class="try-btn" onclick="tryCode('const student = { nume: &quot;Robert&quot;, varsta: 25, limbaje: [&quot;JavaScript&quot;, &quot;TypeScript&quot;], prezentare() { return `${this.nume} știe ${this.limbaje.join(&quot; și &quot;)}`; } }; console.log(student.nume); console.log(student.prezentare());')">▶ Încearcă</button>
-    </div>
-
-    <!-- ========== TYPESCRIPT BASICS ========== -->
-    <h2 class="section-title">5. TypeScript Basics <span>// tipuri statice</span></h2>
-
-    <div class="concept-grid">
-        <div class="card" style="border-left: 3px solid var(--accent-4);">
-            <h3><span class="icon">🔷</span> De ce TypeScript?</h3>
-            <p>TypeScript adaugă <strong>tipuri statice</strong> peste JavaScript. Asta înseamnă că prinzi erorile <em>înainte</em> să rulezi codul!</p>
+        <!-- Metoda 3: addEventListener -->
+        <div class="card" style="border-left: 3px solid var(--success);">
+            <h3><span class="icon">3️⃣</span> addEventListener <span
+                    style="color:var(--success); font-size:0.8rem; margin-left:8px;">— ✅ METODA CORECTĂ</span></h3>
+            <p>Cea mai flexibilă. Poți adăuga <strong>multiple handler-uri</strong> pe același event, le poți și
+                <strong>scoate</strong>.
+            </p>
             <div class="code-block">
-                <span class="lang-tag">ts</span>
-<span class="comment">// TypeScript — tipuri explicite</span>
-<span class="keyword">let</span> nume: <span class="type">string</span> = <span class="string">"Robert"</span>;
-<span class="keyword">let</span> varsta: <span class="type">number</span> = <span class="number">25</span>;
-<span class="keyword">let</span> activ: <span class="type">boolean</span> = <span class="keyword">true</span>;
+                <span class="lang-tag">js</span>
+                <span class="keyword">const</span> btn = document.<span class="function">querySelector</span>(<span
+                    class="string">"#myBtn"</span>);
 
-<span class="comment">// Funcție cu tipuri</span>
-<span class="keyword">function</span> <span class="function">salut</span>(nume: <span class="type">string</span>): <span class="type">string</span> {
-    <span class="keyword">return</span> <span class="string">`Salut, ${</span>nume<span class="string">}!`</span>;
-}
+                <span class="comment">// Adaugă un listener</span>
+                btn.<span class="function">addEventListener</span>(<span class="string">"click"</span>, <span
+                    class="keyword">function</span>() {
+                <span class="function">console.log</span>(<span class="string">"Click 1!"</span>);
+                });
+
+                <span class="comment">// Poți adăuga MAI MULȚI pe același event!</span>
+                btn.<span class="function">addEventListener</span>(<span class="string">"click"</span>, <span
+                    class="keyword">function</span>() {
+                <span class="function">console.log</span>(<span class="string">"Click 2!"</span>);
+                });
+                <span class="comment">// Ambele rulează! 🎉</span>
+
+                <span class="comment">// Cu arrow function</span>
+                btn.<span class="function">addEventListener</span>(<span class="string">"click"</span>, () <span
+                    class="operator">=></span> {
+                <span class="function">console.log</span>(<span class="string">"Click cu arrow!"</span>);
+                });
+            </div>
+            <div class="prof-note">
+                <div class="prof-label">🎓 Sfat de Prof</div>
+                <code>addEventListener</code> e <em>standardul din industrie</em>. Orice framework (React, Angular, Vue)
+                folosește exact acest principiu. Dacă înveți o singură metodă, <em>asta e</em>. Tot ce urmează o
+                folosește!
             </div>
         </div>
 
-        <div class="card" style="border-left: 3px solid var(--accent-4);">
-            <h3><span class="icon">📐</span> Interfaces</h3>
-            <p>Interfețele definesc <strong>forma</strong> unui obiect — ce proprietăți are și ce tipuri au.</p>
+        <!-- Tipuri de evenimente -->
+        <h2 class="section-title">8. Tipuri de Evenimente <span>// click, input, keydown, mouse</span></h2>
+
+        <div class="prof-note">
+            <div class="prof-label">🎓 Sfat de Prof</div>
+            Există zeci de evenimente. Nu trebuie să le memorezi pe toate — le cauți pe <em>MDN</em> când ai nevoie. Dar
+            cele de mai jos sunt <em>cele mai folosite</em> și le vei folosi zilnic ca developer!
+        </div>
+
+        <!-- DEMO: Click Counter -->
+        <div class="card">
+            <h3><span class="icon">🖱️</span> click — cel mai comun event</h3>
+            <p>Se declanșează când utilizatorul apasă pe un element.</p>
+            <div class="live-demo">
+                <div class="demo-label">Demo Interactiv</div>
+                <div class="demo-counter">
+                    <button class="demo-btn" id="counterBtn">Apasă-mă! 🖱️</button>
+                    <div class="count" id="counterDisplay">0</div>
+                </div>
+                <div class="demo-output" id="counterLog">Apasă butonul...</div>
+            </div>
             <div class="code-block">
-                <span class="lang-tag">ts</span>
-<span class="keyword">interface</span> <span class="type">Student</span> {
-    nume: <span class="type">string</span>;
-    varsta: <span class="type">number</span>;
-    limbaje: <span class="type">string</span>[];
-    activ?: <span class="type">boolean</span>;  <span class="comment">// opțional</span>
-}
+                <span class="lang-tag">js</span>
+                <span class="comment">// Codul care face counter-ul de sus să funcționeze:</span>
+                <span class="keyword">let</span> count = <span class="number">0</span>;
+                <span class="keyword">const</span> btn = document.<span class="function">getElementById</span>(<span
+                    class="string">"counterBtn"</span>);
+                <span class="keyword">const</span> display = document.<span class="function">getElementById</span>(<span
+                    class="string">"counterDisplay"</span>);
 
-<span class="keyword">const</span> eu: <span class="type">Student</span> = {
-    nume: <span class="string">"Robert"</span>,
-    varsta: <span class="number">25</span>,
-    limbaje: [<span class="string">"JS"</span>, <span class="string">"TS"</span>]
-};
+                btn.<span class="function">addEventListener</span>(<span class="string">"click"</span>, () <span
+                    class="operator">=></span> {
+                count++;
+                display.textContent = count;
+                });
+            </div>
+            <div class="prof-note">
+                <div class="prof-label">👀 Uită-te în cod</div>
+                Deschide sursa paginii (<code>Ctrl+U</code>) și caută <code>counterBtn</code>. Vei vedea exact codul de
+                sus! Observă: <em>selectăm</em> butonul cu <code>getElementById</code>, apoi <em>ascultăm</em> click-ul
+                cu <code>addEventListener</code>, și <em>reacționăm</em> incrementând counter-ul. Pasul 1-2-3, mereu!
             </div>
         </div>
-    </div>
 
-    <!-- ========== EXERCIȚII ========== -->
-    <h2 class="section-title">🎯 Exerciții Practice <span>// exersează aici</span></h2>
+        <!-- DEMO: Input Event -->
+        <div class="card">
+            <h3><span class="icon">⌨️</span> input — text în timp real</h3>
+            <p>Se declanșează la <strong>fiecare caracter</strong> tastat într-un input.</p>
+            <div class="live-demo">
+                <div class="demo-label">Demo Interactiv</div>
+                <input type="text" class="demo-input-box" id="liveInput" placeholder="Scrie ceva aici...">
+                <div class="demo-output" id="liveInputOutput">Textul tău: <em>nimic încă</em></div>
+            </div>
+            <div class="code-block">
+                <span class="lang-tag">js</span>
+                <span class="keyword">const</span> input = document.<span class="function">getElementById</span>(<span
+                    class="string">"liveInput"</span>);
+                <span class="keyword">const</span> output = document.<span class="function">getElementById</span>(<span
+                    class="string">"liveInputOutput"</span>);
 
-    <!-- Exercițiul 1 -->
-    <div class="card exercise-card">
-        <div class="exercise-label">Exercițiu 1</div>
-        <h3><span class="icon">🧩</span> Calculează suma unui array</h3>
-        <p>Scrie o funcție <code>sumaArray</code> care primește un array de numere și returnează suma lor.</p>
-        <textarea id="ex1" spellcheck="false">function sumaArray(numere) {
+                input.<span class="function">addEventListener</span>(<span class="string">"input"</span>, (e) <span
+                    class="operator">=></span> {
+                output.textContent = <span class="string">`Ai scris: "${e.target.value}" (${e.target.value.length}
+                    caractere)`</span>;
+                });
+            </div>
+            <div class="prof-note">
+                <div class="prof-label">🎓 Ce e <code>e</code> (event object)?</div>
+                Funcția ta de handler primește automat un parametru — <em>obiectul event</em> (îl numim <code>e</code>
+                sau <code>event</code>). El conține informații despre ce s-a întâmplat: <code>e.target</code> =
+                elementul pe care s-a întâmplat, <code>e.target.value</code> = valoarea curentă a input-ului.
+                <em>Întotdeauna</em> ai acces la acest obiect!
+            </div>
+        </div>
+
+        <!-- DEMO: Keydown -->
+        <div class="card">
+            <h3><span class="icon">🎹</span> keydown / keyup — detectează taste</h3>
+            <p>Se declanșează când apeși/eliberezi o tastă. Click pe zona de mai jos, apoi apasă orice tastă!</p>
+            <div class="live-demo" tabindex="0" id="keyArea" style="cursor: pointer; text-align: center;">
+                <div class="demo-label">Demo Interactiv</div>
+                <p style="color: var(--text-secondary); margin-bottom: 12px;">Click aici, apoi apasă orice tastă ↓</p>
+                <div class="key-display" id="keyDisplay">?</div>
+                <div class="demo-output" id="keyInfo">Așteaptă o tastă...</div>
+            </div>
+            <div class="code-block">
+                <span class="lang-tag">js</span>
+                <span class="keyword">const</span> area = document.<span class="function">getElementById</span>(<span
+                    class="string">"keyArea"</span>);
+
+                area.<span class="function">addEventListener</span>(<span class="string">"keydown"</span>, (e) <span
+                    class="operator">=></span> {
+                <span class="function">console.log</span>(<span class="string">`Tasta: ${e.key}, Cod:
+                    ${e.code}`</span>);
+                <span class="comment">// e.key = "a", "Enter", "ArrowUp"...</span>
+                <span class="comment">// e.code = "KeyA", "Enter", "ArrowUp"...</span>
+                });
+            </div>
+            <div class="prof-note">
+                <div class="prof-label">👀 Uită-te în cod</div>
+                <code>e.key</code> îți dă caracterul vizual („a", „Enter"), iar <code>e.code</code> îți dă tasta fizică
+                („KeyA"). Diferența contează pentru taste speciale și la jocuri! Încearcă să apeși Shift, Ctrl, sau
+                săgeți — vezi cum se schimbă valorile.
+            </div>
+        </div>
+
+        <!-- DEMO: Mouseover / Color change -->
+        <div class="card">
+            <h3><span class="icon">🎨</span> mouseover / mouseout — hover effects</h3>
+            <p>Se declanșează când mouse-ul <strong>intră</strong> sau <strong>iese</strong> de pe un element.</p>
+            <div class="live-demo" style="text-align: center;">
+                <div class="demo-label">Demo Interactiv</div>
+                <p style="color: var(--text-secondary); margin-bottom: 8px;">Treci cu mouse-ul peste pătrat:</p>
+                <div class="color-box" id="hoverBox"></div>
+                <div class="demo-output" id="hoverLog">Mișcă mouse-ul pe pătrat...</div>
+            </div>
+            <div class="code-block">
+                <span class="lang-tag">js</span>
+                <span class="keyword">const</span> box = document.<span class="function">getElementById</span>(<span
+                    class="string">"hoverBox"</span>);
+
+                box.<span class="function">addEventListener</span>(<span class="string">"mouseover"</span>, () <span
+                    class="operator">=></span> {
+                box.style.background = <span class="string">"#00d2ff"</span>;
+                box.style.transform = <span class="string">"scale(1.2) rotate(10deg)"</span>;
+                });
+
+                box.<span class="function">addEventListener</span>(<span class="string">"mouseout"</span>, () <span
+                    class="operator">=></span> {
+                box.style.background = <span class="string">"#e94560"</span>;
+                box.style.transform = <span class="string">"scale(1)"</span>;
+                });
+            </div>
+            <div class="prof-note">
+                <div class="prof-label">🎓 CSS vs JS pentru hover?</div>
+                Dacă vrei doar să schimbi culoarea la hover, folosește <em>CSS</em> (<code>:hover</code>) — e mai rapid.
+                Dar dacă ai nevoie de <em>logică</em> (de ex: incrementezi un counter, faci un fetch), atunci folosești
+                JS cu <code>addEventListener</code>. Regula: style → CSS, logică → JS.
+            </div>
+        </div>
+
+        <!-- Event Object & preventDefault -->
+        <div class="card" style="border-left: 3px solid var(--warning);">
+            <h3><span class="icon">🛑</span> preventDefault — oprește comportamentul default</h3>
+            <p>Unele elemente au comportamente built-in (linkurile navighează, formularele se trimit).
+                <code>preventDefault()</code> le oprește!
+            </p>
+            <div class="code-block">
+                <span class="lang-tag">js</span>
+                <span class="comment">// Oprește un link din a naviga</span>
+                <span class="keyword">const</span> link = document.<span class="function">querySelector</span>(<span
+                    class="string">"a"</span>);
+                link.<span class="function">addEventListener</span>(<span class="string">"click"</span>, (e) <span
+                    class="operator">=></span> {
+                e.<span class="function">preventDefault</span>();
+                <span class="function">console.log</span>(<span class="string">"Link-ul NU a navigat!"</span>);
+                });
+
+                <span class="comment">// Oprește un form din a se trimite</span>
+                <span class="keyword">const</span> form = document.<span class="function">querySelector</span>(<span
+                    class="string">"form"</span>);
+                form.<span class="function">addEventListener</span>(<span class="string">"submit"</span>, (e) <span
+                    class="operator">=></span> {
+                e.<span class="function">preventDefault</span>();
+                <span class="comment">// Validezi datele manual aici</span>
+                });
+            </div>
+            <div class="prof-note">
+                <div class="prof-label">🎓 Când folosești asta?</div>
+                <em>Foarte des!</em> De exemplu: ai un formular și vrei să validezi datele cu JS înainte de a-l trimite.
+                Fără <code>preventDefault()</code>, formularul se trimite instant și pagina se reîncarcă. Cu el, tu
+                preiei controlul!
+            </div>
+        </div>
+
+        <!-- ========== EXERCIȚII ========== -->
+        <h2 class="section-title">🎯 Exerciții Practice <span>// exersează aici</span></h2>
+
+        <!-- Exercițiul 1 -->
+        <div class="card exercise-card">
+            <div class="exercise-label">Exercițiu 1</div>
+            <h3><span class="icon">🧩</span> Calculează suma unui array</h3>
+            <p>Scrie o funcție <code>sumaArray</code> care primește un array de numere și returnează suma lor.</p>
+            <textarea id="ex1" spellcheck="false">function sumaArray(numere) {
     // Scrie codul tău aici
     // Hint: folosește .reduce() sau un for loop
 }
 
 console.log(sumaArray([1, 2, 3, 4, 5])); // Ar trebui să afișeze: 15</textarea>
-        <div class="exercise-actions">
-            <button class="btn-run" onclick="runExercise('ex1')">▶ Rulează</button>
-            <button class="btn-hint" onclick="showHint('hint1')">💡 Hint</button>
+            <div class="exercise-actions">
+                <button class="btn-run" onclick="runExercise('ex1')">▶ Rulează</button>
+                <button class="btn-hint" onclick="showHint('hint1')">💡 Hint</button>
+            </div>
+            <div class="hint-text" id="hint1">
+                Folosește <code>numere.reduce((sum, n) => sum + n, 0)</code> pentru a calcula suma!
+            </div>
+            <div class="exercise-output" id="ex1-output"></div>
         </div>
-        <div class="hint-text" id="hint1">
-            Folosește <code>numere.reduce((sum, n) => sum + n, 0)</code> pentru a calcula suma!
-        </div>
-        <div class="exercise-output" id="ex1-output"></div>
-    </div>
 
-    <!-- Exercițiul 2 -->
-    <div class="card exercise-card">
-        <div class="exercise-label">Exercițiu 2</div>
-        <h3><span class="icon">🔍</span> Filtrează numerele pare</h3>
-        <p>Scrie o funcție <code>numPare</code> care returnează doar numerele pare dintr-un array.</p>
-        <textarea id="ex2" spellcheck="false">function numPare(numere) {
+        <!-- Exercițiul 2 -->
+        <div class="card exercise-card">
+            <div class="exercise-label">Exercițiu 2</div>
+            <h3><span class="icon">🔍</span> Filtrează numerele pare</h3>
+            <p>Scrie o funcție <code>numPare</code> care returnează doar numerele pare dintr-un array.</p>
+            <textarea id="ex2" spellcheck="false">function numPare(numere) {
     // Scrie codul tău aici
     // Hint: folosește .filter()
 }
 
 console.log(numPare([1, 2, 3, 4, 5, 6, 7, 8])); // [2, 4, 6, 8]</textarea>
-        <div class="exercise-actions">
-            <button class="btn-run" onclick="runExercise('ex2')">▶ Rulează</button>
-            <button class="btn-hint" onclick="showHint('hint2')">💡 Hint</button>
+            <div class="exercise-actions">
+                <button class="btn-run" onclick="runExercise('ex2')">▶ Rulează</button>
+                <button class="btn-hint" onclick="showHint('hint2')">💡 Hint</button>
+            </div>
+            <div class="hint-text" id="hint2">
+                Folosește <code>numere.filter(n => n % 2 === 0)</code> — operatorul <code>%</code> returnează restul
+                împărțirii!
+            </div>
+            <div class="exercise-output" id="ex2-output"></div>
         </div>
-        <div class="hint-text" id="hint2">
-            Folosește <code>numere.filter(n => n % 2 === 0)</code> — operatorul <code>%</code> returnează restul împărțirii!
-        </div>
-        <div class="exercise-output" id="ex2-output"></div>
-    </div>
 
-    <!-- Exercițiul 3 -->
-    <div class="card exercise-card">
-        <div class="exercise-label">Exercițiu 3</div>
-        <h3><span class="icon">🏗️</span> Creează un obiect</h3>
-        <p>Creează un obiect <code>masina</code> cu proprietățile: marca, model, an, și o metodă <code>descriere()</code>.</p>
-        <textarea id="ex3" spellcheck="false">const masina = {
+        <!-- Exercițiul 3 -->
+        <div class="card exercise-card">
+            <div class="exercise-label">Exercițiu 3</div>
+            <h3><span class="icon">🏗️</span> Creează un obiect</h3>
+            <p>Creează un obiect <code>masina</code> cu proprietățile: marca, model, an, și o metodă
+                <code>descriere()</code>.
+            </p>
+            <textarea id="ex3" spellcheck="false">const masina = {
     // Adaugă proprietățile aici
     // marca: "...",
     // model: "...",
@@ -736,153 +1429,43 @@ console.log(numPare([1, 2, 3, 4, 5, 6, 7, 8])); // [2, 4, 6, 8]</textarea>
 };
 
 console.log(masina.descriere());</textarea>
-        <div class="exercise-actions">
-            <button class="btn-run" onclick="runExercise('ex3')">▶ Rulează</button>
-            <button class="btn-hint" onclick="showHint('hint3')">💡 Hint</button>
+            <div class="exercise-actions">
+                <button class="btn-run" onclick="runExercise('ex3')">▶ Rulează</button>
+                <button class="btn-hint" onclick="showHint('hint3')">💡 Hint</button>
+            </div>
+            <div class="hint-text" id="hint3">
+                Folosește template literals:
+                <code>descriere() { return `${this.marca} ${this.model} (${this.an})`; }</code>
+            </div>
+            <div class="exercise-output" id="ex3-output"></div>
         </div>
-        <div class="hint-text" id="hint3">
-            Folosește template literals: <code>descriere() { return `${this.marca} ${this.model} (${this.an})`; }</code>
-        </div>
-        <div class="exercise-output" id="ex3-output"></div>
-    </div>
 
-</main>
+    </main>
 
-<footer>
-    <p>⚡ JavaScript & TypeScript Playground — Creat pentru a învăța prin practică</p>
-    <p style="margin-top: 8px;">
-        Resurse utile:
-        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">MDN</a> ·
-        <a href="https://www.typescriptlang.org/docs/" target="_blank">TypeScript Docs</a> ·
-        <a href="https://javascript.info/" target="_blank">javascript.info</a>
-    </p>
-</footer>
+    <footer>
+        <p>⚡ JavaScript & TypeScript Playground — Creat pentru a învăța prin practică</p>
+        <p style="margin-top: 8px;">
+            Resurse utile:
+            <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">MDN</a> ·
+            <a href="https://www.typescriptlang.org/docs/" target="_blank">TypeScript Docs</a> ·
+            <a href="https://javascript.info/" target="_blank">javascript.info</a>
+        </p>
+    </footer>
 
-<script>
-    // === Consolă Interactivă ===
-    const consoleInput = document.getElementById('consoleInput');
-    const consoleOutput = document.getElementById('consoleOutput');
-    const runBtn = document.getElementById('runBtn');
-    let commandHistory = [];
-    let historyIndex = -1;
-
-    function addOutput(text, type = 'result') {
-        const line = document.createElement('div');
-        line.className = `output-line ${type}`;
-        line.textContent = text;
-        consoleOutput.appendChild(line);
-        consoleOutput.scrollTop = consoleOutput.scrollHeight;
-    }
-
-    function executeCode(code) {
-        if (!code.trim()) return;
-
-        addOutput(`❯ ${code}`, 'info');
-        commandHistory.unshift(code);
-        historyIndex = -1;
-
-        // Override console.log temporar
-        const originalLog = console.log;
-        const outputs = [];
-
-        console.log = (...args) => {
-            outputs.push(args.map(a => {
-                if (typeof a === 'object') return JSON.stringify(a, null, 2);
-                return String(a);
-            }).join(' '));
-        };
-
-        try {
-            const result = eval(code);
-            outputs.forEach(o => addOutput(o, 'result'));
-            if (result !== undefined && outputs.length === 0) {
-                addOutput(typeof result === 'object' ? JSON.stringify(result, null, 2) : String(result), 'result');
-            }
-        } catch (err) {
-            addOutput(`❌ ${err.message}`, 'error');
-        }
-
-        console.log = originalLog;
-    }
-
-    function tryCode(code) {
-        consoleInput.value = code;
-        executeCode(code);
-        consoleInput.value = '';
-        consoleInput.focus();
-    }
-
-    runBtn.addEventListener('click', () => {
-        executeCode(consoleInput.value);
-        consoleInput.value = '';
-    });
-
-    consoleInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            executeCode(consoleInput.value);
-            consoleInput.value = '';
-        }
-        if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            if (historyIndex < commandHistory.length - 1) {
-                historyIndex++;
-                consoleInput.value = commandHistory[historyIndex];
-            }
-        }
-        if (e.key === 'ArrowDown') {
-            e.preventDefault();
-            if (historyIndex > 0) {
-                historyIndex--;
-                consoleInput.value = commandHistory[historyIndex];
-            } else {
-                historyIndex = -1;
-                consoleInput.value = '';
-            }
-        }
-    });
-
-    // === Exerciții ===
-    function runExercise(id) {
-        const code = document.getElementById(id).value;
-        const outputEl = document.getElementById(`${id}-output`);
-        outputEl.style.display = 'block';
-        outputEl.innerHTML = '';
-
-        const originalLog = console.log;
-        const outputs = [];
-
-        console.log = (...args) => {
-            outputs.push(args.map(a => {
-                if (typeof a === 'object') return JSON.stringify(a);
-                return String(a);
-            }).join(' '));
-        };
-
-        try {
-            eval(code);
-            if (outputs.length > 0) {
-                outputEl.innerHTML = outputs.map(o =>
-                    `<div class="output-line result">✅ ${o}</div>`
-                ).join('');
-            } else {
-                outputEl.innerHTML = '<div class="output-line info">ℹ️ Codul a rulat, dar nu a afișat nimic. Adaugă console.log()!</div>';
-            }
-        } catch (err) {
-            outputEl.innerHTML = `<div class="output-line error">❌ ${err.message}</div>`;
-        }
-
-        console.log = originalLog;
-    }
-
-    function showHint(id) {
-        const hint = document.getElementById(id);
-        hint.style.display = hint.style.display === 'block' ? 'none' : 'block';
-    }
-
-    // === Mesaj de bun venit ===
-    addOutput('🚀 Bine ai venit! Scrie cod JavaScript și apasă Enter sau ▶ RUN.', 'info');
-    addOutput('💡 Încearcă: 2 + 2, "salut".toUpperCase(), [1,2,3].map(n => n * 10)', 'info');
-</script>
+    <!-- 
+        🎓 IMPORTANT: JavaScript-ul e într-un FIȘIER SEPARAT!
+        
+        Deschide "script.js" ca să vezi TOT codul JavaScript cu explicații detaliate.
+        
+        De ce? Pentru că separarea HTML de JS e o practică bună:
+        ✅ Cod mai organizat
+        ✅ Mai ușor de citit și depanat
+        ✅ Browser-ul poate cache-ui fișierul JS
+        
+        "src" = source (sursă) = de unde să încarce fișierul
+    -->
+    <script src="script.js"></script>
 
 </body>
+
 </html>
