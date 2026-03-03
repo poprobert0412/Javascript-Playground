@@ -263,7 +263,7 @@ a:hover {
 }
 
 /* Nav Links — Slide-in panel from right */
-.navbar .nav-links {
+.nav-links {
     position: fixed;
     top: 0;
     right: -320px;
@@ -283,11 +283,11 @@ a:hover {
     list-style: none;
 }
 
-.navbar .nav-links.open {
+.nav-links.open {
     right: 0;
 }
 
-.navbar .nav-links a {
+.nav-links a {
     padding: 14px 18px;
     border-radius: 10px;
     font-size: 1rem;
@@ -300,14 +300,14 @@ a:hover {
     gap: 10px;
 }
 
-.navbar .nav-links a:hover {
+.nav-links a:hover {
     color: var(--accent-4);
     background: rgba(255, 255, 255, 0.06);
     transform: translateX(4px);
     text-decoration: none;
 }
 
-.navbar .nav-links a.active {
+.nav-links a.active {
     color: var(--accent-4);
     background: rgba(0, 210, 255, 0.1);
     border: 1px solid rgba(0, 210, 255, 0.2);

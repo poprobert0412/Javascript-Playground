@@ -449,6 +449,13 @@ if (demoTarget) {
 
     const navLinks = navbar.querySelector('.nav-links');
 
+    // 🔧 FIX: Mutăm nav-links din navbar → body
+    // Navbar are backdrop-filter care creează un "stacking context" propriu.
+    // Asta face ca z-index-ul panoului (150) să fie RELATIV la navbar (z-100),
+    // nu la pagină. Overlay-ul (z-140 pe body) acoperă tot — ecran negru!
+    // Soluția: mutăm panoul pe body = z-index global → funcționează corect.
+    document.body.appendChild(navLinks);
+
     function toggleMenu() {
         hamburger.classList.toggle('active');
         navLinks.classList.toggle('open');
