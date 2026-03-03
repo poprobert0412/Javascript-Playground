@@ -10,7 +10,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/styles.css">
     <style>
         /* Hero specific styles */
         .hero {
@@ -429,46 +429,8 @@
         </p>
     </footer>
 
-    <script>
-        // Animație typing pe pagina de landing
-        const phrases = [
-            'console.log("Salut, lume!");',
-            'let varsta = 25; varsta++;',
-            '[1,2,3].map(n => n * 10);',
-            'document.getElementById("demo");',
-            'const suma = (a, b) => a + b;'
-        ];
-        let phraseIndex = 0;
-        let charIndex = 0;
-        let isDeleting = false;
-        const typingEl = document.getElementById('typingDemo');
-
-        function typeLoop() {
-            const current = phrases[phraseIndex];
-
-            if (isDeleting) {
-                typingEl.textContent = current.substring(0, charIndex - 1);
-                charIndex--;
-            } else {
-                typingEl.textContent = current.substring(0, charIndex + 1);
-                charIndex++;
-            }
-
-            let speed = isDeleting ? 30 : 60;
-
-            if (!isDeleting && charIndex === current.length) {
-                speed = 2000;
-                isDeleting = true;
-            } else if (isDeleting && charIndex === 0) {
-                isDeleting = false;
-                phraseIndex = (phraseIndex + 1) % phrases.length;
-                speed = 400;
-            }
-
-            setTimeout(typeLoop, speed);
-        }
-        typeLoop();
-    </script>
+    <script src="js/index.js"></script>
+    <script src="js/script.js"></script>
 </body>
 
 </html>

@@ -8,7 +8,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/styles.css">
     <style>
         .glossary-filter {
             display: flex;
@@ -111,7 +111,7 @@
     <div class="page-header">
         <h1>📖 Glosar JavaScript</h1>
         <p>Dicționar complet cu toți termenii — de la A la Z. Click pe o literă pentru a sări direct!</p>
-        <span class="badge">60+ Termeni</span>
+        <span class="badge">170+ Termeni</span>
     </div>
     <main>
         <div class="glossary-filter" id="letterFilter"></div>
@@ -120,117 +120,8 @@
     <footer>
         <p>⚡ JavaScript Playground — Creat pentru a învăța prin practică</p>
     </footer>
-    <script src="script.js"></script>
-    <script>
-        const terms = [
-            { term: "API", def: "Application Programming Interface — un set de reguli prin care două programe comunică. Ex: Fetch API, DOM API." },
-            { term: "Arguments", def: "Valorile trimise unei funcții la apelarea ei. Ex: în <code>suma(3, 5)</code>, 3 și 5 sunt arguments." },
-            { term: "Array", def: "O listă ordonată de valori. Se declară cu <code>[]</code>. Ex: <code>[1, 'text', true]</code>. Indexul începe de la 0." },
-            { term: "Arrow Function", def: "Funcție scurtă cu <code>=></code>. Ex: <code>const f = (x) => x * 2</code>. Nu are propriul <code>this</code>." },
-            { term: "Async/Await", def: "<code>async</code> declară o funcție asincronă. <code>await</code> așteaptă un Promise să se rezolve. Alternativă curată la .then()." },
-            { term: "Block Scope", def: "Variabilele <code>let</code>/<code>const</code> sunt vizibile DOAR în blocul <code>{ }</code> unde sunt declarate." },
-            { term: "Boolean", def: "Tip de date cu 2 valori: <code>true</code> sau <code>false</code>. Folosit în condiții și comparații." },
-            { term: "Break", def: "Oprește o buclă sau un switch. Ex: <code>if (found) break;</code>" },
-            { term: "Callback", def: "O funcție trimisă ca argument altei funcții. Ex: <code>arr.map(x => x * 2)</code> — arrow function-ul e callback-ul." },
-            { term: "Class", def: "Tipar (blueprint) pentru crearea obiectelor cu <code>constructor</code> și metode. Ex: <code>class Dog { }</code>." },
-            { term: "Closure", def: "O funcție care 'ține minte' variabilele din scope-ul extern chiar și după ce acel scope s-a terminat. Baza pentru variabile private." },
-            { term: "Console", def: "<code>console.log()</code> afișează date în consola DevTools. Alte metode: <code>.warn()</code>, <code>.error()</code>, <code>.table()</code>." },
-            { term: "const", def: "Declară o variabilă care NU poate fi reasignată. Conținutul unui obiect/array const POATE fi modificat." },
-            { term: "Constructor", def: "Metoda specială <code>constructor()</code> din clase, apelată automat la <code>new ClassName()</code>." },
-            { term: "CSS", def: "Cascading Style Sheets — limbajul care stilizează HTML. Controlează culori, fonturi, layout, animații." },
-            { term: "Destructuring", def: "Extrage valori din obiecte/arrays în variabile separate. Ex: <code>const {name} = obj</code>." },
-            { term: "DOM", def: "Document Object Model — reprezentarea HTML-ului ca un arbore de obiecte JavaScript pe care le poți manipula." },
-            { term: "Event", def: "O acțiune care se întâmplă în browser: click, keydown, scroll, input, submit. Ascultate cu <code>addEventListener</code>." },
-            { term: "Event Listener", def: "Cod care 'ascultă' un eveniment și execută o funcție. Ex: <code>el.addEventListener('click', fn)</code>." },
-            { term: "Expression", def: "Orice cod care returnează o valoare. Ex: <code>2 + 2</code>, <code>x > 5</code>, <code>fn()</code>." },
-            { term: "Falsy", def: "Valori care devin <code>false</code> într-o condiție: <code>false, 0, '', null, undefined, NaN</code>." },
-            { term: "Fetch", def: "Funcție nativă pentru HTTP requests. Returnează un Promise. Ex: <code>await fetch(url)</code>." },
-            { term: "forEach", def: "Metodă de array care execută o funcție pentru FIECARE element. Nu returnează nimic (spre deosebire de map)." },
-            { term: "Function", def: "Bloc de cod reutilizabil. Poate primi parametri și returna o valoare. Ex: <code>function add(a,b) { return a+b; }</code>." },
-            { term: "Hoisting", def: "JS 'mută' declarațiile de funcții și var în sus înainte de execuție. let/const NU sunt hoisted complet." },
-            { term: "HTML", def: "HyperText Markup Language — limbajul care definește STRUCTURA unei pagini web (titluri, paragrafe, butoane)." },
-            { term: "HTTP", def: "Protocol de comunicare web. Metode: GET (citește), POST (trimite), PUT (actualizează), DELETE (șterge)." },
-            { term: "if/else", def: "Structură condițională: dacă condiția e true, execută blocul if; altfel, execută blocul else." },
-            { term: "Immutable", def: "Ceva ce NU poate fi modificat. Stringurile sunt immutable: <code>'abc'[0] = 'x'</code> nu funcționează." },
-            { term: "innerHTML", def: "Proprietate DOM care citește/setează conținutul HTML al unui element. ⚠️ Risc XSS — prefer <code>textContent</code>." },
-            { term: "JavaScript", def: "Limbajul de programare al web-ului. Rulează în browser (frontend) și pe server (Node.js). Creat în 1995." },
-            { term: "JSON", def: "JavaScript Object Notation — format text pentru date. <code>JSON.stringify()</code> = obj→text, <code>JSON.parse()</code> = text→obj." },
-            { term: "let", def: "Declară o variabilă care POATE fi reasignată. Are block scope. Folosește-l când valoarea se schimbă." },
-            { term: "localStorage", def: "Stocare persistentă în browser (chiar și după închiderea tab-ului). <code>setItem(key, val)</code>, <code>getItem(key)</code>." },
-            { term: "Loop", def: "Buclă — execută un bloc de cod de mai multe ori. Tipuri: for, while, for...of, for...in, forEach." },
-            { term: "Map (Array)", def: "Metodă care transformă fiecare element și returnează un array NOU. Ex: <code>[1,2,3].map(x => x*2)</code> → [2,4,6]." },
-            { term: "Method", def: "O funcție care aparține unui obiect sau clase. Ex: <code>arr.push()</code>, <code>str.split()</code>." },
-            { term: "Mutation", def: "Modificarea directă a unei valori. .push(), .sort() MUTEAZĂ array-ul original. Spread <code>[...arr]</code> face copie." },
-            { term: "NaN", def: "Not a Number — rezultat la operații matematice invalide. Ex: <code>'abc' * 2</code> → NaN. Verifică cu <code>isNaN()</code>." },
-            { term: "Node.js", def: "Runtime JavaScript pe server (nu în browser). Permite să faci servere web, API-uri, și scripturi cu JS." },
-            { term: "null", def: "Valoare specială care înseamnă 'nimic, intenționat'. typeof null === 'object' (bug vechi)." },
-            { term: "Object", def: "Colecție de perechi cheie:valoare. Ex: <code>{name: 'Ana', age: 22}</code>. Acces: <code>obj.name</code> sau <code>obj['name']</code>." },
-            { term: "Operator", def: "Simbol care face o operație. Aritmetici: + - * / %. Comparare: === !== > <. Logici: && || !." },
-            { term: "Parameter", def: "Variabila declarată în definiția funcției. Ex: în <code>function f(x)</code>, <code>x</code> e parametrul." },
-            { term: "Promise", def: "Obiect care reprezintă o operație asincronă — va fi rezolvată (resolve) sau respinsă (reject) în viitor." },
-            { term: "Prototype", def: "Mecanismul de moștenire în JS. Fiecare obiect are un prototype de la care moștenește metode." },
-            { term: "querySelector", def: "Selectează primul element care se potrivește unui selector CSS. Ex: <code>document.querySelector('.btn')</code>." },
-            { term: "Reduce", def: "Metodă array care combină toate elementele într-o singură valoare. Ex: <code>[1,2,3].reduce((s,n) => s+n, 0)</code> → 6." },
-            { term: "Rest (...)", def: "Captează restul argumentelor într-un array. Ex: <code>function f(a, ...rest) {}</code>." },
-            { term: "Return", def: "Returnează o valoare din funcție și oprește execuția ei. Fără return, funcția returnează <code>undefined</code>." },
-            { term: "Scope", def: "Zona de vizibilitate a variabilelor. Global (oriunde), Local (în funcție), Block (în { })." },
-            { term: "Spread (...)", def: "Expandează un array/obiect. Ex: <code>[...arr, 4]</code> sau <code>{...obj, new: 'val'}</code>. Opusul REST." },
-            { term: "String", def: "Tip de date pentru text. Se pune între ghilimele: <code>'text'</code>, <code>\"text\"</code>, sau backticks <code>`text ${var}`</code>." },
-            { term: "switch", def: "Structură condițională pentru comparări multiple. Alternativă la if/else if/else if... Necesită break!" },
-            { term: "Template Literal", def: "String cu backticks care permite interpolare: <code>`Salut, ${name}!`</code>. Suportă și multi-linie." },
-            { term: "Ternary", def: "Condiție pe o linie: <code>condiție ? dacă_true : dacă_false</code>. Ex: <code>x > 0 ? 'pozitiv' : 'negativ'</code>." },
-            { term: "this", def: "Referință la obiectul curent. În metode normale = obiectul. În arrow functions = contextul exterior." },
-            { term: "Truthy", def: "Orice valoare care NU e falsy. Ex: 1, 'text', [], {}, -1 — toate sunt truthy." },
-            { term: "try/catch", def: "Prinde erori fără să crape programul. try = cod riscant, catch = gestionare eroare, finally = mereu." },
-            { term: "typeof", def: "Operator care returnează tipul unei valori ca string. Ex: <code>typeof 42</code> → 'number'." },
-            { term: "undefined", def: "Valoare default pentru variabile nedefinite sau funcții fără return. Diferit de null (care e intenționat)." },
-            { term: "var", def: "Declarare veche de variabilă cu function scope. ❌ NU o folosi — folosește let/const. Cauzează bug-uri de hoisting." },
-            { term: "Variable", def: "Container cu nume care stochează o valoare. Se declară cu const, let (sau var). Ex: <code>const x = 5</code>." },
-            { term: "While", def: "Buclă care se repetă CÂT TIMP condiția e true. Ex: <code>while (i < 10) { i++; }</code>." },
-        ];
-
-        // Sortăm alfabetic
-        terms.sort((a, b) => a.term.localeCompare(b.term));
-
-        // Generăm filtrele de litere
-        const letters = [...new Set(terms.map(t => t.term[0].toUpperCase()))].sort();
-        const filterDiv = document.getElementById('letterFilter');
-        const allBtn = document.createElement('button');
-        allBtn.textContent = 'TOATE';
-        allBtn.className = 'active';
-        allBtn.onclick = () => { renderTerms(); document.querySelectorAll('.glossary-filter button').forEach(b => b.classList.remove('active')); allBtn.classList.add('active'); };
-        filterDiv.appendChild(allBtn);
-
-        letters.forEach(l => {
-            const btn = document.createElement('button');
-            btn.textContent = l;
-            btn.onclick = () => {
-                renderTerms(l);
-                document.querySelectorAll('.glossary-filter button').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-            };
-            filterDiv.appendChild(btn);
-        });
-
-        function renderTerms(filterLetter = null) {
-            const list = document.getElementById('glossaryList');
-            const filtered = filterLetter ? terms.filter(t => t.term[0].toUpperCase() === filterLetter) : terms;
-
-            let html = '';
-            let currentLetter = '';
-            filtered.forEach(t => {
-                const letter = t.term[0].toUpperCase();
-                if (letter !== currentLetter) {
-                    currentLetter = letter;
-                    html += `<div class="letter-header">${letter}</div>`;
-                }
-                html += `<div class="glossary-item"><div class="term">${t.term}</div><div class="definition">${t.def}</div></div>`;
-            });
-            list.innerHTML = html;
-        }
-
-        renderTerms();
-    </script>
+    <script src="js/script.js"></script>
+    <script src="js/glosar.js"></script>
 </body>
 
 </html>

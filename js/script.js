@@ -416,32 +416,85 @@ if (demoTarget) {
 
 
 // ============================================================================
-// 🟢 SECȚIUNEA 6: DARK/LIGHT MODE TOGGLE
+// 🟢 SECȚIUNEA 6: NAVBAR — HAMBURGER MENU + DARK/LIGHT MODE TOGGLE
 // ============================================================================
-// Salvăm preferința în localStorage ca să persisteze între sesiuni
 
-(function initTheme() {
+(function initNavbar() {
+    // --- Theme: aplică preferința salvată ---
     const saved = localStorage.getItem('js-playground-theme');
     if (saved === 'light') {
         document.body.classList.add('light-mode');
     }
 
-    // Adaugă butonul de toggle în navbar (dacă există)
     const navbar = document.querySelector('.navbar');
-    if (navbar) {
-        const toggle = document.createElement('button');
-        toggle.className = 'theme-toggle';
-        toggle.id = 'themeToggle';
-        toggle.textContent = document.body.classList.contains('light-mode') ? '🌙' : '☀️';
-        toggle.title = 'Schimbă tema Dark/Light';
-        toggle.addEventListener('click', () => {
-            document.body.classList.toggle('light-mode');
-            const isLight = document.body.classList.contains('light-mode');
-            toggle.textContent = isLight ? '🌙' : '☀️';
-            localStorage.setItem('js-playground-theme', isLight ? 'light' : 'dark');
-        });
-        navbar.appendChild(toggle);
+    if (!navbar) return;
+
+    // --- Logo clickabil → duce la Home ---
+    const logo = navbar.querySelector('.logo');
+    if (logo) {
+        logo.addEventListener('click', () => { window.location.href = 'index.html'; });
     }
+
+    // --- Creăm overlay-ul (fundal întunecat când meniul e deschis) ---
+    const overlay = document.createElement('div');
+    overlay.className = 'nav-overlay';
+    document.body.appendChild(overlay);
+
+    // --- Creăm butonul hamburger (☰ / ✕) ---
+    const hamburger = document.createElement('button');
+    hamburger.className = 'hamburger';
+    hamburger.id = 'hamburgerBtn';
+    hamburger.setAttribute('aria-label', 'Deschide meniul');
+    hamburger.innerHTML = '<span></span><span></span><span></span>';
+
+    const navLinks = navbar.querySelector('.nav-links');
+
+    function toggleMenu() {
+        hamburger.classList.toggle('active');
+        navLinks.classList.toggle('open');
+        overlay.classList.toggle('show');
+        document.body.style.overflow = navLinks.classList.contains('open') ? 'hidden' : '';
+    }
+
+    hamburger.addEventListener('click', toggleMenu);
+    overlay.addEventListener('click', toggleMenu);
+
+    // Închide meniul când dai click pe un link
+    navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            if (navLinks.classList.contains('open')) {
+                toggleMenu();
+            }
+        });
+    });
+
+    // Închide cu Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && navLinks.classList.contains('open')) {
+            toggleMenu();
+        }
+    });
+
+    // --- Creăm wrapper-ul din dreapta (hamburger + theme toggle) ---
+    const rightControls = document.createElement('div');
+    rightControls.style.cssText = 'display:flex; align-items:center; gap:10px;';
+
+    // Theme toggle
+    const toggle = document.createElement('button');
+    toggle.className = 'theme-toggle';
+    toggle.id = 'themeToggle';
+    toggle.textContent = document.body.classList.contains('light-mode') ? '🌙' : '☀️';
+    toggle.title = 'Schimbă tema Dark/Light';
+    toggle.addEventListener('click', () => {
+        document.body.classList.toggle('light-mode');
+        const isLight = document.body.classList.contains('light-mode');
+        toggle.textContent = isLight ? '🌙' : '☀️';
+        localStorage.setItem('js-playground-theme', isLight ? 'light' : 'dark');
+    });
+
+    rightControls.appendChild(toggle);
+    rightControls.appendChild(hamburger);
+    navbar.appendChild(rightControls);
 })();
 
 
