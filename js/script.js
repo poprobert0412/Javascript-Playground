@@ -739,55 +739,79 @@ document.addEventListener('keydown', (e) => {
 // 🟢 SECȚIUNEA 13: PAGE LOAD ANIMATION (Fade In)
 // ============================================================================
 
+
 (function pageLoadAnimation() {
+    // Create transition bar
+    const bar = document.createElement('div');
+    bar.className = 'page-transition-bar';
+    document.body.appendChild(bar);
+
     document.body.style.opacity = '0';
-    document.body.style.transition = 'opacity 0.4s ease';
+    document.body.style.transform = 'translateY(8px)';
+    document.body.style.transition = 'opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
 
-    window.addEventListener('DOMContentLoaded', () => {
-        requestAnimationFrame(() => {
+    function reveal() {
+        requestAnimationFrame(function() {
             document.body.style.opacity = '1';
+            document.body.style.transform = 'translateY(0)';
         });
-    });
+    }
 
-    // If DOMContentLoaded already fired
-    if (document.readyState !== 'loading') {
-        requestAnimationFrame(() => {
-            document.body.style.opacity = '1';
-        });
+    if (document.readyState === 'loading') {
+        window.addEventListener('DOMContentLoaded', reveal);
+    } else {
+        reveal();
     }
 })();
 
 
 // ============================================================================
-// 🟢 SECȚIUNEA 14: SMOOTH PAGE TRANSITIONS  
+// 🟢 SECŢIUNEA 14: SMOOTH PAGE TRANSITIONS
 // ============================================================================
 
-document.addEventListener('click', (e) => {
-    const link = e.target.closest('a[href]');
+document.addEventListener('click', function(e) {
+    var link = e.target.closest('a[href]');
     if (!link) return;
 
-    const href = link.getAttribute('href');
-    // Only intercept local .html links
+    var href = link.getAttribute('href');
     if (!href || href.startsWith('http') || href.startsWith('#') || href.startsWith('mailto:') || link.target === '_blank') return;
 
     e.preventDefault();
+
+    // Activate loading bar
+    var bar = document.querySelector('.page-transition-bar');
+    if (bar) bar.classList.add('loading');
+
     document.body.style.opacity = '0';
-    setTimeout(() => {
-        window.location.href = href;
-    }, 300);
+    document.body.style.transform = 'translateY(-8px)';
+
+    setTimeout(function() {
+        if (bar) bar.classList.add('done');
+        setTimeout(function() { window.location.href = href; }, 150);
+    }, 250);
 });
 
 
 // ============================================================================
-// 🟢 SECȚIUNEA 15: SCROLL ANIMATIONS (Intersection Observer)
+// 🟢 SECŢIUNEA 15: SCROLL ANIMATIONS (Intersection Observer)
 // ============================================================================
 
 (function initScrollAnimations() {
-    // Elements to animate on scroll
-    const selectors = '.card, .landing-card, .overview-card, .achievement-card, .progress-section, .recent-activity, .level-card, .roadmap-item, .prof-note, .puzzle-container, .flashcard-container, .error-page, .page-header';
+    var variantMap = {
+        '.page-header': 'scroll-fade-down',
+        '.landing-card:nth-child(odd)': 'scroll-fade-left',
+        '.landing-card:nth-child(even)': 'scroll-fade-right',
+        '.overview-card': 'scroll-scale-up',
+        '.achievement-card:nth-child(odd)': 'scroll-fade-left',
+        '.achievement-card:nth-child(even)': 'scroll-fade-right',
+        '.level-card': 'scroll-scale-up',
+        '.error-page': 'scroll-scale-up'
+    };
 
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
+    var defaultSelectors = '.card, .progress-section, .recent-activity, .roadmap-item, .prof-note, .puzzle-container, .flashcard-container';
+
+    var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
             if (entry.isIntersecting) {
                 entry.target.classList.add('scroll-visible');
                 observer.unobserve(entry.target);
@@ -798,25 +822,34 @@ document.addEventListener('click', (e) => {
         rootMargin: '0px 0px -40px 0px'
     });
 
-    // Apply initial hidden state + observe
     function observeElements() {
-        document.querySelectorAll(selectors).forEach((el, i) => {
+        // Apply specific directional variants
+        Object.entries(variantMap).forEach(function(pair) {
+            document.querySelectorAll(pair[0]).forEach(function(el, i) {
+                if (!el.classList.contains('scroll-animated')) {
+                    el.classList.add('scroll-animated', pair[1]);
+                    el.style.transitionDelay = Math.min(i * 0.08, 0.5) + 's';
+                    observer.observe(el);
+                }
+            });
+        });
+
+        // Apply default fade-up to remaining elements
+        document.querySelectorAll(defaultSelectors).forEach(function(el, i) {
             if (!el.classList.contains('scroll-animated')) {
-                el.classList.add('scroll-animated');
-                el.style.transitionDelay = `${Math.min(i * 0.06, 0.4)}s`;
+                el.classList.add('scroll-animated', 'scroll-fade-up');
+                el.style.transitionDelay = Math.min(i * 0.08, 0.5) + 's';
                 observer.observe(el);
             }
         });
     }
 
-    // Run on load and after dynamic content
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', observeElements);
     } else {
         observeElements();
     }
 
-    // Re-observe after 500ms for dynamically generated content
     setTimeout(observeElements, 500);
 })();
 
