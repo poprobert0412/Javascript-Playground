@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔷 TypeScript — JS Playground</title>
+    <meta name="description"
+        content="Introducere în TypeScript — de la JavaScript la tipuri statice. Lecții cu exemple și comparații JS vs TS.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .ts-hero {
+            text-align: center;
+            padding: 50px 20px 30px;
+        }
+
+        .ts-hero h1 {
+            font-size: 2.4rem;
+            background: linear-gradient(135deg, #3178c6, #00d2ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .ts-hero p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            max-width: 650px;
+            margin: 0 auto 20px;
+            line-height: 1.6;
+        }
+
+        .ts-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            background: rgba(49, 120, 198, 0.12);
+            border: 1px solid rgba(49, 120, 198, 0.3);
+            color: #3178c6;
+        }
+
+        /* Lesson cards */
+        .ts-lessons {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .ts-lesson {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ts-lesson::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #3178c6, #00d2ff);
+        }
+
+        .ts-lesson-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .ts-lesson-num {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: rgba(49, 120, 198, 0.15);
+            border: 1px solid rgba(49, 120, 198, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #3178c6;
+            flex-shrink: 0;
+        }
+
+        .ts-lesson-title {
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: var(--text-primary);
+        }
+
+        .ts-lesson-tag {
+            display: inline-block;
+            background: rgba(49, 120, 198, 0.1);
+            border: 1px solid rgba(49, 120, 198, 0.2);
+            border-radius: 6px;
+            padding: 2px 10px;
+            font-size: 0.72rem;
+            font-family: 'JetBrains Mono', monospace;
+            color: #3178c6;
+            margin-bottom: 12px;
+        }
+
+        .ts-lesson p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.7;
+            margin-bottom: 14px;
+        }
+
+        .ts-lesson p strong {
+            color: var(--text-primary);
+        }
+
+        /* Code comparison */
+        .ts-compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 14px 0;
+        }
+
+        .ts-compare-block {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .ts-compare-block .label {
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .ts-compare-block.js .label {
+            color: #f7df1e;
+        }
+
+        .ts-compare-block.ts .label {
+            color: #3178c6;
+        }
+
+        /* Single code block */
+        .ts-code {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            margin: 12px 0;
+        }
+
+        /* Syntax colors */
+        .kw {
+            color: #c678dd;
+        }
+
+        .str {
+            color: #98c379;
+        }
+
+        .num {
+            color: #d19a66;
+        }
+
+        .fn {
+            color: #61afef;
+        }
+
+        .type {
+            color: #e5c07b;
+        }
+
+        .com {
+            color: #5c6370;
+            font-style: italic;
+        }
+
+        .op {
+            color: #56b6c2;
+        }
+
+        .ts-type {
+            color: #3178c6;
+            font-weight: 600;
+        }
+
+        /* Prof note */
+        .ts-note {
+            background: rgba(49, 120, 198, 0.06);
+            border-left: 3px solid #3178c6;
+            border-radius: 0 10px 10px 0;
+            padding: 14px 18px;
+            margin: 14px 0;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .ts-note strong {
+            color: var(--text-primary);
+        }
+
+        .ts-note code {
+            background: rgba(49, 120, 198, 0.1);
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #3178c6;
+        }
+
+        /* Warning box */
+        .ts-warning {
+            background: rgba(255, 171, 64, 0.08);
+            border-left: 3px solid #ffab40;
+            border-radius: 0 10px 10px 0;
+            padding: 14px 18px;
+            margin: 14px 0;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .ts-warning strong {
+            color: #ffab40;
+        }
+
+        @media (max-width: 768px) {
+            .ts-compare {
+                grid-template-columns: 1fr;
+            }
+
+            .ts-hero h1 {
+                font-size: 1.7rem;
+            }
+
+            .ts-lesson {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo">⚡ JS Playground</div>
+        <div class="nav-links">
+            <a href="index.html">🏠 Acasă</a>
+            <a href="lectii.html">📖 Lecții</a>
+            <a href="exercitii.html">✏️ Exerciții</a>
+            <a href="quizuri.html">❓ Quiz</a>
+            <a href="cheatsheet.html">📋 Cheatsheet</a>
+            <a href="devtools.html">🔧 DevTools</a>
+            <a href="provocari.html">🎯 Provocări</a>
+            <a href="proiecte.html">🚀 Proiecte</a>
+            <a href="debugging.html">🐛 Debug</a>
+            <a href="glosar.html">📖 Glosar</a>
+            <a href="search.html">🔍 Caută</a>
+            <a href="playground.html">💻 Playground</a>
+            <a href="achievements.html">🏆 Achievements</a>
+            <a href="dashboard.html">📊 Dashboard</a>
+            <a href="puzzle.html">🧩 Code Puzzle</a>
+            <a href="flashcards.html">🃏 Flashcards</a>
+            <a href="console-challenges.html">🖥️ Console Tasks</a>
+            <a href="typescript.html" class="active">🔷 TypeScript</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <div class="ts-hero">
+        <h1>🔷 Introducere în TypeScript</h1>
+        <p>TypeScript = JavaScript + <strong>tipuri statice</strong>. Același cod JS pe care îl cunoști, dar cu
+            superlputeri: detectează erorile <em>înainte</em> de a rula codul!</p>
+        <div class="ts-badge">🔷 TypeScript 5.x — Superset of JavaScript</div>
+    </div>
+
+    <main>
+        <div class="ts-lessons">
+
+            <!-- LESSON 1: Ce este TypeScript? -->
+            <div class="ts-lesson">
+                <div class="ts-lesson-header">
+                    <div class="ts-lesson-num">1</div>
+                    <div class="ts-lesson-title">Ce este TypeScript?</div>
+                </div>
+                <div class="ts-lesson-tag">Bazele TS</div>
+                <p>
+                    <strong>TypeScript</strong> este un <strong>superset</strong> al JavaScript-ului, creat de
+                    Microsoft. Asta înseamnă că <em>orice cod JavaScript valid este și cod TypeScript valid</em>.
+                    TypeScript adaugă <strong>tipuri statice</strong> — adică spui explicit ce tip de date conține
+                    fiecare variabilă.
+                </p>
+                <div class="ts-note">
+                    <strong>🎓 De ce contează?</strong> JavaScript nu te oprește dacă faci
+                    <code>let x = 5; x = "text";</code> — dar asta poate cauza bug-uri subtile. TypeScript te
+                    avertizează <em>înainte de a rula codul</em>!
+                </div>
+                <div class="ts-compare">
+                    <div class="ts-compare-block js">
+                        <span class="label">JavaScript</span>
+                        <span class="kw">let</span> nume = <span class="str">"Robert"</span>;
+                        nome = <span class="num">42</span>; <span class="com">// ✅ JS permite, dar e bug!</span>
+                    </div>
+                    <div class="ts-compare-block ts">
+                        <span class="label">TypeScript</span>
+                        <span class="kw">let</span> nume: <span class="ts-type">string</span> = <span
+                            class="str">"Robert"</span>;
+                        nume = <span class="num">42</span>; <span class="com">// ❌ Error: Type 'number'</span>
+                        <span class="com">// is not assignable to type 'string'</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LESSON 2: Tipuri de bază -->
+            <div class="ts-lesson">
+                <div class="ts-lesson-header">
+                    <div class="ts-lesson-num">2</div>
+                    <div class="ts-lesson-title">Tipuri de bază (Primitive Types)</div>
+                </div>
+                <div class="ts-lesson-tag">string · number · boolean · null · undefined</div>
+                <p>
+                    TypeScript are aceleași tipuri primitive ca JavaScript, dar le poți <strong>declara
+                        explicit</strong>:
+                </p>
+                <div class="ts-code"><span class="com">// Tipuri primitive</span>
+                    <span class="kw">let</span> nume: <span class="ts-type">string</span> = <span
+                        class="str">"Robert"</span>;
+                    <span class="kw">let</span> varsta: <span class="ts-type">number</span> = 25;
+                    <span class="kw">let</span> student: <span class="ts-type">boolean</span> = <span
+                        class="kw">true</span>;
+                    <span class="kw">let</span> nimic: <span class="ts-type">null</span> = <span class="kw">null</span>;
+                    <span class="kw">let</span> nedefinit: <span class="ts-type">undefined</span> = <span
+                        class="kw">undefined</span>;
+
+                    <span class="com">// Array-uri tipizate</span>
+                    <span class="kw">let</span> numere: <span class="ts-type">number[]</span> = [<span
+                        class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>];
+                    <span class="kw">let</span> nume: <span class="ts-type">string[]</span> = [<span
+                        class="str">"Ana"</span>, <span class="str">"Ion"</span>];
+
+                    <span class="com">// Tuple — array cu tipuri fixe</span>
+                    <span class="kw">let</span> pereche: [<span class="ts-type">string</span>, <span
+                        class="ts-type">number</span>] = [<span class="str">"Robert"</span>, <span
+                        class="num">25</span>];
+                </div>
+                <div class="ts-note">
+                    <strong>💡 Type Inference:</strong> TypeScript poate <em>ghici</em> tipul automat!
+                    <code>let x = 5</code> → TS știe că <code>x</code> e <code>number</code> fără să spui explicit. Dar
+                    e bine să le declari când codul e complex.
+                </div>
+            </div>
+
+            <!-- LESSON 3: Funcții tipizate -->
+            <div class="ts-lesson">
+                <div class="ts-lesson-header">
+                    <div class="ts-lesson-num">3</div>
+                    <div class="ts-lesson-title">Funcții cu tipuri</div>
+                </div>
+                <div class="ts-lesson-tag">function types · return types · optional params</div>
+                <p>
+                    În TypeScript, <strong>parametrii și return-ul</strong> funcțiilor au tipuri. Asta previne erori ca:
+                    "am trimis un string unde trebuia un număr".
+                </p>
+                <div class="ts-compare">
+                    <div class="ts-compare-block js">
+                        <span class="label">JavaScript</span>
+                        <span class="kw">function</span> <span class="fn">aduna</span>(a, b) {
+                        <span class="kw">return</span> a + b;
+                        }
+                        <span class="fn">aduna</span>(<span class="str">"5"</span>, <span class="num">3</span>); <span
+                            class="com">// "53" 😱 string!</span>
+                    </div>
+                    <div class="ts-compare-block ts">
+                        <span class="label">TypeScript</span>
+                        <span class="kw">function</span> <span class="fn">aduna</span>(a: <span
+                            class="ts-type">number</span>, b: <span class="ts-type">number</span>): <span
+                            class="ts-type">number</span> {
+                        <span class="kw">return</span> a + b;
+                        }
+                        <span class="fn">aduna</span>(<span class="str">"5"</span>, <span class="num">3</span>); <span
+                            class="com">// ❌ Error!</span>
+                    </div>
+                </div>
+                <div class="ts-code"><span class="com">// Parametri opționali (?)</span>
+                    <span class="kw">function</span> <span class="fn">salut</span>(nume: <span
+                        class="ts-type">string</span>, titlu<span class="op">?</span>: <span
+                        class="ts-type">string</span>): <span class="ts-type">string</span> {
+                    <span class="kw">if</span> (titlu) <span class="kw">return</span> <span class="str">`Salut, ${titlu}
+                        ${nume}!`</span>;
+                    <span class="kw">return</span> <span class="str">`Salut, ${nume}!`</span>;
+                    }
+                    <span class="fn">salut</span>(<span class="str">"Robert"</span>); <span class="com">// ✅ "Salut,
+                        Robert!"</span>
+                    <span class="fn">salut</span>(<span class="str">"Robert"</span>, <span class="str">"Dl."</span>);
+                    <span class="com">// ✅ "Salut, Dl. Robert!"</span>
+
+                    <span class="com">// Valori default</span>
+                    <span class="kw">function</span> <span class="fn">putere</span>(baza: <span
+                        class="ts-type">number</span>, exp: <span class="ts-type">number</span> = <span
+                        class="num">2</span>): <span class="ts-type">number</span> {
+                    <span class="kw">return</span> baza <span class="op">**</span> exp;
+                    }
+                </div>
+            </div>
+
+            <!-- LESSON 4: Interfaces -->
+            <div class="ts-lesson">
+                <div class="ts-lesson-header">
+                    <div class="ts-lesson-num">4</div>
+                    <div class="ts-lesson-title">Interfaces — Structuri de date</div>
+                </div>
+                <div class="ts-lesson-tag">interface · shape of objects</div>
+                <p>
+                    O <strong>interfață</strong> definește "forma" unui obiect — ce proprietăți trebuie să aibă și de ce
+                    tip sunt. E ca un contract: "orice obiect de acest tip TREBUIE să aibă aceste câmpuri".
+                </p>
+                <div class="ts-code"><span class="com">// Definim interfața</span>
+                    <span class="kw">interface</span> <span class="ts-type">User</span> {
+                    nume: <span class="ts-type">string</span>;
+                    varsta: <span class="ts-type">number</span>;
+                    email: <span class="ts-type">string</span>;
+                    premium<span class="op">?</span>: <span class="ts-type">boolean</span>; <span class="com">//
+                        opțional</span>
+                    }
+
+                    <span class="com">// Folosim interfața</span>
+                    <span class="kw">const</span> user: <span class="ts-type">User</span> = {
+                    nume: <span class="str">"Robert"</span>,
+                    varsta: <span class="num">25</span>,
+                    email: <span class="str">"robert@mail.com"</span>
+                    }; <span class="com">// ✅ OK!</span>
+
+                    <span class="kw">const</span> bad: <span class="ts-type">User</span> = {
+                    nume: <span class="str">"Ion"</span>
+                    }; <span class="com">// ❌ Error: lipsește 'varsta' și 'email'</span>
+
+                    <span class="com">// Funcție care acceptă un User</span>
+                    <span class="kw">function</span> <span class="fn">salutaUser</span>(u: <span
+                        class="ts-type">User</span>): <span class="ts-type">string</span> {
+                    <span class="kw">return</span> <span class="str">`Salut, ${u.nume}! Ai ${u.varsta} ani.`</span>;
+                    }
+                </div>
+            </div>
+
+            <!-- LESSON 5: Type Aliases -->
+            <div class="ts-lesson">
+                <div class="ts-lesson-header">
+                    <div class="ts-lesson-num">5</div>
+                    <div class="ts-lesson-title">Type Aliases & Union Types</div>
+                </div>
+                <div class="ts-lesson-tag">type · union (|) · literal types</div>
+                <p>
+                    <strong>Type alias</strong> = un nume personalizat pentru un tip. <strong>Union type</strong> (|) =
+                    o valoare poate fi de mai multe tipuri.
+                </p>
+                <div class="ts-code"><span class="com">// Type alias</span>
+                    <span class="kw">type</span> <span class="ts-type">ID</span> = <span class="ts-type">string</span> |
+                    <span class="ts-type">number</span>;
+
+                    <span class="kw">let</span> userId: <span class="ts-type">ID</span> = <span
+                        class="str">"abc-123"</span>; <span class="com">// ✅ string</span>
+                    userId = <span class="num">42</span>; <span class="com">// ✅ number</span>
+                    userId = <span class="kw">true</span>; <span class="com">// ❌ Error!</span>
+
+                    <span class="com">// Literal types — exact aceste valori!</span>
+                    <span class="kw">type</span> <span class="ts-type">Direction</span> = <span class="str">"up"</span>
+                    | <span class="str">"down"</span> | <span class="str">"left"</span> | <span
+                        class="str">"right"</span>;
+
+                    <span class="kw">function</span> <span class="fn">move</span>(dir: <span
+                        class="ts-type">Direction</span>) {
+                    console.<span class="fn">log</span>(<span class="str">`Moving ${dir}`</span>);
+                    }
+                    <span class="fn">move</span>(<span class="str">"up"</span>); <span class="com">// ✅</span>
+                    <span class="fn">move</span>(<span class="str">"diag"</span>); <span class="com">// ❌ Error: not in
+                        union</span>
+
+                    <span class="com">// Union cu interfețe</span>
+                    <span class="kw">type</span> <span class="ts-type">Result</span> = { success: <span
+                        class="kw">true</span>; data: <span class="ts-type">string</span> }
+                    | { success: <span class="kw">false</span>; error: <span class="ts-type">string</span> };
+                </div>
+                <div class="ts-note">
+                    <strong>🤔 Interface vs Type?</strong> Ambele definesc forme de obiecte. Diferențe:
+                    <code>interface</code> poate fi extinsă cu <code>extends</code>, <code>type</code> poate face union
+                    (<code>|</code>) și intersection (<code>&</code>). Regulă: folosește <code>interface</code> pentru
+                    obiecte, <code>type</code> pentru union-uri și alias-uri.
+                </div>
+            </div>
+
+            <!-- LESSON 6: Enums -->
+            <div class="ts-lesson">
+                <div class="ts-lesson-header">
+                    <div class="ts-lesson-num">6</div>
+                    <div class="ts-lesson-title">Enums — Seturi de constante</div>
+                </div>
+                <div class="ts-lesson-tag">enum · const enum</div>
+                <p>
+                    <strong>Enum</strong> (enumerare) definește un set de constante cu nume. Perfect pentru stări,
+                    roluri, direcții, etc.
+                </p>
+                <div class="ts-code"><span class="com">// Numeric enum (default: 0, 1, 2...)</span>
+                    <span class="kw">enum</span> <span class="ts-type">Status</span> {
+                    Pending, <span class="com">// 0</span>
+                    Active, <span class="com">// 1</span>
+                    Completed, <span class="com">// 2</span>
+                    Cancelled <span class="com">// 3</span>
+                    }
+
+                    <span class="kw">let</span> taskStatus: <span class="ts-type">Status</span> = Status.Active;
+                    console.<span class="fn">log</span>(taskStatus); <span class="com">// 1</span>
+
+                    <span class="com">// String enum (mai descriptiv)</span>
+                    <span class="kw">enum</span> <span class="ts-type">Role</span> {
+                    Admin = <span class="str">"ADMIN"</span>,
+                    User = <span class="str">"USER"</span>,
+                    Guest = <span class="str">"GUEST"</span>
+                    }
+
+                    <span class="kw">function</span> <span class="fn">checkAccess</span>(role: <span
+                        class="ts-type">Role</span>) {
+                    <span class="kw">if</span> (role === Role.Admin) {
+                    console.<span class="fn">log</span>(<span class="str">"Full access!"</span>);
+                    }
+                    }
+                    <span class="fn">checkAccess</span>(Role.Admin); <span class="com">// ✅ "Full access!"</span>
+                </div>
+            </div>
+
+            <!-- LESSON 7: Generics -->
+            <div class="ts-lesson">
+                <div class="ts-lesson-header">
+                    <div class="ts-lesson-num">7</div>
+                    <div class="ts-lesson-title">Generics — Tipuri flexibile</div>
+                </div>
+                <div class="ts-lesson-tag">generics · &lt;T&gt; · reusable types</div>
+                <p>
+                    <strong>Generics</strong> permit crearea de funcții și clase care funcționează cu <em>orice
+                        tip</em>, păstrând type safety. Gândește-te la ele ca la variabile pentru tipuri:
+                    <code>&lt;T&gt;</code>.
+                </p>
+                <div class="ts-compare">
+                    <div class="ts-compare-block js">
+                        <span class="label">Fără Generics ❌</span>
+                        <span class="com">// Pierde tipul! Returnează 'any'</span>
+                        <span class="kw">function</span> <span class="fn">first</span>(arr: <span
+                            class="ts-type">any[]</span>): <span class="ts-type">any</span> {
+                        <span class="kw">return</span> arr[<span class="num">0</span>];
+                        }
+                        <span class="kw">let</span> x = <span class="fn">first</span>([<span class="num">1</span>,<span
+                            class="num">2</span>,<span class="num">3</span>]);
+                        <span class="com">// x e 'any' — TS nu știe tipul 😞</span>
+                    </div>
+                    <div class="ts-compare-block ts">
+                        <span class="label">Cu Generics ✅</span>
+                        <span class="com">// Păstrează tipul!</span>
+                        <span class="kw">function</span> <span class="fn">first</span>&lt;<span
+                            class="ts-type">T</span>&gt;(arr: <span class="ts-type">T[]</span>): <span
+                            class="ts-type">T</span> {
+                        <span class="kw">return</span> arr[<span class="num">0</span>];
+                        }
+                        <span class="kw">let</span> x = <span class="fn">first</span>([<span class="num">1</span>,<span
+                            class="num">2</span>,<span class="num">3</span>]);
+                        <span class="com">// x e 'number' — TS știe! 🎯</span>
+                    </div>
+                </div>
+                <div class="ts-code"><span class="com">// Generic mai complex: o pereche cheie-valoare</span>
+                    <span class="kw">interface</span> <span class="ts-type">Pair</span>&lt;<span
+                        class="ts-type">K</span>, <span class="ts-type">V</span>&gt; {
+                    key: <span class="ts-type">K</span>;
+                    value: <span class="ts-type">V</span>;
+                    }
+
+                    <span class="kw">const</span> p1: <span class="ts-type">Pair</span>&lt;<span
+                        class="ts-type">string</span>, <span class="ts-type">number</span>&gt; = { key: <span
+                        class="str">"age"</span>, value: <span class="num">25</span> };
+                    <span class="kw">const</span> p2: <span class="ts-type">Pair</span>&lt;<span
+                        class="ts-type">number</span>, <span class="ts-type">boolean</span>&gt; = { key: <span
+                        class="num">1</span>, value: <span class="kw">true</span> };
+                </div>
+            </div>
+
+            <!-- LESSON 8: Type Guards -->
+            <div class="ts-lesson">
+                <div class="ts-lesson-header">
+                    <div class="ts-lesson-num">8</div>
+                    <div class="ts-lesson-title">Type Guards — Verificare la runtime</div>
+                </div>
+                <div class="ts-lesson-tag">typeof · instanceof · in · narrowing</div>
+                <p>
+                    <strong>Type guards</strong> sunt verificări care ajută TypeScript să "îngusteze" (narrow) tipul
+                    unei valori. După o verificare, TS știe exact ce tip e.
+                </p>
+                <div class="ts-code"><span class="com">// typeof guard</span>
+                    <span class="kw">function</span> <span class="fn">formatValue</span>(val: <span
+                        class="ts-type">string</span> | <span class="ts-type">number</span>): <span
+                        class="ts-type">string</span> {
+                    <span class="kw">if</span> (<span class="kw">typeof</span> val === <span
+                        class="str">"string"</span>) {
+                    <span class="kw">return</span> val.<span class="fn">toUpperCase</span>(); <span class="com">// TS
+                        știe: val e string</span>
+                    }
+                    <span class="kw">return</span> val.<span class="fn">toFixed</span>(<span class="num">2</span>);
+                    <span class="com">// TS știe: val e number</span>
+                    }
+
+                    <span class="com">// 'in' guard (verifică proprietăți)</span>
+                    <span class="kw">interface</span> <span class="ts-type">Dog</span> { bark(): <span
+                        class="ts-type">void</span>; }
+                    <span class="kw">interface</span> <span class="ts-type">Cat</span> { meow(): <span
+                        class="ts-type">void</span>; }
+
+                    <span class="kw">function</span> <span class="fn">makeSound</span>(pet: <span
+                        class="ts-type">Dog</span> | <span class="ts-type">Cat</span>) {
+                    <span class="kw">if</span> (<span class="str">"bark"</span> <span class="kw">in</span> pet) {
+                    pet.<span class="fn">bark</span>(); <span class="com">// TS știe: e Dog</span>
+                    } <span class="kw">else</span> {
+                    pet.<span class="fn">meow</span>(); <span class="com">// TS știe: e Cat</span>
+                    }
+                    }
+                </div>
+            </div>
+
+            <!-- LESSON 9: Classes cu TS -->
+            <div class="ts-lesson">
+                <div class="ts-lesson-header">
+                    <div class="ts-lesson-num">9</div>
+                    <div class="ts-lesson-title">Clase TypeScript</div>
+                </div>
+                <div class="ts-lesson-tag">class · public · private · readonly · implements</div>
+                <p>
+                    TypeScript adaugă <strong>modificatori de acces</strong> la clasele JavaScript: <code>public</code>,
+                    <code>private</code>, <code>protected</code>, <code>readonly</code>.
+                </p>
+                <div class="ts-code"><span class="kw">interface</span> <span class="ts-type">Printable</span> {
+                    <span class="fn">print</span>(): <span class="ts-type">void</span>;
+                    }
+
+                    <span class="kw">class</span> <span class="ts-type">Student</span> <span
+                        class="kw">implements</span> <span class="ts-type">Printable</span> {
+                    <span class="com">// Shorthand: parametrii din constructor devin proprietăți</span>
+                    <span class="kw">constructor</span>(
+                    <span class="kw">public</span> name: <span class="ts-type">string</span>,
+                    <span class="kw">private</span> grade: <span class="ts-type">number</span>,
+                    <span class="kw">readonly</span> id: <span class="ts-type">string</span>
+                    ) {}
+
+                    <span class="fn">print</span>() {
+                    console.<span class="fn">log</span>(<span class="str">`${this.name} — nota ${this.grade}`</span>);
+                    }
+
+                    <span class="fn">getGrade</span>(): <span class="ts-type">number</span> {
+                    <span class="kw">return</span> this.grade; <span class="com">// ✅ acces din interior</span>
+                    }
+                    }
+
+                    <span class="kw">const</span> s = <span class="kw">new</span> <span
+                        class="ts-type">Student</span>(<span class="str">"Robert"</span>, <span class="num">10</span>,
+                    <span class="str">"STU-001"</span>);
+                    s.name; <span class="com">// ✅ public</span>
+                    s.grade; <span class="com">// ❌ Error: 'grade' is private</span>
+                    s.id = <span class="str">"X"</span>; <span class="com">// ❌ Error: 'id' is readonly</span>
+                </div>
+            </div>
+
+            <!-- LESSON 10: Utility Types -->
+            <div class="ts-lesson">
+                <div class="ts-lesson-header">
+                    <div class="ts-lesson-num">10</div>
+                    <div class="ts-lesson-title">Utility Types — Superputeri TS</div>
+                </div>
+                <div class="ts-lesson-tag">Partial · Required · Pick · Omit · Record · Readonly</div>
+                <p>
+                    TypeScript vine cu <strong>tipuri utilitare</strong> built-in care transformă alte tipuri. Sunt
+                    <em>extrem</em> de utile în cod real:
+                </p>
+                <div class="ts-code"><span class="kw">interface</span> <span class="ts-type">User</span> {
+                    name: <span class="ts-type">string</span>;
+                    email: <span class="ts-type">string</span>;
+                    age: <span class="ts-type">number</span>;
+                    }
+
+                    <span class="com">// Partial — toate câmpurile devin opționale</span>
+                    <span class="kw">function</span> <span class="fn">updateUser</span>(user: <span
+                        class="ts-type">User</span>, updates: <span class="ts-type">Partial</span>&lt;<span
+                        class="ts-type">User</span>&gt;) {
+                    <span class="kw">return</span> { ...user, ...updates };
+                    }
+                    <span class="fn">updateUser</span>(user, { age: <span class="num">26</span> }); <span class="com">//
+                        ✅ doar 'age'</span>
+
+                    <span class="com">// Pick — selectează doar câmpurile dorite</span>
+                    <span class="kw">type</span> <span class="ts-type">UserPreview</span> = <span
+                        class="ts-type">Pick</span>&lt;<span class="ts-type">User</span>, <span
+                        class="str">"name"</span> | <span class="str">"email"</span>&gt;;
+                    <span class="com">// = { name: string; email: string; }</span>
+
+                    <span class="com">// Omit — exclude câmpuri</span>
+                    <span class="kw">type</span> <span class="ts-type">UserPublic</span> = <span
+                        class="ts-type">Omit</span>&lt;<span class="ts-type">User</span>, <span
+                        class="str">"email"</span>&gt;;
+                    <span class="com">// = { name: string; age: number; }</span>
+
+                    <span class="com">// Record — obiect cu chei și valori tipizate</span>
+                    <span class="kw">type</span> <span class="ts-type">Scores</span> = <span
+                        class="ts-type">Record</span>&lt;<span class="ts-type">string</span>, <span
+                        class="ts-type">number</span>&gt;;
+                    <span class="kw">const</span> scores: <span class="ts-type">Scores</span> = { math: <span
+                        class="num">95</span>, js: <span class="num">100</span> };
+
+                    <span class="com">// Readonly — nu poți modifica</span>
+                    <span class="kw">const</span> frozen: <span class="ts-type">Readonly</span>&lt;<span
+                        class="ts-type">User</span>&gt; = { name: <span class="str">"X"</span>, email: <span
+                        class="str">"x@x"</span>, age: <span class="num">20</span> };
+                    frozen.name = <span class="str">"Y"</span>; <span class="com">// ❌ Error: readonly!</span>
+                </div>
+            </div>
+
+            <!-- LESSON 11: Async/Promises -->
+            <div class="ts-lesson">
+                <div class="ts-lesson-header">
+                    <div class="ts-lesson-num">11</div>
+                    <div class="ts-lesson-title">Async & Promises cu tipuri</div>
+                </div>
+                <div class="ts-lesson-tag">Promise&lt;T&gt; · async/await · fetch typing</div>
+                <p>
+                    TypeScript tipizează și <strong>operațiile asincrone</strong> — funcțiile async returnează
+                    <code>Promise&lt;T&gt;</code>.
+                </p>
+                <div class="ts-code"><span class="com">// Funcție async tipizată</span>
+                    <span class="kw">async function</span> <span class="fn">fetchUser</span>(id: <span
+                        class="ts-type">number</span>): <span class="ts-type">Promise</span>&lt;<span
+                        class="ts-type">User</span>&gt; {
+                    <span class="kw">const</span> res = <span class="kw">await</span> <span
+                        class="fn">fetch</span>(<span class="str">`/api/users/${id}`</span>);
+                    <span class="kw">const</span> data: <span class="ts-type">User</span> = <span
+                        class="kw">await</span> res.<span class="fn">json</span>();
+                    <span class="kw">return</span> data;
+                    }
+
+                    <span class="com">// Folosire</span>
+                    <span class="kw">const</span> user = <span class="kw">await</span> <span
+                        class="fn">fetchUser</span>(<span class="num">1</span>);
+                    console.<span class="fn">log</span>(user.name); <span class="com">// TS știe: e string</span>
+                    console.<span class="fn">log</span>(user.xyz); <span class="com">// ❌ Error: 'xyz' nu există pe
+                        User</span>
+
+                    <span class="com">// Promise.all tipizat</span>
+                    <span class="kw">const</span> [user1, user2] = <span class="kw">await</span> Promise.<span
+                        class="fn">all</span>([
+                    <span class="fn">fetchUser</span>(<span class="num">1</span>),
+                    <span class="fn">fetchUser</span>(<span class="num">2</span>)
+                    ]); <span class="com">// Ambii sunt User!</span>
+                </div>
+            </div>
+
+            <!-- LESSON 12: Cum compilezi TS -->
+            <div class="ts-lesson">
+                <div class="ts-lesson-header">
+                    <div class="ts-lesson-num">12</div>
+                    <div class="ts-lesson-title">Cum rulezi TypeScript?</div>
+                </div>
+                <div class="ts-lesson-tag">tsc · tsconfig · compilation</div>
+                <p>
+                    Browser-ul <strong>NU</strong> înțelege TypeScript direct. Trebuie <strong>compilat</strong> în
+                    JavaScript cu <code>tsc</code> (TypeScript Compiler).
+                </p>
+                <div class="ts-code"><span class="com"># Instalare globală</span>
+                    npm install -g typescript
+
+                    <span class="com"># Verifică versiunea</span>
+                    tsc --version
+
+                    <span class="com"># Compilează un fișier</span>
+                    tsc hello.ts <span class="com"># → generează hello.js</span>
+
+                    <span class="com"># Watch mode (compilează automat la salvare)</span>
+                    tsc --watch hello.ts
+
+                    <span class="com"># Inițializează tsconfig.json</span>
+                    tsc --init
+                </div>
+                <div class="ts-note">
+                    <strong>💡 Alternativ:</strong> Poți folosi <code>ts-node</code> pentru a rula direct fișiere
+                    <code>.ts</code> fără compilare manuală: <code>npx ts-node hello.ts</code>
+                </div>
+                <div class="ts-warning">
+                    <strong>⚠️ Important:</strong> TypeScript există DOAR la compilare. La runtime, totul devine
+                    JavaScript normal. Tipurile sunt "șterse" — nu există overhead de performanță!
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer
+        style="text-align:center;padding:30px;color:var(--text-secondary);font-size:0.85rem;border-top:1px solid var(--border);">
+        ⚡ JavaScript Playground — Creat pentru a învăța prin practică<br>
+        <a href="https://github.com/poprobert0412" style="color:var(--text-accent);">Creat de poprobert0412</a>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>

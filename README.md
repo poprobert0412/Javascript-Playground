@@ -23,6 +23,7 @@
 | ❓ **15 Quiz-uri** | Testează-ți cunoștințele cu feedback instant |
 | 🎯 **8 Provocări Consolă** | Scrie JavaScript direct din F12! |
 | 🖥️ **9 Console Challenges** | Deschide DevTools → Console și manipulează pagina cu cod real! |
+| 🔷 **12 Lecții TypeScript** | De la tipuri de bază la generics, interfaces, enums și utility types |
 | 🚀 **3 Mini-Proiecte** | To-Do List, Quiz Game, Weather App |
 | 💻 **Playground** | Consolă JS interactivă cu autocomplete |
 | 🧩 **Code Puzzle** | Drag & drop — aranjează codul corect |
@@ -76,6 +77,7 @@
 ├── 📄 puzzle.html               # 10 code puzzle-uri
 ├── 📄 flashcards.html           # 44 flashcards JavaScript
 ├── 📄 console-challenges.html   # 🆕 9 Console Challenges (DevTools)
+├── 📄 typescript.html            # 🆕 12 lecții TypeScript
 ├── 📄 achievements.html         # Pagina achievements
 ├── 📄 dashboard.html            # Dashboard progres
 ├── 📄 cheatsheet.html           # Referință rapidă
@@ -98,7 +100,8 @@
 │   ├── 📄 dashboard.js          # Logica dashboard
 │   ├── 📄 puzzle.js             # Logica code puzzle + confetti
 │   ├── 📄 flashcards.js         # Logica flashcards
-│   └── 📄 console-challenges.js # 🆕 Console Challenges detection
+│   ├── 📄 console-challenges.js # 🆕 Console Challenges detection
+│   └── 📄 ...
 ├── 📄 LICENSE                   # Licență MIT
 ├── 📄 README.md                 # Acest fișier
 └── 🖼️ screenshot.png            # Preview homepage
