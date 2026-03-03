@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Puzzle — Aranjează Codul Corect</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .puzzle-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .puzzle-info {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .puzzle-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        .puzzle-badge.level {
+            background: rgba(0, 210, 255, 0.12);
+            color: var(--accent-4);
+            border: 1px solid rgba(0, 210, 255, 0.25);
+        }
+
+        .puzzle-badge.score {
+            background: rgba(0, 230, 118, 0.12);
+            color: var(--success);
+            border: 1px solid rgba(0, 230, 118, 0.25);
+        }
+
+        .puzzle-badge.streak {
+            background: rgba(233, 69, 96, 0.12);
+            color: var(--accent-1);
+            border: 1px solid rgba(233, 69, 96, 0.25);
+        }
+
+        .puzzle-challenge {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 24px;
+        }
+
+        .puzzle-challenge h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .puzzle-desc {
+            font-size: 0.92rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .expected-output {
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--success);
+            margin-bottom: 20px;
+        }
+
+        .expected-output .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        /* Drag & Drop Area */
+        .puzzle-area {
+            background: var(--bg-code);
+            border: 2px dashed var(--border);
+            border-radius: 14px;
+            padding: 16px;
+            min-height: 200px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+        }
+
+        .puzzle-area.drag-over {
+            border-color: var(--accent-4);
+            background: rgba(0, 210, 255, 0.03);
+        }
+
+        .puzzle-line {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            cursor: grab;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .puzzle-line:active {
+            cursor: grabbing;
+        }
+
+        .puzzle-line:hover {
+            border-color: var(--accent-4);
+            transform: translateX(4px);
+        }
+
+        .puzzle-line.dragging {
+            opacity: 0.4;
+            border-color: var(--accent-4);
+        }
+
+        .puzzle-line.drag-placeholder {
+            border: 2px dashed var(--accent-4);
+            background: rgba(0, 210, 255, 0.05);
+        }
+
+        .puzzle-line .line-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            min-width: 24px;
+            text-align: center;
+            opacity: 0.5;
+        }
+
+        .puzzle-line .line-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.88rem;
+            color: var(--text-primary);
+            flex: 1;
+        }
+
+        .puzzle-line .drag-handle {
+            color: var(--text-secondary);
+            opacity: 0.4;
+            font-size: 1rem;
+        }
+
+        /* Correct/Wrong feedback */
+        .puzzle-line.correct {
+            border-color: var(--success);
+            background: rgba(0, 230, 118, 0.06);
+        }
+
+        .puzzle-line.correct .line-number {
+            color: var(--success);
+            opacity: 1;
+        }
+
+        .puzzle-line.wrong {
+            border-color: var(--accent-1);
+            background: rgba(233, 69, 96, 0.06);
+        }
+
+        .puzzle-line.wrong .line-number {
+            color: var(--accent-1);
+            opacity: 1;
+        }
+
+        /* Buttons */
+        .puzzle-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .puzzle-btn {
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border: none;
+        }
+
+        .puzzle-btn.primary {
+            background: linear-gradient(135deg, #e94560, #533483);
+            color: white;
+            box-shadow: 0 4px 18px rgba(233, 69, 96, 0.25);
+        }
+
+        .puzzle-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(233, 69, 96, 0.35);
+        }
+
+        .puzzle-btn.secondary {
+            background: transparent;
+            border: 1px solid var(--accent-4);
+            color: var(--accent-4);
+        }
+
+        .puzzle-btn.secondary:hover {
+            background: rgba(0, 210, 255, 0.1);
+        }
+
+        .puzzle-btn.success {
+            background: linear-gradient(135deg, #00e676, #00c853);
+            color: #1a1a2e;
+        }
+
+        /* Result */
+        .puzzle-result {
+            display: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .puzzle-result.show {
+            display: block;
+        }
+
+        .puzzle-result.correct-result {
+            border-color: var(--success);
+        }
+
+        .puzzle-result.wrong-result {
+            border-color: var(--accent-1);
+        }
+
+        .puzzle-result .result-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .puzzle-result .result-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .puzzle-result .result-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Puzzle selector */
+        .puzzle-selector {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .puzzle-select-btn {
+            padding: 8px 18px;
+            border-radius: 10px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--text-secondary);
+        }
+
+        .puzzle-select-btn:hover {
+            border-color: var(--accent-4);
+            color: var(--accent-4);
+        }
+
+        .puzzle-select-btn.active {
+            background: rgba(0, 210, 255, 0.12);
+            border-color: var(--accent-4);
+            color: var(--accent-4);
+        }
+
+        .puzzle-select-btn.completed {
+            background: rgba(0, 230, 118, 0.1);
+            border-color: var(--success);
+            color: var(--success);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo">⚡ JS Playground</div>
+        <div class="nav-links">
+            <a href="index.html">🏠 Acasă</a>
+            <a href="lectii.html">📖 Lecții</a>
+            <a href="exercitii.html">✏️ Exerciții</a>
+            <a href="quizuri.html">❓ Quiz</a>
+            <a href="cheatsheet.html">📋 Cheatsheet</a>
+            <a href="devtools.html">🔧 DevTools</a>
+            <a href="provocari.html">🎯 Provocări</a>
+            <a href="proiecte.html">🚀 Proiecte</a>
+            <a href="debugging.html">🐛 Debug</a>
+            <a href="glosar.html">📖 Glosar</a>
+            <a href="search.html">🔍 Caută</a>
+            <a href="playground.html">💻 Playground</a>
+            <a href="achievements.html">🏆 Achievements</a>
+            <a href="dashboard.html">📊 Dashboard</a>
+            <a href="puzzle.html" class="active">🧩 Code Puzzle</a>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <h1>🧩 Code Puzzle</h1>
+        <p>Aranjează liniile de cod în ordinea corectă! Trage și plasează fiecare linie la locul ei.</p>
+    </div>
+
+    <main>
+        <div class="puzzle-header">
+            <div class="puzzle-info">
+                <span class="puzzle-badge level" id="levelBadge">Puzzle 1 / 10</span>
+                <span class="puzzle-badge score" id="scoreBadge">Scor: 0</span>
+                <span class="puzzle-badge streak" id="streakBadge">🔥 Streak: 0</span>
+            </div>
+        </div>
+
+        <div class="puzzle-selector" id="puzzleSelector"></div>
+
+        <div class="puzzle-challenge" id="puzzleChallenge">
+            <h3 id="puzzleTitle">🧩 Încarcă...</h3>
+            <p class="puzzle-desc" id="puzzleDesc"></p>
+            <div class="expected-output" id="expectedOutput">
+                <div class="label">Rezultat așteptat:</div>
+                <div id="expectedText"></div>
+            </div>
+        </div>
+
+        <div class="puzzle-area" id="puzzleArea"></div>
+
+        <div class="puzzle-result" id="puzzleResult">
+            <span class="result-icon" id="resultIcon"></span>
+            <div class="result-text" id="resultText"></div>
+            <div class="result-desc" id="resultDesc"></div>
+        </div>
+
+        <div class="puzzle-actions">
+            <button class="puzzle-btn primary" id="checkBtn">✅ Verifică</button>
+            <button class="puzzle-btn secondary" id="shuffleBtn">🔀 Amestecă</button>
+            <button class="puzzle-btn success" id="nextBtn" style="display:none;">➡️ Următorul Puzzle</button>
+        </div>
+    </main>
+
+    <footer>
+        <p>⚡ JavaScript Playground — Creat pentru a învăța prin practică</p>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script src="js/puzzle.js"></script>
+</body>
+
+</html>

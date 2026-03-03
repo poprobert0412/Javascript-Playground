@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Achievements — Realizările Tale JavaScript</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .achievements-stats {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px 36px;
+            text-align: center;
+            min-width: 160px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(0, 210, 255, 0.3);
+        }
+
+        .stat-card .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-4), var(--accent-1));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .achievement-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .achievement-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-4), var(--accent-1));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .achievement-card.unlocked::before {
+            opacity: 1;
+        }
+
+        .achievement-card.unlocked {
+            border-color: rgba(0, 210, 255, 0.25);
+        }
+
+        .achievement-card.unlocked:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 210, 255, 0.15);
+        }
+
+        .achievement-card.locked {
+            opacity: 0.5;
+            filter: grayscale(0.4);
+        }
+
+        .achievement-card.locked:hover {
+            opacity: 0.7;
+        }
+
+        .achievement-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .achievement-card.unlocked .achievement-icon {
+            animation: iconPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes iconPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .achievement-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .achievement-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .achievement-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .achievement-card.unlocked .achievement-status {
+            background: rgba(0, 230, 118, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(0, 230, 118, 0.3);
+        }
+
+        .achievement-card.locked .achievement-status {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .achievement-progress {
+            margin-top: 10px;
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            background: linear-gradient(90deg, var(--accent-4), var(--accent-1));
+            transition: width 0.6s ease;
+        }
+
+        .progress-text {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            text-align: right;
+        }
+
+        .reset-btn {
+            display: block;
+            margin: 40px auto 0;
+            padding: 10px 24px;
+            background: transparent;
+            border: 1px solid var(--accent-1);
+            border-radius: 10px;
+            color: var(--accent-1);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .reset-btn:hover {
+            background: rgba(233, 69, 96, 0.1);
+        }
+
+        .section-label {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 30px 0 16px;
+            padding-left: 14px;
+            border-left: 3px solid var(--accent-4);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo">⚡ JS Playground</div>
+        <div class="nav-links">
+            <a href="index.html">🏠 Acasă</a>
+            <a href="lectii.html">📖 Lecții</a>
+            <a href="exercitii.html">✏️ Exerciții</a>
+            <a href="quizuri.html">❓ Quiz</a>
+            <a href="cheatsheet.html">📋 Cheatsheet</a>
+            <a href="devtools.html">🔧 DevTools</a>
+            <a href="provocari.html">🎯 Provocări</a>
+            <a href="proiecte.html">🚀 Proiecte</a>
+            <a href="debugging.html">🐛 Debug</a>
+            <a href="glosar.html">📖 Glosar</a>
+            <a href="search.html">🔍 Caută</a>
+            <a href="playground.html">💻 Playground</a>
+            <a href="achievements.html" class="active">🏆 Achievements</a>
+            <a href="dashboard.html">📊 Dashboard</a>
+            <a href="puzzle.html">🧩 Code Puzzle</a>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <h1>🏆 Achievements</h1>
+        <p>Colecționează badge-uri pe măsură ce înveți! Completează lecții, exerciții și provocări pentru a le debloca.
+        </p>
+        <span class="badge" id="totalBadge">0 / 10 deblocate</span>
+    </div>
+
+    <main>
+        <div class="achievements-stats" id="stats"></div>
+        <div class="section-label">🔓 Achievements Deblocate</div>
+        <div class="achievements-grid" id="unlockedGrid"></div>
+        <div class="section-label" id="lockedLabel">🔒 Achievements Blocate</div>
+        <div class="achievements-grid" id="lockedGrid"></div>
+        <button class="reset-btn" id="resetBtn">🗑️ Resetează tot progresul</button>
+    </main>
+
+    <footer>
+        <p>⚡ JavaScript Playground — Creat pentru a învăța prin practică</p>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script src="js/achievements.js"></script>
+</body>
+
+</html>
