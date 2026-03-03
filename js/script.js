@@ -776,3 +776,129 @@ document.addEventListener('click', (e) => {
         window.location.href = href;
     }, 300);
 });
+
+
+// ============================================================================
+// 🟢 SECȚIUNEA 15: SCROLL ANIMATIONS (Intersection Observer)
+// ============================================================================
+
+(function initScrollAnimations() {
+    // Elements to animate on scroll
+    const selectors = '.card, .landing-card, .overview-card, .achievement-card, .progress-section, .recent-activity, .level-card, .roadmap-item, .prof-note, .puzzle-container, .flashcard-container, .error-page, .page-header';
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('scroll-visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.08,
+        rootMargin: '0px 0px -40px 0px'
+    });
+
+    // Apply initial hidden state + observe
+    function observeElements() {
+        document.querySelectorAll(selectors).forEach((el, i) => {
+            if (!el.classList.contains('scroll-animated')) {
+                el.classList.add('scroll-animated');
+                el.style.transitionDelay = `${Math.min(i * 0.06, 0.4)}s`;
+                observer.observe(el);
+            }
+        });
+    }
+
+    // Run on load and after dynamic content
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', observeElements);
+    } else {
+        observeElements();
+    }
+
+    // Re-observe after 500ms for dynamically generated content
+    setTimeout(observeElements, 500);
+})();
+
+
+// ============================================================================
+// 🟢 SECȚIUNEA 16: TOOLTIP SYSTEM
+// ============================================================================
+
+(function initTooltips() {
+    // Tooltip data for navigation links
+    const tooltipMap = {
+        '🏠 Acasă': 'Pagina principală',
+        '📖 Lecții': '19 lecții interactive JavaScript',
+        '✏️ Exerciții': '18 exerciții practice cu editor',
+        '❓ Quiz': '15 quiz-uri pentru testare',
+        '📋 Cheatsheet': 'Referință rapidă concepte JS',
+        '🔧 DevTools': 'Ghid Chrome Developer Tools',
+        '🎯 Provocări': '8 provocări avansate',
+        '🚀 Proiecte': '3 mini-proiecte reale',
+        '🐛 Debug': 'Tehnici de debugging JS',
+        '📖 Glosar': 'Dicționar de termeni',
+        '🔍 Caută': 'Caută în tot conținutul',
+        '💻 Playground': 'Consolă JS interactivă',
+        '🏆 Achievements': '10 badge-uri de colectat',
+        '📊 Dashboard': 'Progresul tău global',
+        '🧩 Code Puzzle': '10 puzzle-uri drag & drop',
+        '🃏 Flashcards': '44 termeni cu flip 3D'
+    };
+
+    // Create tooltip element
+    const tooltip = document.createElement('div');
+    tooltip.className = 'js-tooltip';
+    tooltip.style.cssText = `
+        position: fixed; z-index: 9999;
+        padding: 6px 12px; border-radius: 8px;
+        background: rgba(0, 0, 0, 0.85); color: #e0e0e0;
+        font-size: 0.75rem; font-weight: 500;
+        pointer-events: none; opacity: 0;
+        transition: opacity 0.2s ease, transform 0.2s ease;
+        transform: translateY(4px);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.1);
+        white-space: nowrap;
+        font-family: 'Inter', sans-serif;
+    `;
+    document.body.appendChild(tooltip);
+
+    // Apply tooltips to nav links
+    document.querySelectorAll('.nav-links a').forEach(link => {
+        const text = link.textContent.trim();
+        if (tooltipMap[text]) {
+            link.setAttribute('data-tooltip', tooltipMap[text]);
+        }
+    });
+
+    // Global tooltip handlers
+    document.addEventListener('mouseover', (e) => {
+        const el = e.target.closest('[data-tooltip]');
+        if (!el) return;
+
+        tooltip.textContent = el.getAttribute('data-tooltip');
+        tooltip.style.opacity = '1';
+        tooltip.style.transform = 'translateY(0)';
+
+        const rect = el.getBoundingClientRect();
+        const tipRect = tooltip.getBoundingClientRect();
+        let left = rect.left + rect.width / 2 - tipRect.width / 2;
+        let top = rect.top - tipRect.height - 8;
+
+        // Keep in viewport
+        if (left < 8) left = 8;
+        if (left + tipRect.width > window.innerWidth - 8) left = window.innerWidth - tipRect.width - 8;
+        if (top < 8) top = rect.bottom + 8; // flip below
+
+        tooltip.style.left = left + 'px';
+        tooltip.style.top = top + 'px';
+    });
+
+    document.addEventListener('mouseout', (e) => {
+        const el = e.target.closest('[data-tooltip]');
+        if (!el) return;
+        tooltip.style.opacity = '0';
+        tooltip.style.transform = 'translateY(4px)';
+    });
+})();

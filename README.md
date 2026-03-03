@@ -33,7 +33,17 @@
 | 🐛 **Tutorial Debugging** | Tehnici de depanare profesionale |
 | 📖 **Glosar 238+ Termeni** | Dicționar complet JavaScript |
 | 🔍 **Căutare Instant** | Găsește orice concept rapid |
-| 🌓 **Dark/Light Mode** | Tema preferată salvată în localStorage |
+| 📝 **Dark/Light Mode** | Tema preferată salvată în localStorage |
+| ⏱️ **Timer pe Puzzle** | 60 secunde cu bonus de timp la scor |
+| 🎊 **Confetti Animation** | Ploaie de confetti la răspuns corect |
+| 🔊 **Sound Effects** | Ding melodic la corect, buzz la greșit |
+| ⌨️ **Ctrl+K Căutare** | Scurtătură globală pentru căutare |
+| 📥 **Export/Import** | Salvează/restaurează progresul ca JSON |
+| ✨ **Page Transitions** | Fade-in la încărcare, fade-out la navigare |
+| 📜 **Scroll Animations** | Elemente apar cu fade pe scroll |
+| 💬 **Tooltip-uri** | Hover arată descrieri pe link-uri |
+| 🤔 **Pagina 404** | Pagină custom cu cod animat |
+| 📱 **Responsive Design** | Perfect pe telefon, tabletă și desktop |
 
 ---
 
@@ -44,6 +54,9 @@
 - **JavaScript (Vanilla)** — Zero dependențe externe, cod curat și comentat
 - **Google Fonts** — Inter + JetBrains Mono
 - **localStorage** — Salvare progres, teme, achievements
+- **Intersection Observer** — Scroll animations
+- **Web Audio API** — Sound effects fără fișiere externe
+- **Responsive Design** — 3 breakpoints (1024px, 768px, 480px)
 
 ---
 
@@ -67,6 +80,7 @@
 ├── 📄 debugging.html          # Tutorial debugging
 ├── 📄 glosar.html             # Glosar 238+ termeni
 ├── 📄 search.html             # Căutare instant
+├── 📄 404.html                # Pagină 404 custom
 ├── 📂 css/
 │   └── 📄 styles.css          # Stiluri CSS partajate
 ├── 📂 js/
