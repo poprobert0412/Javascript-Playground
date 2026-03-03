@@ -1377,3 +1377,47 @@ footer .footer-license {
         border: 1px solid #ddd;
     }
 }
+
+/* === CONFETTI ANIMATION === */
+@keyframes confettiFall {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* === KEYBOARD SHORTCUT HINT === */
+.ctrl-k-hint {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 8px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    z-index: 100;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.ctrl-k-hint kbd {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem;
+}
+
+@media (max-width: 768px) {
+    .ctrl-k-hint {
+        display: none;
+    }
+}

@@ -418,6 +418,9 @@
             resultText.textContent = 'PERFECT!';
             resultDesc.textContent = `+${(streak) * 10} puncte + ${timeBonus}s bonus timp! Streak: ${streak} 🔥`;
 
+            if (window.launchConfetti) window.launchConfetti();
+            if (window.SoundFX) window.SoundFX.play('correct');
+
             document.getElementById('nextBtn').style.display = '';
             document.getElementById('checkBtn').style.display = 'none';
         } else {
@@ -426,6 +429,7 @@
             resultIcon.textContent = '😅';
             resultText.textContent = 'Nu e corect...';
             resultDesc.textContent = 'Liniile roșii sunt la poziția greșită. Mai încearcă!';
+            if (window.SoundFX) window.SoundFX.play('wrong');
         }
 
         document.getElementById('scoreBadge').textContent = `Scor: ${score}`;

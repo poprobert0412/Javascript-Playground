@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 — Pagina nu există</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .error-page {
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .error-code {
+            font-size: 8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-3), var(--accent-4));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 10px;
+            animation: glitch 3s ease-in-out infinite;
+        }
+
+        @keyframes glitch {
+
+            0%,
+            100% {
+                transform: translate(0);
+            }
+
+            20% {
+                transform: translate(-2px, 2px);
+            }
+
+            40% {
+                transform: translate(2px, -2px);
+            }
+
+            60% {
+                transform: translate(-1px, -1px);
+            }
+
+            80% {
+                transform: translate(1px, 1px);
+            }
+        }
+
+        .error-emoji {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        .error-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .error-desc {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .error-code-block {
+            background: var(--bg-code);
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--accent-1);
+            margin-bottom: 32px;
+            border: 1px solid var(--border);
+        }
+
+        .error-actions {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .error-btn {
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.25s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .error-btn.primary {
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
+            color: white;
+        }
+
+        .error-btn.primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(233, 69, 96, 0.3);
+        }
+
+        .error-btn.secondary {
+            background: transparent;
+            border: 1px solid var(--accent-4);
+            color: var(--accent-4);
+        }
+
+        .error-btn.secondary:hover {
+            background: rgba(0, 210, 255, 0.1);
+            transform: translateY(-3px);
+        }
+
+        @media (max-width: 480px) {
+            .error-code {
+                font-size: 5rem;
+            }
+
+            .error-emoji {
+                font-size: 3.5rem;
+            }
+
+            .error-title {
+                font-size: 1.4rem;
+            }
+
+            .error-desc {
+                font-size: 0.88rem;
+            }
+
+            .error-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .error-btn {
+                width: 100%;
+                max-width: 260px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo">⚡ JS Playground</div>
+        <div class="nav-links">
+            <a href="index.html">🏠 Acasă</a>
+            <a href="lectii.html">📖 Lecții</a>
+            <a href="exercitii.html">✏️ Exerciții</a>
+            <a href="quizuri.html">❓ Quiz</a>
+            <a href="cheatsheet.html">📋 Cheatsheet</a>
+            <a href="devtools.html">🔧 DevTools</a>
+            <a href="provocari.html">🎯 Provocări</a>
+            <a href="proiecte.html">🚀 Proiecte</a>
+            <a href="debugging.html">🐛 Debug</a>
+            <a href="glosar.html">📖 Glosar</a>
+            <a href="search.html">🔍 Caută</a>
+            <a href="playground.html">💻 Playground</a>
+            <a href="achievements.html">🏆 Achievements</a>
+            <a href="dashboard.html">📊 Dashboard</a>
+            <a href="puzzle.html">🧩 Code Puzzle</a>
+            <a href="flashcards.html">🃏 Flashcards</a>
+        </div>
+    </nav>
+
+    <div class="error-page">
+        <div class="error-code">404</div>
+        <div class="error-emoji">🤔</div>
+        <h1 class="error-title">Pagina nu a fost găsită</h1>
+        <p class="error-desc">
+            Se pare că ai ajuns pe o cale care nu există. Poate URL-ul e greșit, sau pagina a fost mutată.
+        </p>
+        <div class="error-code-block">
+            <span style="color: var(--accent-4)">const</span> page = <span
+                style="color: var(--success)">find</span>(url);<br>
+            <span style="color: var(--text-secondary)">// ❌ TypeError: page is undefined</span>
+        </div>
+        <div class="error-actions">
+            <a href="index.html" class="error-btn primary">🏠 Acasă</a>
+            <a href="search.html" class="error-btn secondary">🔍 Caută</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>⚡ JavaScript Playground — Creat pentru a învăța prin practică</p>
+        <div class="footer-author">
+            <div class="author-name">Creat de poprobert0412</div>
+            <div class="social-links">
+                <a href="https://github.com/poprobert0412" target="_blank">🐙 GitHub</a>
+                <a href="https://www.linkedin.com/in/poprobert1999" target="_blank">💼 LinkedIn</a>
+            </div>
+        </div>
+        <p class="footer-license">© 2026 poprobert0412. Toate drepturile rezervate. Licență MIT.</p>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>

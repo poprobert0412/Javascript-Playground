@@ -502,6 +502,12 @@ if (demoTarget) {
     rightControls.appendChild(toggle);
     rightControls.appendChild(hamburger);
     navbar.appendChild(rightControls);
+
+    // Ctrl+K hint badge
+    const hint = document.createElement('div');
+    hint.className = 'ctrl-k-hint';
+    hint.innerHTML = '<kbd>Ctrl</kbd> + <kbd>K</kbd> Caută';
+    document.body.appendChild(hint);
 })();
 
 
@@ -587,3 +593,186 @@ const Achievements = {
 };
 
 window.Achievements = Achievements;
+
+
+// ============================================================================
+// 🟢 SECȚIUNEA 9: EXPORT / IMPORT PROGRES
+// ============================================================================
+
+window.exportProgress = function () {
+    const data = {
+        progress: JSON.parse(localStorage.getItem('js-playground-progress') || '{}'),
+        achievements: JSON.parse(localStorage.getItem('js-playground-achievements') || '[]'),
+        theme: localStorage.getItem('js-playground-theme') || 'dark',
+        exportDate: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `js-playground-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+};
+
+window.importProgress = function () {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            try {
+                const data = JSON.parse(ev.target.result);
+                if (data.progress) localStorage.setItem('js-playground-progress', JSON.stringify(data.progress));
+                if (data.achievements) localStorage.setItem('js-playground-achievements', JSON.stringify(data.achievements));
+                if (data.theme) localStorage.setItem('js-playground-theme', data.theme);
+                alert('✅ Progres importat cu succes! Pagina se va reîncărca.');
+                location.reload();
+            } catch (err) {
+                alert('❌ Fișier invalid! Selectează un backup JSON valid.');
+            }
+        };
+        reader.readAsText(file);
+    });
+    input.click();
+};
+
+
+// ============================================================================
+// 🟢 SECȚIUNEA 10: CONFETTI ANIMATION 🎊
+// ============================================================================
+
+window.launchConfetti = function () {
+    const colors = ['#e94560', '#00d2ff', '#533483', '#00e676', '#ffab40', '#ffd700', '#ff6b6b', '#b388ff'];
+    const container = document.createElement('div');
+    container.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;overflow:hidden;';
+    document.body.appendChild(container);
+
+    for (let i = 0; i < 80; i++) {
+        const piece = document.createElement('div');
+        const size = Math.random() * 10 + 6;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const left = Math.random() * 100;
+        const delay = Math.random() * 0.6;
+        const duration = Math.random() * 2 + 2;
+        const rotation = Math.random() * 720 - 360;
+        const shapes = ['50%', '0%', '30%'];
+        const shape = shapes[Math.floor(Math.random() * shapes.length)];
+
+        piece.style.cssText = `
+            position:absolute; top:-20px; left:${left}%;
+            width:${size}px; height:${size}px;
+            background:${color}; border-radius:${shape};
+            opacity:1;
+            animation: confettiFall ${duration}s ease-in ${delay}s forwards;
+        `;
+        container.appendChild(piece);
+    }
+
+    setTimeout(() => container.remove(), 4000);
+};
+
+
+// ============================================================================
+// 🟢 SECȚIUNEA 11: SOUND EFFECTS 🔊
+// ============================================================================
+
+const SoundFX = {
+    ctx: null,
+    getCtx() {
+        if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        return this.ctx;
+    },
+    play(type) {
+        try {
+            const ctx = this.getCtx();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            if (type === 'correct') {
+                osc.frequency.setValueAtTime(523, ctx.currentTime);     // C5
+                osc.frequency.setValueAtTime(659, ctx.currentTime + 0.1); // E5
+                osc.frequency.setValueAtTime(784, ctx.currentTime + 0.2); // G5
+                gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.5);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, ctx.currentTime);
+                osc.frequency.setValueAtTime(150, ctx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.3);
+            } else if (type === 'click') {
+                osc.frequency.setValueAtTime(800, ctx.currentTime);
+                gain.gain.setValueAtTime(0.05, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.08);
+            }
+        } catch (e) { /* AudioContext not supported */ }
+    }
+};
+
+window.SoundFX = SoundFX;
+
+
+// ============================================================================
+// 🟢 SECȚIUNEA 12: CTRL+K GLOBAL SEARCH SHORTCUT
+// ============================================================================
+
+document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        window.location.href = 'search.html';
+    }
+});
+
+
+// ============================================================================
+// 🟢 SECȚIUNEA 13: PAGE LOAD ANIMATION (Fade In)
+// ============================================================================
+
+(function pageLoadAnimation() {
+    document.body.style.opacity = '0';
+    document.body.style.transition = 'opacity 0.4s ease';
+
+    window.addEventListener('DOMContentLoaded', () => {
+        requestAnimationFrame(() => {
+            document.body.style.opacity = '1';
+        });
+    });
+
+    // If DOMContentLoaded already fired
+    if (document.readyState !== 'loading') {
+        requestAnimationFrame(() => {
+            document.body.style.opacity = '1';
+        });
+    }
+})();
+
+
+// ============================================================================
+// 🟢 SECȚIUNEA 14: SMOOTH PAGE TRANSITIONS  
+// ============================================================================
+
+document.addEventListener('click', (e) => {
+    const link = e.target.closest('a[href]');
+    if (!link) return;
+
+    const href = link.getAttribute('href');
+    // Only intercept local .html links
+    if (!href || href.startsWith('http') || href.startsWith('#') || href.startsWith('mailto:') || link.target === '_blank') return;
+
+    e.preventDefault();
+    document.body.style.opacity = '0';
+    setTimeout(() => {
+        window.location.href = href;
+    }, 300);
+});
