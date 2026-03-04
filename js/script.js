@@ -484,7 +484,7 @@ if (demoTarget) {
 
     // --- Creăm wrapper-ul din dreapta (hamburger + theme toggle) ---
     const rightControls = document.createElement('div');
-    rightControls.style.cssText = 'display:flex; align-items:center; gap:10px;';
+    rightControls.style.cssText = 'display:flex; align-items:center; gap:10px; position:relative; z-index:200;';
 
     // Theme toggle
     const toggle = document.createElement('button');
@@ -500,6 +500,185 @@ if (demoTarget) {
     });
 
     rightControls.appendChild(toggle);
+
+    // --- Lo-Fi Beat Music Player ---
+    let audioCtx = null;
+    let musicPlaying = false;
+    let beatInterval = null;
+
+    function createLoFiBeat() {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const master = audioCtx.createGain();
+        master.gain.value = 0.08;
+        const comp = audioCtx.createDynamicsCompressor();
+        comp.threshold.value = -20;
+        comp.ratio.value = 4;
+        master.connect(comp);
+        comp.connect(audioCtx.destination);
+
+        // Vinyl crackle
+        const cLen = audioCtx.sampleRate * 4;
+        const cBuf = audioCtx.createBuffer(1, cLen, audioCtx.sampleRate);
+        const cD = cBuf.getChannelData(0);
+        for (let i = 0; i < cLen; i++) cD[i] = Math.random() > 0.997 ? (Math.random() - 0.5) * 0.3 : (Math.random() - 0.5) * 0.008;
+        const cSrc = audioCtx.createBufferSource();
+        cSrc.buffer = cBuf; cSrc.loop = true;
+        const cF = audioCtx.createBiquadFilter();
+        cF.type = 'bandpass'; cF.frequency.value = 4000;
+        const cG = audioCtx.createGain(); cG.gain.value = 0.5;
+        cSrc.connect(cF); cF.connect(cG); cG.connect(master); cSrc.start();
+
+        function kick(t) {
+            const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+            o.type = 'sine';
+            o.frequency.setValueAtTime(150, t);
+            o.frequency.exponentialRampToValueAtTime(30, t + 0.15);
+            g.gain.setValueAtTime(0.8, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+            o.connect(g); g.connect(master); o.start(t); o.stop(t + 0.4);
+        }
+
+        function hihat(t, open) {
+            const len = audioCtx.sampleRate * (open ? 0.15 : 0.05);
+            const b = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+            const d = b.getChannelData(0);
+            for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+            const s = audioCtx.createBufferSource(); s.buffer = b;
+            const f = audioCtx.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 7000;
+            const g = audioCtx.createGain();
+            g.gain.setValueAtTime(open ? 0.12 : 0.08, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + (open ? 0.15 : 0.05));
+            s.connect(f); f.connect(g); g.connect(master); s.start(t);
+        }
+
+        function snare(t) {
+            const len = audioCtx.sampleRate * 0.12;
+            const b = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+            const d = b.getChannelData(0);
+            for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+            const s = audioCtx.createBufferSource(); s.buffer = b;
+            const nF = audioCtx.createBiquadFilter(); nF.type = 'bandpass'; nF.frequency.value = 3000;
+            const nG = audioCtx.createGain();
+            nG.gain.setValueAtTime(0.2, t);
+            nG.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+            s.connect(nF); nF.connect(nG); nG.connect(master); s.start(t);
+            const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+            o.type = 'triangle'; o.frequency.value = 180;
+            g.gain.setValueAtTime(0.25, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+            o.connect(g); g.connect(master); o.start(t); o.stop(t + 0.08);
+        }
+
+        const chords = [
+            { pad: [220, 261.63, 329.63], bass: 110 },
+            { pad: [196, 246.94, 293.66], bass: 98 },
+            { pad: [174.61, 220, 261.63], bass: 87.31 },
+            { pad: [196, 233.08, 293.66], bass: 98 },
+            { pad: [220, 261.63, 329.63], bass: 110 },
+            { pad: [174.61, 220, 277.18], bass: 87.31 },
+            { pad: [164.81, 196, 246.94], bass: 82.41 },
+            { pad: [196, 246.94, 293.66], bass: 98 },
+        ];
+
+        const BPM = 75;
+        const beatLen = 60 / BPM;
+        let beat = 0, chordIdx = 0;
+
+        function tick() {
+            if (!musicPlaying || !audioCtx) return;
+            const t = audioCtx.currentTime + 0.05;
+            const b = beat % 8;
+            if ([0, 3, 4, 6].includes(b)) kick(t);
+            if ([2, 6].includes(b)) snare(t);
+            hihat(t, b === 1 || b === 5);
+
+            if (b === 0) {
+                const c = chords[chordIdx % chords.length]; chordIdx++;
+                c.pad.forEach((freq, i) => {
+                    const o = audioCtx.createOscillator(), g = audioCtx.createGain(), f = audioCtx.createBiquadFilter();
+                    o.type = 'triangle'; o.frequency.value = freq; o.detune.value = (Math.random() - 0.5) * 15;
+                    f.type = 'lowpass'; f.frequency.value = 500 + Math.random() * 300;
+                    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.2, t + 0.8);
+                    g.gain.setValueAtTime(0.2, t + beatLen * 6); g.gain.linearRampToValueAtTime(0, t + beatLen * 8);
+                    o.connect(f); f.connect(g); g.connect(master);
+                    o.start(t + i * 0.1); o.stop(t + beatLen * 8.5);
+                });
+                const bs = audioCtx.createOscillator(), bG = audioCtx.createGain();
+                bs.type = 'sine'; bs.frequency.value = c.bass;
+                bG.gain.setValueAtTime(0, t); bG.gain.linearRampToValueAtTime(0.4, t + 0.3);
+                bG.gain.setValueAtTime(0.4, t + beatLen * 6); bG.gain.linearRampToValueAtTime(0, t + beatLen * 8);
+                bs.connect(bG); bG.connect(master); bs.start(t); bs.stop(t + beatLen * 8.5);
+
+                if (Math.random() > 0.3) {
+                    const mN = c.pad[Math.floor(Math.random() * 3)] * 2;
+                    const m = audioCtx.createOscillator(), mG = audioCtx.createGain();
+                    m.type = 'sine'; m.frequency.value = mN;
+                    const mT = t + beatLen * (1 + Math.floor(Math.random() * 3));
+                    mG.gain.setValueAtTime(0, mT); mG.gain.linearRampToValueAtTime(0.06, mT + 0.2);
+                    mG.gain.linearRampToValueAtTime(0, mT + 1.5);
+                    m.connect(mG); mG.connect(master); m.start(mT); m.stop(mT + 2);
+                }
+            }
+            beat++;
+        }
+
+        beatInterval = setInterval(tick, beatLen * 1000);
+        tick();
+    }
+
+    function stopMusic() {
+        musicPlaying = false;
+        if (beatInterval) { clearInterval(beatInterval); beatInterval = null; }
+        if (audioCtx) { audioCtx.close().catch(() => {}); audioCtx = null; }
+    }
+
+    function startMusic() {
+        if (musicPlaying) return;
+        musicPlaying = true;
+        createLoFiBeat();
+        musicBtn.textContent = '🔊';
+        musicBtn.title = 'Lo-Fi Beat (On)';
+        musicBtn.style.opacity = '1';
+    }
+
+    const musicBtn = document.createElement('button');
+    musicBtn.className = 'theme-toggle';
+    musicBtn.id = 'musicToggle';
+    musicBtn.textContent = '🎵';
+    musicBtn.title = 'Lo-Fi Beat (Off)';
+    musicBtn.style.opacity = '0.5';
+
+    musicBtn.addEventListener('click', () => {
+        if (musicPlaying) {
+            stopMusic();
+            musicBtn.textContent = '🎵';
+            musicBtn.title = 'Lo-Fi Beat (Off)';
+            musicBtn.style.opacity = '0.5';
+            localStorage.setItem('js-playground-music', 'off');
+        } else {
+            startMusic();
+            localStorage.setItem('js-playground-music', 'on');
+        }
+    });
+
+    // Auto-resume across pages
+    if (localStorage.getItem('js-playground-music') === 'on') {
+        try {
+            const test = new (window.AudioContext || window.webkitAudioContext)();
+            if (test.state === 'running') { test.close(); startMusic(); }
+            else {
+                test.close();
+                const resume = () => { if (!musicPlaying) startMusic(); };
+                document.addEventListener('click', resume, { once: true });
+                document.addEventListener('scroll', resume, { once: true, passive: true });
+                musicBtn.textContent = '⏸️'; musicBtn.title = 'Click/scroll to resume'; musicBtn.style.opacity = '0.8';
+            }
+        } catch (e) {
+            document.addEventListener('click', () => { if (!musicPlaying) startMusic(); }, { once: true });
+        }
+    }
+
+    rightControls.appendChild(musicBtn);
     rightControls.appendChild(hamburger);
     navbar.appendChild(rightControls);
 
@@ -508,6 +687,256 @@ if (demoTarget) {
     hint.className = 'ctrl-k-hint';
     hint.innerHTML = '<kbd>Ctrl</kbd> + <kbd>K</kbd> Caută';
     document.body.appendChild(hint);
+
+    // --- Scroll to Top Button ---
+    const scrollBtn = document.createElement('button');
+    scrollBtn.id = 'scrollToTopBtn';
+    scrollBtn.innerHTML = '↑';
+    scrollBtn.title = 'Înapoi sus';
+    scrollBtn.setAttribute('aria-label', 'Scroll to top');
+    scrollBtn.style.cssText = 'position:fixed!important;bottom:30px!important;right:30px!important;width:48px!important;height:48px!important;border-radius:50%!important;border:1px solid rgba(255,255,255,0.15)!important;background:rgba(30,30,50,0.9)!important;color:#00d2ff!important;font-size:1.3rem!important;cursor:pointer!important;z-index:99999!important;opacity:0;pointer-events:none;transition:opacity 0.3s ease;display:flex!important;align-items:center!important;justify-content:center!important;box-shadow:0 4px 20px rgba(0,0,0,0.4)!important;';
+    document.documentElement.appendChild(scrollBtn);
+
+    scrollBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    function checkScroll() {
+        const s = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+        scrollBtn.style.opacity = s > 300 ? '1' : '0';
+        scrollBtn.style.pointerEvents = s > 300 ? 'all' : 'none';
+    }
+
+    window.addEventListener('scroll', checkScroll, { passive: true });
+    document.addEventListener('scroll', checkScroll, { passive: true });
+    setInterval(checkScroll, 300);
+
+    // Hover glow on scroll button
+    scrollBtn.addEventListener('mouseenter', () => {
+        scrollBtn.style.background = 'rgba(0, 210, 255, 0.2)';
+        scrollBtn.style.borderColor = '#00d2ff';
+        scrollBtn.style.boxShadow = '0 0 20px rgba(0, 210, 255, 0.4)';
+    });
+    scrollBtn.addEventListener('mouseleave', () => {
+        scrollBtn.style.background = 'rgba(30, 30, 50, 0.9)';
+        scrollBtn.style.borderColor = 'rgba(255,255,255,0.15)';
+        scrollBtn.style.boxShadow = '0 4px 20px rgba(0,0,0,0.4)';
+    });
+
+    // --- Scroll Progress Bar ---
+    const progressBar = document.createElement('div');
+    progressBar.id = 'scrollProgressBar';
+    progressBar.style.cssText = 'position:fixed!important;top:0!important;left:0!important;height:3px!important;width:0%!important;background:linear-gradient(90deg,#00d2ff,#7b2ff7,#ff6b9d)!important;z-index:100001!important;transition:width 0.1s linear!important;pointer-events:none!important;';
+    document.documentElement.appendChild(progressBar);
+
+    function updateProgress() {
+        const s = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+        const docHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight) - window.innerHeight;
+        const percent = docHeight > 0 ? Math.min((s / docHeight) * 100, 100) : 0;
+        progressBar.style.width = percent + '%';
+    }
+
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    document.addEventListener('scroll', updateProgress, { passive: true });
+    setInterval(updateProgress, 300);
+
+    // --- Reading Time Badge ---
+    const mainContent = document.querySelector('main');
+    if (mainContent) {
+        const textContent = mainContent.textContent || '';
+        const wordCount = textContent.trim().split(/\s+/).length;
+        const readingTime = Math.max(1, Math.ceil(wordCount / 200)); // 200 words/min
+
+        const badge = document.querySelector('.badge');
+        if (badge) {
+            badge.textContent += ` • ⏱️ ${readingTime} min citire`;
+        } else {
+            // Create reading time badge if no badge exists
+            const pageHeader = document.querySelector('.page-header');
+            if (pageHeader) {
+                const timeBadge = document.createElement('span');
+                timeBadge.className = 'badge';
+                timeBadge.textContent = `⏱️ ${readingTime} min citire`;
+                timeBadge.style.cssText = 'display:inline-block;margin-top:14px;padding:5px 14px;background:rgba(0,210,255,0.1);border:1px solid rgba(0,210,255,0.3);border-radius:20px;font-size:0.82rem;color:#00d2ff;font-weight:500;';
+                pageHeader.appendChild(timeBadge);
+            }
+        }
+    }
+
+    // --- Copy Button on Code Blocks ---
+    document.querySelectorAll('.code-block').forEach(block => {
+        const copyBtn = document.createElement('button');
+        copyBtn.textContent = '📋 Copiază';
+        copyBtn.title = 'Copiază codul';
+        copyBtn.style.cssText = 'position:absolute;top:10px;right:10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#ccc;border-radius:8px;padding:6px 14px;font-size:0.85rem;cursor:pointer;opacity:0.7;transition:opacity 0.2s ease, background 0.2s ease;z-index:10;';
+
+        // Make code-block relative for absolute positioning
+        block.style.position = 'relative';
+
+        block.addEventListener('mouseenter', () => { copyBtn.style.opacity = '1'; copyBtn.style.background = 'rgba(0,210,255,0.15)'; });
+        block.addEventListener('mouseleave', () => { copyBtn.style.opacity = '0.7'; copyBtn.style.background = 'rgba(255,255,255,0.1)'; });
+
+        copyBtn.addEventListener('click', async () => {
+            // Get clean text (without the lang-tag)
+            const langTag = block.querySelector('.lang-tag');
+            const cloned = block.cloneNode(true);
+            const clonedTag = cloned.querySelector('.lang-tag');
+            if (clonedTag) clonedTag.remove();
+            const text = cloned.textContent.trim();
+
+            try {
+                await navigator.clipboard.writeText(text);
+                copyBtn.textContent = '✅ Copiat!';
+                setTimeout(() => { copyBtn.textContent = '📋 Copiază'; }, 1500);
+            } catch {
+                // Fallback for older browsers
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                copyBtn.textContent = '✅';
+                setTimeout(() => { copyBtn.textContent = '📋'; }, 1500);
+            }
+        });
+
+        block.appendChild(copyBtn);
+    });
+
+    // --- Citatul Zilei ---
+    const quotes = [
+        { text: "Talk is cheap. Show me the code.", author: "Linus Torvalds" },
+        { text: "Code is like humor. When you have to explain it, it's bad.", author: "Cory House" },
+        { text: "First, solve the problem. Then, write the code.", author: "John Johnson" },
+        { text: "Any fool can write code that a computer can understand. Good programmers write code that humans can understand.", author: "Martin Fowler" },
+        { text: "The best error message is the one that never shows up.", author: "Thomas Fuchs" },
+        { text: "Simplicity is the soul of efficiency.", author: "Austin Freeman" },
+        { text: "Fix the cause, not the symptom.", author: "Steve Maguire" },
+        { text: "Make it work, make it right, make it fast.", author: "Kent Beck" },
+        { text: "Clean code always looks like it was written by someone who cares.", author: "Robert C. Martin" },
+        { text: "Programming isn't about what you know; it's about what you can figure out.", author: "Chris Pine" },
+        { text: "The only way to learn a new programming language is by writing programs in it.", author: "Dennis Ritchie" },
+        { text: "Debugging is twice as hard as writing the code in the first place.", author: "Brian Kernighan" },
+        { text: "It's not a bug — it's an undocumented feature.", author: "Anonymous" },
+        { text: "JavaScript is the world's most misunderstood programming language.", author: "Douglas Crockford" },
+    ];
+
+    const pageHeader = document.querySelector('.page-header');
+    if (pageHeader && !window.location.pathname.includes('index.html') && !window.location.pathname.endsWith('/')) {
+        const todayIndex = new Date().getDate() % quotes.length;
+        const q = quotes[todayIndex];
+        const quoteEl = document.createElement('div');
+        quoteEl.style.cssText = 'margin-top:16px;font-style:italic;color:var(--text-secondary);font-size:0.85rem;opacity:0.7;';
+        quoteEl.innerHTML = `💬 <em>"${q.text}"</em> — <strong>${q.author}</strong>`;
+        pageHeader.appendChild(quoteEl);
+    }
+
+    // =========================================================================
+    // 🎨 PREMIUM UI EFFECTS
+    // =========================================================================
+
+    // --- 1. Smooth Page Transitions ---
+    const pageTransitionStyle = document.createElement('style');
+    pageTransitionStyle.textContent = `
+        body { animation: pageSlideIn 0.4s ease-out; }
+        @keyframes pageSlideIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        body.page-leaving { animation: pageFadeOut 0.25s ease-in forwards; }
+        @keyframes pageFadeOut { to { opacity: 0; transform: translateY(-8px); } }
+    `;
+    document.head.appendChild(pageTransitionStyle);
+
+    // Intercept nav link clicks for smooth transition
+    document.querySelectorAll('a[href$=".html"]').forEach(link => {
+        link.addEventListener('click', (e) => {
+            const href = link.getAttribute('href');
+            if (!href || href.startsWith('http') || href.startsWith('#') || link.classList.contains('active')) return;
+            e.preventDefault();
+            document.body.classList.add('page-leaving');
+            setTimeout(() => { window.location.href = href; }, 250);
+        });
+    });
+
+    // --- 2. Particle Sparkles on Card Hover ---
+    document.querySelectorAll('.feature-card, .card').forEach(card => {
+        card.addEventListener('mouseenter', (e) => {
+            for (let i = 0; i < 6; i++) {
+                const spark = document.createElement('span');
+                spark.textContent = ['✨', '⚡', '💫', '🌟'][Math.floor(Math.random() * 4)];
+                spark.style.cssText = `position:absolute;font-size:${10 + Math.random() * 8}px;pointer-events:none;z-index:50;opacity:1;transition:all 0.8s ease-out;`;
+                const rect = card.getBoundingClientRect();
+                spark.style.left = (Math.random() * rect.width) + 'px';
+                spark.style.top = (Math.random() * rect.height) + 'px';
+                card.style.position = card.style.position || 'relative';
+                card.appendChild(spark);
+                requestAnimationFrame(() => {
+                    spark.style.opacity = '0';
+                    spark.style.transform = `translateY(-${30 + Math.random() * 40}px) scale(0.3)`;
+                });
+                setTimeout(() => spark.remove(), 900);
+            }
+        });
+    });
+
+    // --- 3. Custom Cursor Glow ---
+    const cursorGlow = document.createElement('div');
+    cursorGlow.id = 'cursorGlow';
+    cursorGlow.style.cssText = 'position:fixed;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(0,210,255,0.04) 0%,transparent 70%);pointer-events:none;z-index:0;transform:translate(-50%,-50%);transition:opacity 0.3s ease;opacity:0;';
+    document.documentElement.appendChild(cursorGlow);
+
+    document.addEventListener('mousemove', (e) => {
+        cursorGlow.style.left = e.clientX + 'px';
+        cursorGlow.style.top = e.clientY + 'px';
+        cursorGlow.style.opacity = '1';
+    });
+    document.addEventListener('mouseleave', () => { cursorGlow.style.opacity = '0'; });
+
+    // --- 4. Skeleton Loading ---
+    const skeletonStyle = document.createElement('style');
+    skeletonStyle.textContent = `
+        .skeleton-overlay { position: fixed; inset: 0; z-index: 100000; background: var(--bg-primary, #0a0a1a); display: flex; flex-direction: column; padding: 80px 30px 30px; gap: 20px; animation: skeletonFadeOut 0.4s ease-out 0.3s forwards; pointer-events: none; }
+        .skeleton-bar { height: 20px; border-radius: 8px; background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+        .skeleton-bar.wide { width: 60%; height: 32px; margin-bottom: 10px; }
+        .skeleton-bar.medium { width: 80%; }
+        .skeleton-bar.short { width: 40%; }
+        .skeleton-bar.block { width: 100%; height: 120px; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        @keyframes skeletonFadeOut { to { opacity: 0; visibility: hidden; } }
+    `;
+    document.head.appendChild(skeletonStyle);
+
+    const skeleton = document.createElement('div');
+    skeleton.className = 'skeleton-overlay';
+    skeleton.innerHTML = '<div class="skeleton-bar wide"></div><div class="skeleton-bar medium"></div><div class="skeleton-bar short"></div><div class="skeleton-bar block"></div><div class="skeleton-bar medium"></div><div class="skeleton-bar short"></div>';
+    document.body.appendChild(skeleton);
+    setTimeout(() => skeleton.remove(), 800);
+
+    // --- 5. Active Section Highlight (lectii.html) ---
+    if (window.location.pathname.includes('lectii')) {
+        const sections = document.querySelectorAll('.lesson-section, .card[id]');
+        const tocLinks = document.querySelectorAll('.table-of-contents a, .toc a');
+
+        if (sections.length > 0) {
+            const sectionObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id || entry.target.dataset.lesson;
+                        if (id) {
+                            tocLinks.forEach(l => l.style.borderLeft = '');
+                            tocLinks.forEach(l => {
+                                if (l.getAttribute('href') === '#' + id) {
+                                    l.style.borderLeft = '3px solid #00d2ff';
+                                    l.style.paddingLeft = '8px';
+                                }
+                            });
+                        }
+                    }
+                });
+            }, { threshold: 0.3, rootMargin: '-60px 0px -40% 0px' });
+
+            sections.forEach(s => sectionObserver.observe(s));
+        }
+    }
 })();
 
 
@@ -751,7 +1180,7 @@ document.addEventListener('keydown', (e) => {
     document.body.style.transition = 'opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
 
     function reveal() {
-        requestAnimationFrame(function() {
+        requestAnimationFrame(function () {
             document.body.style.opacity = '1';
             document.body.style.transform = 'translateY(0)';
         });
@@ -769,7 +1198,7 @@ document.addEventListener('keydown', (e) => {
 // 🟢 SECŢIUNEA 14: SMOOTH PAGE TRANSITIONS
 // ============================================================================
 
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     var link = e.target.closest('a[href]');
     if (!link) return;
 
@@ -785,9 +1214,9 @@ document.addEventListener('click', function(e) {
     document.body.style.opacity = '0';
     document.body.style.transform = 'translateY(-8px)';
 
-    setTimeout(function() {
+    setTimeout(function () {
         if (bar) bar.classList.add('done');
-        setTimeout(function() { window.location.href = href; }, 150);
+        setTimeout(function () { window.location.href = href; }, 150);
     }, 250);
 });
 
@@ -810,8 +1239,8 @@ document.addEventListener('click', function(e) {
 
     var defaultSelectors = '.card, .progress-section, .recent-activity, .roadmap-item, .prof-note, .puzzle-container, .flashcard-container';
 
-    var observer = new IntersectionObserver(function(entries) {
-        entries.forEach(function(entry) {
+    var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
             if (entry.isIntersecting) {
                 entry.target.classList.add('scroll-visible');
                 observer.unobserve(entry.target);
@@ -824,8 +1253,8 @@ document.addEventListener('click', function(e) {
 
     function observeElements() {
         // Apply specific directional variants
-        Object.entries(variantMap).forEach(function(pair) {
-            document.querySelectorAll(pair[0]).forEach(function(el, i) {
+        Object.entries(variantMap).forEach(function (pair) {
+            document.querySelectorAll(pair[0]).forEach(function (el, i) {
                 if (!el.classList.contains('scroll-animated')) {
                     el.classList.add('scroll-animated', pair[1]);
                     el.style.transitionDelay = Math.min(i * 0.08, 0.5) + 's';
@@ -835,7 +1264,7 @@ document.addEventListener('click', function(e) {
         });
 
         // Apply default fade-up to remaining elements
-        document.querySelectorAll(defaultSelectors).forEach(function(el, i) {
+        document.querySelectorAll(defaultSelectors).forEach(function (el, i) {
             if (!el.classList.contains('scroll-animated')) {
                 el.classList.add('scroll-animated', 'scroll-fade-up');
                 el.style.transitionDelay = Math.min(i * 0.08, 0.5) + 's';

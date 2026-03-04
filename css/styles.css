@@ -194,10 +194,17 @@ a:hover {
     }
 }
 
+/* === BODY OFFSET FOR FIXED NAVBAR === */
+body {
+    padding-top: 60px;
+}
+
 /* === NAVIGATION BAR === */
 .navbar {
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    width: 100%;
     z-index: 100;
     display: flex;
     align-items: center;
@@ -1370,6 +1377,50 @@ footer .footer-license {
 
     a {
         min-height: 36px;
+    }
+}
+
+/* === SCROLL TO TOP BUTTON === */
+.scroll-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--bg-secondary);
+    backdrop-filter: blur(20px);
+    color: var(--accent-4);
+    font-size: 1.3rem;
+    cursor: pointer;
+    z-index: 90;
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease, background 0.2s ease, border-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.scroll-to-top.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+}
+
+.scroll-to-top:hover {
+    background: rgba(0, 210, 255, 0.15);
+    border-color: var(--accent-4);
+    transform: translateY(-3px);
+}
+
+@media (max-width: 480px) {
+    .scroll-to-top {
+        bottom: 20px;
+        right: 20px;
     }
 }
 
