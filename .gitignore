@@ -14,3 +14,7 @@ dist/
 
 # Misc
 *.log
+
+# Server data (baza de date + sesiuni)
+server/data/
+server/sessions/

@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: js-playground
+    runtime: node
+    buildCommand: npm install
+    startCommand: node server/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: js-playground-db
+          property: connectionString
+
+databases:
+  - name: js-playground-db
+    plan: free
