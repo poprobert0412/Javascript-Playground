@@ -22,13 +22,24 @@ const PORT = process.env.PORT || 3000;
 // MIDDLEWARE
 // ============================================================================
 
+// Trust proxy (necesar pe Render pentru secure cookies prin HTTPS)
+if (db.IS_PRODUCTION) {
+    app.set('trust proxy', 1);
+}
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Session store: PostgreSQL pe Render, fișiere local
-async function setupSession() {
-    let store;
+// ============================================================================
+// PORNIRE SERVER
+// ============================================================================
 
+async function start() {
+    // Inițializăm baza de date
+    await db.init();
+
+    // Session store: PostgreSQL pe Render, fișiere local
+    let store;
     if (db.IS_PRODUCTION) {
         const pgSession = require('connect-pg-simple')(session);
         store = new pgSession({
@@ -47,6 +58,7 @@ async function setupSession() {
         console.log('  📦 Sesiuni: Fișiere locale');
     }
 
+    // Configurăm sesiunile ÎNAINTE de rute
     app.use(session({
         store,
         secret: process.env.SESSION_SECRET || 'js-playground-secret-key-2026',
@@ -56,31 +68,16 @@ async function setupSession() {
             maxAge: 7 * 24 * 60 * 60 * 1000,
             httpOnly: true,
             sameSite: 'lax',
-            secure: db.IS_PRODUCTION, // HTTPS pe Render
+            secure: db.IS_PRODUCTION,
         }
     }));
-}
 
-// Servim fișierele statice
-app.use(express.static(path.join(__dirname, '..')));
+    // Servim fișierele statice
+    app.use(express.static(path.join(__dirname, '..')));
 
-// ============================================================================
-// RUTE API
-// ============================================================================
-
-app.use('/api', authRoutes);
-app.use('/api/progress', progressRoutes);
-
-// ============================================================================
-// PORNIRE SERVER
-// ============================================================================
-
-async function start() {
-    // Inițializăm baza de date
-    await db.init();
-
-    // Configurăm sesiunile
-    await setupSession();
+    // Rute API (DUPĂ session middleware!)
+    app.use('/api', authRoutes);
+    app.use('/api/progress', progressRoutes);
 
     app.listen(PORT, () => {
         console.log('');
