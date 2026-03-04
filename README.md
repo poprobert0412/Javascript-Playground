@@ -50,9 +50,12 @@
 | 📱 **Responsive Design** | Perfect pe telefon, tabletă și desktop |
 | 🔐 **Autentificare** | Register, Login, Logout cu sesiuni securizate |
 | 👤 **Profil Editabil** | Schimbă username, email și parolă |
-| 🔒 **Reset Parolă** | Generare link de resetare cu token securizat |
+| 🖼️ **Avatar Upload** | Încarcă avatar custom (JPG/PNG/GIF/WebP, max 2MB) |
+| 🔒 **Reset Parolă** | Via email (SMTP) sau link manual cu token securizat |
 | 🥇 **Leaderboard** | Clasament live cu podium (gold/silver/bronze) |
 | 🔄 **Sincronizare** | Progresul se salvează automat pe server |
+| 🛡️ **Rate Limiting** | Protecție împotriva request-urilor excesive |
+| ⚙️ **Admin Panel** | Dashboard admin cu statistici, user management |
 
 ---
 
@@ -104,8 +107,9 @@ Meniul de navigare este organizat pe 4 categorii:
 │   ├── 📄 flashcards.html         # 44 flashcards JavaScript
 │   ├── 📄 console-challenges.html # 9 Console Challenges (DevTools)
 │   ├── 📄 typescript.html         # 12 lecții TypeScript
-│   ├── 📄 login.html              # Login / Register / Profil
-│   ├── 📄 leaderboard.html        # 🆕 Clasament utilizatori
+│   ├── 📄 login.html              # Login / Register / Profil / Avatar
+│   ├── 📄 leaderboard.html        # Clasament utilizatori
+│   ├── 📄 admin.html              # 🆕 Admin Panel
 │   ├── 📄 achievements.html       # Pagina achievements
 │   ├── 📄 dashboard.html          # Dashboard progres
 │   ├── 📄 cheatsheet.html         # Referință rapidă
@@ -131,8 +135,9 @@ Meniul de navigare este organizat pe 4 categorii:
 │   ├── 📄 server.js               # Express server principal
 │   ├── 📄 database.js             # Dual DB (JSON + PostgreSQL)
 │   └── 📂 routes/
-│       ├── 📄 auth.js             # API: register/login/profil/reset
-│       └── 📄 progress.js         # API: progres + leaderboard
+│       ├── 📄 auth.js             # API: register/login/profil/avatar/reset
+│       ├── 📄 progress.js         # API: progres + leaderboard
+│       └── 📄 admin.js            # 🆕 API: admin stats/users/management
 ├── 📂 src/
 │   └── 📄 index.ts                # Exemple TypeScript
 ├── 📄 package.json                # Dependențe Node.js
@@ -219,10 +224,12 @@ Acest proiect este licențiat sub [MIT License](LICENSE).
 
 **© 2026 poprobert0412. Toate drepturile rezervate.**
 
-> ⚠️ **IMPORTANT:** Acest proiect a fost creat și conceptualizat de **poprobert0412**.
-> Ideea originală și implementarea aparțin autorului. Oricine poate descărca și folosi
-> proiectul, dar trebuie să includă credit către autorul original.
-> **Nu este permisă revendicarea proiectului ca fiind propriu.**
+> ⚠️ **IMPORTANT:** Acest proiect a fost creat și conceptualizat **integral** de **poprobert0412**.
+> Designul, arhitectura, ideea originală și implementarea aparțin exclusiv autorului.
+> Oricine poate descărca și folosi proiectul în scop educațional, dar **TREBUIE** să
+> includă credit vizibil către autorul original în orice redistribuire sau derivat.
+> **Nu este permisă revendicarea proiectului ca fiind propriu sub nicio formă.**
+> Încălcarea acestei reguli constituie plagiat și poate fi raportată.
 
 ---
 
