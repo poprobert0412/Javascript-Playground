@@ -22,9 +22,15 @@ async function initPostgres() {
             username TEXT UNIQUE NOT NULL,
             email TEXT UNIQUE NOT NULL,
             password_hash TEXT NOT NULL,
+            avatar_url TEXT DEFAULT NULL,
+            is_admin BOOLEAN DEFAULT FALSE,
             created_at TIMESTAMPTZ DEFAULT NOW()
         )
     `);
+
+    try { await pgPool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url TEXT DEFAULT NULL'); } catch (e) { }
+    try { await pgPool.query('ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE'); } catch (e) { }
+
     await pgPool.query(`
         CREATE TABLE IF NOT EXISTS progress (
             user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
@@ -40,6 +46,7 @@ async function initPostgres() {
             created_at TIMESTAMPTZ DEFAULT NOW()
         )
     `);
+
     console.log('Tables ready');
 }
 
@@ -63,7 +70,7 @@ const pgDB = {
     },
 
     async findUserById(id) {
-        const res = await pgPool.query('SELECT id, username, email, created_at FROM users WHERE id = $1', [id]);
+        const res = await pgPool.query('SELECT id, username, email, avatar_url, is_admin, created_at FROM users WHERE id = $1', [id]);
         return res.rows[0] || null;
     },
 
@@ -79,6 +86,10 @@ const pgDB = {
 
     async updatePassword(id, hash) {
         await pgPool.query('UPDATE users SET password_hash=$1 WHERE id=$2', [hash, id]);
+    },
+
+    async updateAvatar(id, avatarUrl) {
+        await pgPool.query('UPDATE users SET avatar_url=$1 WHERE id=$2', [avatarUrl, id]);
     },
 
     async getProgress(userId) {
@@ -114,33 +125,79 @@ const pgDB = {
 
     async getLeaderboard() {
         const res = await pgPool.query(`
-            SELECT u.id, u.username, u.created_at, p.progress_data
+            SELECT u.id, u.username, u.avatar_url, u.created_at, p.progress_data
             FROM users u
             LEFT JOIN progress p ON u.id = p.user_id
             ORDER BY u.created_at ASC
         `);
-        return res.rows.map(row => {
-            const data = row.progress_data || {};
-            const pd = data['js-playground-progress'] ? JSON.parse(data['js-playground-progress']) : {};
-            const achievements = data['js-playground-achievements'] ? JSON.parse(data['js-playground-achievements']) : [];
-            return {
-                id: row.id,
-                username: row.username,
-                lessons: pd.lessons ? pd.lessons.length : 0,
-                exercises: pd.exercises ? pd.exercises.length : 0,
-                quizzes: pd.quizzes ? pd.quizzes.length : 0,
-                challenges: pd.challenges ? pd.challenges.length : 0,
-                achievements: achievements.length,
-                totalScore: (pd.lessons ? pd.lessons.length * 10 : 0)
-                    + (pd.exercises ? pd.exercises.length * 15 : 0)
-                    + (pd.quizzes ? pd.quizzes.length * 10 : 0)
-                    + (pd.challenges ? pd.challenges.length * 20 : 0)
-                    + (achievements.length * 25),
-                joinedAt: row.created_at,
-            };
-        }).sort((a, b) => b.totalScore - a.totalScore);
+        return buildLeaderboard(res.rows);
+    },
+
+    async getAllUsers() {
+        const res = await pgPool.query(`
+            SELECT u.id, u.username, u.email, u.avatar_url, u.is_admin, u.created_at, p.progress_data
+            FROM users u
+            LEFT JOIN progress p ON u.id = p.user_id
+            ORDER BY u.created_at DESC
+        `);
+        return res.rows.map(row => ({
+            id: row.id,
+            username: row.username,
+            email: row.email,
+            avatarUrl: row.avatar_url,
+            isAdmin: row.is_admin,
+            createdAt: row.created_at,
+            ...calcScore(row.progress_data),
+        }));
+    },
+
+    async getAdminStats() {
+        const users = await pgPool.query('SELECT COUNT(*) as count FROM users');
+        const withProgress = await pgPool.query('SELECT COUNT(*) as count FROM progress WHERE progress_data != \'{}\'');
+        const recentUsers = await pgPool.query('SELECT COUNT(*) as count FROM users WHERE created_at > NOW() - INTERVAL \'7 days\'');
+        return {
+            totalUsers: parseInt(users.rows[0].count),
+            activeUsers: parseInt(withProgress.rows[0].count),
+            newUsersThisWeek: parseInt(recentUsers.rows[0].count),
+        };
+    },
+
+    async deleteUser(id) {
+        await pgPool.query('DELETE FROM users WHERE id = $1', [id]);
+    },
+
+    async setAdmin(id, isAdmin) {
+        await pgPool.query('UPDATE users SET is_admin = $1 WHERE id = $2', [isAdmin, id]);
     },
 };
+
+function calcScore(progressData) {
+    const data = progressData || {};
+    const pd = data['js-playground-progress'] ? JSON.parse(data['js-playground-progress']) : {};
+    const achievements = data['js-playground-achievements'] ? JSON.parse(data['js-playground-achievements']) : [];
+    return {
+        lessons: pd.lessons ? pd.lessons.length : 0,
+        exercises: pd.exercises ? pd.exercises.length : 0,
+        quizzes: pd.quizzes ? pd.quizzes.length : 0,
+        challenges: pd.challenges ? pd.challenges.length : 0,
+        achievements: achievements.length,
+        totalScore: (pd.lessons ? pd.lessons.length * 10 : 0)
+            + (pd.exercises ? pd.exercises.length * 15 : 0)
+            + (pd.quizzes ? pd.quizzes.length * 10 : 0)
+            + (pd.challenges ? pd.challenges.length * 20 : 0)
+            + (achievements.length * 25),
+    };
+}
+
+function buildLeaderboard(rows) {
+    return rows.map(row => ({
+        id: row.id,
+        username: row.username,
+        avatarUrl: row.avatar_url,
+        ...calcScore(row.progress_data),
+        joinedAt: row.created_at,
+    })).sort((a, b) => b.totalScore - a.totalScore);
+}
 
 const DATA_DIR = path.join(__dirname, 'data');
 const DB_PATH = path.join(DATA_DIR, 'db.json');
@@ -169,7 +226,7 @@ const jsonDB = {
     async createUser(username, email, passwordHash) {
         const db = loadDB();
         const id = db.nextId++;
-        const user = { id, username, email, password_hash: passwordHash, created_at: new Date().toISOString() };
+        const user = { id, username, email, password_hash: passwordHash, avatar_url: null, is_admin: false, created_at: new Date().toISOString() };
         db.users.push(user);
         saveDB(db);
         return user;
@@ -202,10 +259,13 @@ const jsonDB = {
     async updatePassword(id, hash) {
         const db = loadDB();
         const user = db.users.find(u => u.id === id);
-        if (user) {
-            user.password_hash = hash;
-            saveDB(db);
-        }
+        if (user) { user.password_hash = hash; saveDB(db); }
+    },
+
+    async updateAvatar(id, avatarUrl) {
+        const db = loadDB();
+        const user = db.users.find(u => u.id === id);
+        if (user) { user.avatar_url = avatarUrl; saveDB(db); }
     },
 
     async getProgress(userId) {
@@ -237,27 +297,50 @@ const jsonDB = {
 
     async getLeaderboard() {
         const db = loadDB();
-        return db.users.map(user => {
-            const record = db.progress[user.id];
-            const data = record ? record.data : {};
-            const pd = data['js-playground-progress'] ? JSON.parse(data['js-playground-progress']) : {};
-            const achievements = data['js-playground-achievements'] ? JSON.parse(data['js-playground-achievements']) : [];
-            return {
-                id: user.id,
-                username: user.username,
-                lessons: pd.lessons ? pd.lessons.length : 0,
-                exercises: pd.exercises ? pd.exercises.length : 0,
-                quizzes: pd.quizzes ? pd.quizzes.length : 0,
-                challenges: pd.challenges ? pd.challenges.length : 0,
-                achievements: achievements.length,
-                totalScore: (pd.lessons ? pd.lessons.length * 10 : 0)
-                    + (pd.exercises ? pd.exercises.length * 15 : 0)
-                    + (pd.quizzes ? pd.quizzes.length * 10 : 0)
-                    + (pd.challenges ? pd.challenges.length * 20 : 0)
-                    + (achievements.length * 25),
-                joinedAt: user.created_at,
-            };
-        }).sort((a, b) => b.totalScore - a.totalScore);
+        return db.users.map(user => ({
+            id: user.id,
+            username: user.username,
+            avatarUrl: user.avatar_url,
+            ...calcScore(db.progress[user.id] ? db.progress[user.id].data : {}),
+            joinedAt: user.created_at,
+        })).sort((a, b) => b.totalScore - a.totalScore);
+    },
+
+    async getAllUsers() {
+        const db = loadDB();
+        return db.users.map(user => ({
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            avatarUrl: user.avatar_url,
+            isAdmin: user.is_admin || false,
+            createdAt: user.created_at,
+            ...calcScore(db.progress[user.id] ? db.progress[user.id].data : {}),
+        }));
+    },
+
+    async getAdminStats() {
+        const db = loadDB();
+        const now = new Date();
+        const weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+        return {
+            totalUsers: db.users.length,
+            activeUsers: Object.keys(db.progress).length,
+            newUsersThisWeek: db.users.filter(u => new Date(u.created_at) > weekAgo).length,
+        };
+    },
+
+    async deleteUser(id) {
+        const db = loadDB();
+        db.users = db.users.filter(u => u.id !== id);
+        delete db.progress[id];
+        saveDB(db);
+    },
+
+    async setAdmin(id, isAdmin) {
+        const db = loadDB();
+        const user = db.users.find(u => u.id === id);
+        if (user) { user.is_admin = isAdmin; saveDB(db); }
     },
 };
 
