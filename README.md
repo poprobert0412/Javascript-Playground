@@ -2,7 +2,7 @@
 
 > Platformă interactivă de învățare JavaScript — de la zero la erou! 🚀
 >
-> 🌐 **[LIVE DEMO](https://javascript-playground-mvb.onrender.com)**
+> 🌐 **[LIVE DEMO](https://javascript-playground-mvdb.onrender.com)**
 
 ![Homepage Preview](public/images/screenshot.png)
 
