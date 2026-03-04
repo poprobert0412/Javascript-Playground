@@ -1,14 +1,6 @@
-// ============================================================================
-// 🔐 auth.js — Client-side auth + full progress sync (toate paginile)
-// ============================================================================
-
 (function initAuth() {
 
     let currentUser = null;
-
-    // ============================================================================
-    // VERIFICARE AUTENTIFICARE
-    // ============================================================================
 
     async function checkAuthState() {
         try {
@@ -28,10 +20,6 @@
             updateNavbarAuth(null);
         }
     }
-
-    // ============================================================================
-    // NAVBAR — Login/Profil button
-    // ============================================================================
 
     function updateNavbarAuth(user) {
         const navbar = document.querySelector('.navbar');
@@ -71,10 +59,6 @@
         rightControls.insertBefore(authBtn, rightControls.firstChild);
     }
 
-    // ============================================================================
-    // PROGRESS SYNC — încarcă progres de pe server + auto-salvare
-    // ============================================================================
-
     async function loadServerProgress() {
         if (!currentUser) return;
         try {
@@ -82,19 +66,16 @@
             if (!res.ok) return;
             const { progress } = await res.json();
             if (progress && typeof progress === 'object') {
-                // Merge: server data + local data (local wins on conflicts)
                 Object.keys(progress).forEach(key => {
                     const localVal = localStorage.getItem(key);
                     if (!localVal) {
                         localStorage.setItem(key, progress[key]);
                     } else {
-                        // Merge arrays (for progress data)
                         try {
                             const serverData = JSON.parse(progress[key]);
                             const localData = JSON.parse(localVal);
                             if (typeof serverData === 'object' && typeof localData === 'object' &&
                                 !Array.isArray(serverData) && !Array.isArray(localData)) {
-                                // Merge objects — combine array values
                                 const merged = { ...serverData };
                                 Object.keys(localData).forEach(k => {
                                     if (Array.isArray(localData[k]) && Array.isArray(merged[k])) {
@@ -105,20 +86,17 @@
                                 });
                                 localStorage.setItem(key, JSON.stringify(merged));
                             }
-                        } catch (e) {
-                            // Not JSON, keep local value
-                        }
+                        } catch (e) { }
                     }
                 });
             }
-        } catch (err) { /* silent */ }
+        } catch (err) { }
     }
 
     let syncTimeout = null;
 
     function syncProgressToServer() {
         if (!currentUser) return;
-        // Debounce — nu trimite la fiecare click, ci o dată la 2 secunde
         clearTimeout(syncTimeout);
         syncTimeout = setTimeout(async () => {
             try {
@@ -136,15 +114,12 @@
                         body: JSON.stringify({ progress })
                     });
                 }
-            } catch (err) { /* silent */ }
+            } catch (err) { }
         }, 2000);
     }
 
-    // Hook into JSProgress.save() to auto-sync when progress changes
     function hookProgressSync() {
         if (!currentUser) return;
-
-        // Monkey-patch localStorage.setItem to detect progress changes
         const origSetItem = localStorage.setItem.bind(localStorage);
         localStorage.setItem = function (key, value) {
             origSetItem(key, value);
@@ -154,13 +129,11 @@
         };
     }
 
-    // Expune funcții utile global
     window.JSAuth = {
         getUser: () => currentUser,
         isLoggedIn: () => !!currentUser,
         syncNow: syncProgressToServer,
     };
 
-    // Pornire — mic delay pentru a lăsa navbar-ul să se inițializeze
     setTimeout(checkAuthState, 300);
 })();

@@ -1,7 +1,3 @@
-// ============================================================================
-// 📊 progress.js — Rute pentru progres + leaderboard
-// ============================================================================
-
 const express = require('express');
 const db = require('../database');
 
@@ -14,7 +10,6 @@ function requireAuth(req, res, next) {
     next();
 }
 
-// GET /api/progress
 router.get('/', requireAuth, async (req, res) => {
     try {
         const record = await db.getProgress(req.session.userId);
@@ -26,7 +21,6 @@ router.get('/', requireAuth, async (req, res) => {
     }
 });
 
-// POST /api/progress
 router.post('/', requireAuth, async (req, res) => {
     try {
         const { progress } = req.body;
@@ -34,14 +28,13 @@ router.post('/', requireAuth, async (req, res) => {
             return res.status(400).json({ error: 'Datele de progres sunt invalide' });
         }
         await db.saveProgress(req.session.userId, progress);
-        res.json({ message: 'Progresul a fost salvat! ✅', updatedAt: new Date().toISOString() });
+        res.json({ message: 'Progresul a fost salvat!', updatedAt: new Date().toISOString() });
     } catch (err) {
         console.error('Save progress error:', err);
         res.status(500).json({ error: 'Eroare la salvarea progresului' });
     }
 });
 
-// GET /api/progress/leaderboard — PUBLIC (nu necesită autentificare)
 router.get('/leaderboard', async (req, res) => {
     try {
         const leaderboard = await db.getLeaderboard();

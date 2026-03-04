@@ -1,7 +1,3 @@
-// ============================================================================
-// 🔐 auth.js — Rute de autentificare + profil + reset parolă
-// ============================================================================
-
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
@@ -10,9 +6,6 @@ const db = require('../database');
 const router = express.Router();
 const SALT_ROUNDS = 10;
 
-// ============================================================================
-// POST /api/register
-// ============================================================================
 router.post('/register', async (req, res) => {
     try {
         const { username, email, password } = req.body;
@@ -39,21 +32,18 @@ router.post('/register', async (req, res) => {
 
         req.session.userId = user.id;
         req.session.save((err) => {
-            if (err) console.error('[Register] Session save error:', err);
+            if (err) console.error('Session save error:', err);
             res.status(201).json({
-                message: 'Cont creat cu succes! 🎉',
+                message: 'Cont creat cu succes!',
                 user: { id: user.id, username: user.username, email: user.email }
             });
         });
     } catch (err) {
-        console.error('[Register] Error:', err.message);
+        console.error('Register error:', err.message);
         res.status(500).json({ error: 'Eroare la server. Încearcă din nou.' });
     }
 });
 
-// ============================================================================
-// POST /api/login
-// ============================================================================
 router.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -69,21 +59,18 @@ router.post('/login', async (req, res) => {
 
         req.session.userId = user.id;
         req.session.save((err) => {
-            if (err) console.error('[Login] Session save error:', err);
+            if (err) console.error('Session save error:', err);
             res.json({
-                message: 'Autentificare reușită! 🚀',
+                message: 'Autentificare reușită!',
                 user: { id: user.id, username: user.username, email: user.email }
             });
         });
     } catch (err) {
-        console.error('[Login] Error:', err.message);
+        console.error('Login error:', err.message);
         res.status(500).json({ error: 'Eroare la server. Încearcă din nou.' });
     }
 });
 
-// ============================================================================
-// POST /api/logout
-// ============================================================================
 router.post('/logout', (req, res) => {
     req.session.destroy((err) => {
         if (err) return res.status(500).json({ error: 'Eroare la logout' });
@@ -92,9 +79,6 @@ router.post('/logout', (req, res) => {
     });
 });
 
-// ============================================================================
-// GET /api/me
-// ============================================================================
 router.get('/me', async (req, res) => {
     if (!req.session || !req.session.userId) {
         return res.status(401).json({ error: 'Nu ești autentificat' });
@@ -104,14 +88,10 @@ router.get('/me', async (req, res) => {
         if (!user) return res.status(404).json({ error: 'User negăsit' });
         res.json({ user });
     } catch (err) {
-        console.error('[Me] Error:', err.message);
         res.status(500).json({ error: 'Eroare la server' });
     }
 });
 
-// ============================================================================
-// PUT /api/profile — Editare profil (username, email)
-// ============================================================================
 router.put('/profile', async (req, res) => {
     if (!req.session || !req.session.userId) {
         return res.status(401).json({ error: 'Nu ești autentificat' });
@@ -145,16 +125,13 @@ router.put('/profile', async (req, res) => {
         await db.updateUser(userId, { username, email });
         const user = await db.findUserById(userId);
 
-        res.json({ message: 'Profil actualizat! ✅', user });
+        res.json({ message: 'Profil actualizat!', user });
     } catch (err) {
-        console.error('[Profile] Error:', err.message);
+        console.error('Profile update error:', err.message);
         res.status(500).json({ error: 'Eroare la server' });
     }
 });
 
-// ============================================================================
-// PUT /api/password — Schimbare parolă
-// ============================================================================
 router.put('/password', async (req, res) => {
     if (!req.session || !req.session.userId) {
         return res.status(401).json({ error: 'Nu ești autentificat' });
@@ -182,16 +159,13 @@ router.put('/password', async (req, res) => {
         const newHash = await bcrypt.hash(newPassword, SALT_ROUNDS);
         await db.updatePassword(req.session.userId, newHash);
 
-        res.json({ message: 'Parola a fost schimbată! 🔒' });
+        res.json({ message: 'Parola a fost schimbată!' });
     } catch (err) {
-        console.error('[Password] Error:', err.message);
+        console.error('Password change error:', err.message);
         res.status(500).json({ error: 'Eroare la server' });
     }
 });
 
-// ============================================================================
-// POST /api/forgot-password — Generare token de reset
-// ============================================================================
 router.post('/forgot-password', async (req, res) => {
     try {
         const { username } = req.body;
@@ -204,13 +178,11 @@ router.post('/forgot-password', async (req, res) => {
             return res.status(404).json({ error: 'Username negăsit' });
         }
 
-        // Generăm un token unic
         const token = crypto.randomBytes(32).toString('hex');
-        const expiresAt = new Date(Date.now() + 1 * 60 * 60 * 1000).toISOString(); // 1 oră
+        const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
 
         await db.createResetToken(user.id, token, expiresAt);
 
-        // Returnăm link-ul de reset (fără email, userul îl copiază)
         const baseUrl = `${req.protocol}://${req.get('host')}`;
         const resetLink = `${baseUrl}/login.html?reset=${token}`;
 
@@ -219,14 +191,11 @@ router.post('/forgot-password', async (req, res) => {
             resetLink
         });
     } catch (err) {
-        console.error('[ForgotPassword] Error:', err.message);
+        console.error('Forgot password error:', err.message);
         res.status(500).json({ error: 'Eroare la server' });
     }
 });
 
-// ============================================================================
-// POST /api/reset-password — Resetare parolă cu token
-// ============================================================================
 router.post('/reset-password', async (req, res) => {
     try {
         const { token, newPassword } = req.body;
@@ -251,9 +220,9 @@ router.post('/reset-password', async (req, res) => {
         await db.updatePassword(resetData.user_id, newHash);
         await db.deleteResetToken(token);
 
-        res.json({ message: 'Parola a fost resetată cu succes! 🎉 Poți te loga acum.' });
+        res.json({ message: 'Parola a fost resetată cu succes! Poți te loga acum.' });
     } catch (err) {
-        console.error('[ResetPassword] Error:', err.message);
+        console.error('Reset password error:', err.message);
         res.status(500).json({ error: 'Eroare la server' });
     }
 });

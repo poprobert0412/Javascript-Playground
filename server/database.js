@@ -1,15 +1,7 @@
-// ============================================================================
-// 🗄️ database.js — Bază de date DUAL: JSON (local) + PostgreSQL (Render)
-// ============================================================================
-
 const fs = require('fs');
 const path = require('path');
 
 const IS_PRODUCTION = !!process.env.DATABASE_URL;
-
-// ============================================================================
-// VARIANTA 1: PostgreSQL (pentru Render / producție)
-// ============================================================================
 
 let pgPool = null;
 
@@ -20,14 +12,9 @@ async function initPostgres() {
         ssl: { rejectUnauthorized: false },
     });
 
-    try {
-        const client = await pgPool.connect();
-        console.log('  ✅ PostgreSQL conectat!');
-        client.release();
-    } catch (err) {
-        console.error('  ❌ PostgreSQL conexiune eșuată:', err.message);
-        throw err;
-    }
+    const client = await pgPool.connect();
+    console.log('PostgreSQL connected');
+    client.release();
 
     await pgPool.query(`
         CREATE TABLE IF NOT EXISTS users (
@@ -53,11 +40,10 @@ async function initPostgres() {
             created_at TIMESTAMPTZ DEFAULT NOW()
         )
     `);
-    console.log('  ✅ Tabele create/verificate');
+    console.log('Tables ready');
 }
 
 const pgDB = {
-    // --- Users ---
     async createUser(username, email, passwordHash) {
         const res = await pgPool.query(
             'INSERT INTO users (username, email, password_hash) VALUES ($1, $2, $3) RETURNING id, username, email, created_at',
@@ -65,18 +51,22 @@ const pgDB = {
         );
         return res.rows[0];
     },
+
     async findUserByUsername(username) {
         const res = await pgPool.query('SELECT * FROM users WHERE username = $1', [username]);
         return res.rows[0] || null;
     },
+
     async findUserByEmail(email) {
         const res = await pgPool.query('SELECT * FROM users WHERE email = $1', [email]);
         return res.rows[0] || null;
     },
+
     async findUserById(id) {
         const res = await pgPool.query('SELECT id, username, email, created_at FROM users WHERE id = $1', [id]);
         return res.rows[0] || null;
     },
+
     async updateUser(id, { username, email }) {
         if (username && email) {
             await pgPool.query('UPDATE users SET username=$1, email=$2 WHERE id=$3', [username, email, id]);
@@ -86,16 +76,17 @@ const pgDB = {
             await pgPool.query('UPDATE users SET email=$1 WHERE id=$2', [email, id]);
         }
     },
+
     async updatePassword(id, hash) {
         await pgPool.query('UPDATE users SET password_hash=$1 WHERE id=$2', [hash, id]);
     },
 
-    // --- Progress ---
     async getProgress(userId) {
         const res = await pgPool.query('SELECT progress_data, updated_at FROM progress WHERE user_id = $1', [userId]);
         if (!res.rows[0]) return null;
         return { data: res.rows[0].progress_data, updated_at: res.rows[0].updated_at };
     },
+
     async saveProgress(userId, progressData) {
         await pgPool.query(`
             INSERT INTO progress (user_id, progress_data, updated_at)
@@ -104,7 +95,6 @@ const pgDB = {
         `, [userId, JSON.stringify(progressData)]);
     },
 
-    // --- Password Reset ---
     async createResetToken(userId, token, expiresAt) {
         await pgPool.query('DELETE FROM password_resets WHERE user_id = $1', [userId]);
         await pgPool.query(
@@ -112,15 +102,16 @@ const pgDB = {
             [token, userId, expiresAt]
         );
     },
+
     async findResetToken(token) {
         const res = await pgPool.query('SELECT * FROM password_resets WHERE token = $1', [token]);
         return res.rows[0] || null;
     },
+
     async deleteResetToken(token) {
         await pgPool.query('DELETE FROM password_resets WHERE token = $1', [token]);
     },
 
-    // --- Leaderboard ---
     async getLeaderboard() {
         const res = await pgPool.query(`
             SELECT u.id, u.username, u.created_at, p.progress_data
@@ -151,10 +142,6 @@ const pgDB = {
     },
 };
 
-// ============================================================================
-// VARIANTA 2: JSON File (pentru dezvoltare locală)
-// ============================================================================
-
 const DATA_DIR = path.join(__dirname, 'data');
 const DB_PATH = path.join(DATA_DIR, 'db.json');
 const DEFAULT_DB = { users: [], progress: {}, resetTokens: [], nextId: 1 };
@@ -170,7 +157,7 @@ function loadDB() {
             if (!data.resetTokens) data.resetTokens = [];
             return data;
         }
-    } catch (err) { console.error('⚠️ DB read error:', err.message); }
+    } catch (err) { console.error('DB read error:', err.message); }
     return { ...DEFAULT_DB };
 }
 
@@ -187,18 +174,22 @@ const jsonDB = {
         saveDB(db);
         return user;
     },
+
     async findUserByUsername(username) {
         return loadDB().users.find(u => u.username === username) || null;
     },
+
     async findUserByEmail(email) {
         return loadDB().users.find(u => u.email === email) || null;
     },
+
     async findUserById(id) {
         const user = loadDB().users.find(u => u.id === id);
         if (!user) return null;
         const { password_hash, ...safe } = user;
         return safe;
     },
+
     async updateUser(id, { username, email }) {
         const db = loadDB();
         const user = db.users.find(u => u.id === id);
@@ -207,6 +198,7 @@ const jsonDB = {
         if (email) user.email = email;
         saveDB(db);
     },
+
     async updatePassword(id, hash) {
         const db = loadDB();
         const user = db.users.find(u => u.id === id);
@@ -215,28 +207,34 @@ const jsonDB = {
             saveDB(db);
         }
     },
+
     async getProgress(userId) {
         return loadDB().progress[userId] || null;
     },
+
     async saveProgress(userId, progressData) {
         const db = loadDB();
         db.progress[userId] = { data: progressData, updated_at: new Date().toISOString() };
         saveDB(db);
     },
+
     async createResetToken(userId, token, expiresAt) {
         const db = loadDB();
         db.resetTokens = db.resetTokens.filter(t => t.user_id !== userId);
         db.resetTokens.push({ token, user_id: userId, expires_at: expiresAt });
         saveDB(db);
     },
+
     async findResetToken(token) {
         return loadDB().resetTokens.find(t => t.token === token) || null;
     },
+
     async deleteResetToken(token) {
         const db = loadDB();
         db.resetTokens = db.resetTokens.filter(t => t.token !== token);
         saveDB(db);
     },
+
     async getLeaderboard() {
         const db = loadDB();
         return db.users.map(user => {
@@ -263,12 +261,8 @@ const jsonDB = {
     },
 };
 
-// ============================================================================
-// EXPORT
-// ============================================================================
-
 const database = IS_PRODUCTION ? pgDB : jsonDB;
-database.init = IS_PRODUCTION ? initPostgres : async () => { console.log('  ✅ JSON DB local (server/data/db.json)'); };
+database.init = IS_PRODUCTION ? initPostgres : async () => { console.log('Using local JSON DB'); };
 database.IS_PRODUCTION = IS_PRODUCTION;
 database.pgPool = IS_PRODUCTION ? () => pgPool : null;
 
