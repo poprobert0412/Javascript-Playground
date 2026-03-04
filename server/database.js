@@ -1,11 +1,6 @@
 // ============================================================================
 // 🗄️ database.js — Bază de date DUAL: JSON (local) + PostgreSQL (Render)
 // ============================================================================
-//
-// Dacă există variabila DATABASE_URL (setată automat de Render),
-// folosim PostgreSQL. Altfel, folosim fișierul JSON local.
-//
-// ============================================================================
 
 const fs = require('fs');
 const path = require('path');
@@ -25,7 +20,17 @@ async function initPostgres() {
         ssl: { rejectUnauthorized: false },
     });
 
-    // Creăm tabelele dacă nu există
+    // Testăm conexiunea
+    try {
+        const client = await pgPool.connect();
+        console.log('  ✅ PostgreSQL conectat!');
+        client.release();
+    } catch (err) {
+        console.error('  ❌ PostgreSQL conexiune eșuată:', err.message);
+        throw err;
+    }
+
+    // Creăm tabelele separat (mai sigur)
     await pgPool.query(`
         CREATE TABLE IF NOT EXISTS users (
             id SERIAL PRIMARY KEY,
@@ -33,15 +38,18 @@ async function initPostgres() {
             email TEXT UNIQUE NOT NULL,
             password_hash TEXT NOT NULL,
             created_at TIMESTAMPTZ DEFAULT NOW()
-        );
+        )
+    `);
+
+    await pgPool.query(`
         CREATE TABLE IF NOT EXISTS progress (
             user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
             progress_data JSONB DEFAULT '{}',
             updated_at TIMESTAMPTZ DEFAULT NOW()
-        );
+        )
     `);
 
-    console.log('  ✅ PostgreSQL conectat și tabele create');
+    console.log('  ✅ Tabele create/verificate');
 }
 
 const pgDB = {
@@ -135,7 +143,7 @@ const jsonDB = {
 };
 
 // ============================================================================
-// EXPORT — selectăm automat varianta potrivită
+// EXPORT
 // ============================================================================
 
 const database = IS_PRODUCTION ? pgDB : jsonDB;

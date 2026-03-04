@@ -27,24 +27,35 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ error: 'Parola trebuie să aibă minim 6 caractere' });
         }
 
-        if (await db.findUserByUsername(username)) {
+        const existingUser = await db.findUserByUsername(username);
+        if (existingUser) {
             return res.status(409).json({ error: 'Acest username este deja folosit' });
         }
-        if (await db.findUserByEmail(email)) {
+        const existingEmail = await db.findUserByEmail(email);
+        if (existingEmail) {
             return res.status(409).json({ error: 'Acest email este deja înregistrat' });
         }
 
         const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+        console.log('[Register] Creating user:', username);
         const user = await db.createUser(username, email, passwordHash);
+        console.log('[Register] User created with id:', user.id);
 
         req.session.userId = user.id;
 
-        res.status(201).json({
-            message: 'Cont creat cu succes! 🎉',
-            user: { id: user.id, username: user.username, email: user.email }
+        // Salvăm sesiunea explicit înainte de a răspunde
+        req.session.save((err) => {
+            if (err) {
+                console.error('[Register] Session save error:', err);
+                // Răspundem oricum cu succes — user-ul e creat
+            }
+            res.status(201).json({
+                message: 'Cont creat cu succes! 🎉',
+                user: { id: user.id, username: user.username, email: user.email }
+            });
         });
     } catch (err) {
-        console.error('Register error:', err);
+        console.error('[Register] Error:', err.message, err.stack);
         res.status(500).json({ error: 'Eroare la server. Încearcă din nou.' });
     }
 });
@@ -72,12 +83,15 @@ router.post('/login', async (req, res) => {
 
         req.session.userId = user.id;
 
-        res.json({
-            message: 'Autentificare reușită! 🚀',
-            user: { id: user.id, username: user.username, email: user.email }
+        req.session.save((err) => {
+            if (err) console.error('[Login] Session save error:', err);
+            res.json({
+                message: 'Autentificare reușită! 🚀',
+                user: { id: user.id, username: user.username, email: user.email }
+            });
         });
     } catch (err) {
-        console.error('Login error:', err);
+        console.error('[Login] Error:', err.message, err.stack);
         res.status(500).json({ error: 'Eroare la server. Încearcă din nou.' });
     }
 });
@@ -97,12 +111,17 @@ router.post('/logout', (req, res) => {
 // GET /api/me — Info despre user-ul curent
 // ============================================================================
 router.get('/me', async (req, res) => {
-    if (!req.session.userId) {
+    if (!req.session || !req.session.userId) {
         return res.status(401).json({ error: 'Nu ești autentificat' });
     }
-    const user = await db.findUserById(req.session.userId);
-    if (!user) return res.status(404).json({ error: 'User negăsit' });
-    res.json({ user });
+    try {
+        const user = await db.findUserById(req.session.userId);
+        if (!user) return res.status(404).json({ error: 'User negăsit' });
+        res.json({ user });
+    } catch (err) {
+        console.error('[Me] Error:', err.message);
+        res.status(500).json({ error: 'Eroare la server' });
+    }
 });
 
 module.exports = router;
