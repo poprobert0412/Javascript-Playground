@@ -1,5 +1,5 @@
 // ============================================================================
-// 📊 progress.js — Rute pentru salvarea/citirea progresului
+// 📊 progress.js — Rute pentru progres + leaderboard
 // ============================================================================
 
 const express = require('express');
@@ -8,7 +8,7 @@ const db = require('../database');
 const router = express.Router();
 
 function requireAuth(req, res, next) {
-    if (!req.session.userId) {
+    if (!req.session || !req.session.userId) {
         return res.status(401).json({ error: 'Trebuie să fii autentificat' });
     }
     next();
@@ -38,6 +38,17 @@ router.post('/', requireAuth, async (req, res) => {
     } catch (err) {
         console.error('Save progress error:', err);
         res.status(500).json({ error: 'Eroare la salvarea progresului' });
+    }
+});
+
+// GET /api/progress/leaderboard — PUBLIC (nu necesită autentificare)
+router.get('/leaderboard', async (req, res) => {
+    try {
+        const leaderboard = await db.getLeaderboard();
+        res.json({ leaderboard });
+    } catch (err) {
+        console.error('Leaderboard error:', err);
+        res.status(500).json({ error: 'Eroare la încărcarea clasamentului' });
     }
 });
 

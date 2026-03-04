@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login — JS Playground</title>
-    <meta name="description" content="Conectează-te la JS Playground pentru a-ți salva progresul de învățare JavaScript.">
+    <meta name="description"
+        content="Conectează-te la JS Playground pentru a-ți salva progresul de învățare JavaScript.">
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
         rel="stylesheet">
@@ -469,6 +470,7 @@
             <div class="nav-category">📊 Progres</div>
             <a href="dashboard.html">📊 Dashboard</a>
             <a href="achievements.html">🏆 Achievements</a>
+            <a href="leaderboard.html">🥇 Leaderboard</a>
             <a href="search.html">🔍 Caută</a>
             <div class="nav-category">👤 Cont</div>
             <a href="login.html" class="active">🔐 Login</a>
@@ -516,14 +518,63 @@
                     <button type="submit" class="auth-btn login-btn" id="loginBtn">
                         🔑 Conectează-te
                     </button>
+                    <div style="text-align:center;margin-top:14px;">
+                        <a href="#" id="forgotPasswordLink" onclick="showForgotPassword();return false;"
+                            style="font-size:0.85rem;color:var(--accent-4);text-decoration:none;">🔒 Ai uitat
+                            parola?</a>
+                    </div>
+                </form>
+
+                <!-- Forgot Password Form -->
+                <form class="auth-form" id="forgotForm" onsubmit="handleForgotPassword(event)">
+                    <p style="font-size:0.88rem;color:var(--text-secondary);margin-bottom:16px;">Introdu username-ul tău
+                        și vom genera un link de resetare.</p>
+                    <div class="form-group">
+                        <label><span class="label-icon">👤</span> Username</label>
+                        <input type="text" class="form-input" id="forgotUsername" placeholder="Username-ul contului"
+                            required>
+                    </div>
+                    <button type="submit" class="auth-btn login-btn" id="forgotBtn">🔑 Generează Link de
+                        Resetare</button>
+                    <div id="resetLinkBox"
+                        style="display:none;margin-top:16px;background:rgba(0,210,255,0.08);border:1px solid rgba(0,210,255,0.3);border-radius:12px;padding:14px;word-break:break-all;">
+                        <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:8px;">📋 Copiază acest link
+                            și deschide-l:</p>
+                        <a id="resetLinkUrl" href="#" target="_blank"
+                            style="color:var(--accent-4);font-size:0.85rem;"></a>
+                    </div>
+                    <div style="text-align:center;margin-top:14px;">
+                        <a href="#" onclick="switchTab('login');return false;"
+                            style="font-size:0.85rem;color:var(--text-secondary);text-decoration:none;">← Înapoi la
+                            login</a>
+                    </div>
+                </form>
+
+                <!-- Reset Password Form (accessed via ?reset=token) -->
+                <form class="auth-form" id="resetForm" onsubmit="handleResetPassword(event)">
+                    <p style="font-size:0.88rem;color:var(--text-secondary);margin-bottom:16px;">Alege o parolă nouă
+                        pentru contul tău.</p>
+                    <div class="form-group">
+                        <label><span class="label-icon">🔒</span> Parolă Nouă</label>
+                        <input type="password" class="form-input" id="resetNewPassword" placeholder="Minim 6 caractere"
+                            required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label><span class="label-icon">🔒</span> Confirmă Parola</label>
+                        <input type="password" class="form-input" id="resetConfirmPassword"
+                            placeholder="Scrie parola din nou" required>
+                    </div>
+                    <input type="hidden" id="resetToken">
+                    <button type="submit" class="auth-btn register-btn" id="resetBtn">🔒 Schimbă Parola</button>
                 </form>
 
                 <!-- Register Form -->
                 <form class="auth-form" id="registerForm" onsubmit="handleRegister(event)">
                     <div class="form-group">
                         <label><span class="label-icon">👤</span> Username</label>
-                        <input type="text" class="form-input" id="regUsername" placeholder="Alege un username (min. 3 caractere)"
-                            required minlength="3" autocomplete="username">
+                        <input type="text" class="form-input" id="regUsername"
+                            placeholder="Alege un username (min. 3 caractere)" required minlength="3"
+                            autocomplete="username">
                     </div>
                     <div class="form-group">
                         <label><span class="label-icon">📧</span> Email</label>
@@ -532,9 +583,9 @@
                     </div>
                     <div class="form-group">
                         <label><span class="label-icon">🔒</span> Parolă</label>
-                        <input type="password" class="form-input" id="regPassword"
-                            placeholder="Minim 6 caractere" required minlength="6"
-                            oninput="checkPasswordStrength(this.value)" autocomplete="new-password">
+                        <input type="password" class="form-input" id="regPassword" placeholder="Minim 6 caractere"
+                            required minlength="6" oninput="checkPasswordStrength(this.value)"
+                            autocomplete="new-password">
                         <div class="password-strength">
                             <div class="password-strength-bar" id="strengthBar"></div>
                         </div>
@@ -582,6 +633,42 @@
                             <div class="profile-stat-label">Zile membru</div>
                         </div>
                     </div>
+
+                    <div class="auth-message" id="profileMessage"></div>
+
+                    <!-- Profile Edit Form -->
+                    <div style="margin-top:20px;border-top:1px solid var(--border);padding-top:20px;text-align:left;">
+                        <h4 style="font-size:0.95rem;color:var(--text-primary);margin-bottom:14px;">✏️ Editează Profilul
+                        </h4>
+                        <div class="form-group">
+                            <label><span class="label-icon">👤</span> Username</label>
+                            <input type="text" class="form-input" id="editUsername" placeholder="Noul username">
+                        </div>
+                        <div class="form-group">
+                            <label><span class="label-icon">📧</span> Email</label>
+                            <input type="email" class="form-input" id="editEmail" placeholder="Noul email">
+                        </div>
+                        <button class="auth-btn login-btn" onclick="handleEditProfile()" style="margin-bottom:20px;">💾
+                            Salvează Modificările</button>
+                    </div>
+
+                    <!-- Change Password Form -->
+                    <div style="border-top:1px solid var(--border);padding-top:20px;text-align:left;">
+                        <h4 style="font-size:0.95rem;color:var(--text-primary);margin-bottom:14px;">🔒 Schimbă Parola
+                        </h4>
+                        <div class="form-group">
+                            <label>Parolă Curentă</label>
+                            <input type="password" class="form-input" id="currentPassword" placeholder="Parola actuală">
+                        </div>
+                        <div class="form-group">
+                            <label>Parolă Nouă</label>
+                            <input type="password" class="form-input" id="newPassword" placeholder="Minim 6 caractere"
+                                minlength="6">
+                        </div>
+                        <button class="auth-btn register-btn" onclick="handleChangePassword()"
+                            style="margin-bottom:24px;">🔒 Schimbă Parola</button>
+                    </div>
+
                     <button class="logout-btn" onclick="handleLogout()">
                         🚪 Deconectează-te
                     </button>
@@ -862,7 +949,158 @@
             }
         }
 
+        // Forgot password
+        function showForgotPassword() {
+            document.getElementById('loginForm').classList.remove('active');
+            document.getElementById('registerForm').classList.remove('active');
+            document.getElementById('forgotForm').classList.add('active');
+            document.getElementById('loginTab').classList.remove('active');
+            document.getElementById('registerTab').classList.remove('active');
+            hideMessage();
+        }
+
+        async function handleForgotPassword(e) {
+            e.preventDefault();
+            const btn = document.getElementById('forgotBtn');
+            const username = document.getElementById('forgotUsername').value.trim();
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner"></div> Se generează...';
+            hideMessage();
+            try {
+                const res = await fetch('/api/forgot-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showMessage(data.message, 'success');
+                    document.getElementById('resetLinkBox').style.display = 'block';
+                    document.getElementById('resetLinkUrl').href = data.resetLink;
+                    document.getElementById('resetLinkUrl').textContent = data.resetLink;
+                } else {
+                    showMessage(data.error, 'error');
+                }
+            } catch (err) {
+                showMessage('Eroare de conexiune.', 'error');
+            }
+            btn.disabled = false;
+            btn.innerHTML = '🔑 Generează Link de Resetare';
+        }
+
+        async function handleResetPassword(e) {
+            e.preventDefault();
+            const token = document.getElementById('resetToken').value;
+            const newPassword = document.getElementById('resetNewPassword').value;
+            const confirm = document.getElementById('resetConfirmPassword').value;
+            if (newPassword !== confirm) {
+                showMessage('Parolele nu se potrivesc!', 'error');
+                return;
+            }
+            const btn = document.getElementById('resetBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner"></div> Se resetează...';
+            try {
+                const res = await fetch('/api/reset-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token, newPassword })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showMessage(data.message, 'success');
+                    setTimeout(() => { switchTab('login'); }, 2000);
+                } else {
+                    showMessage(data.error, 'error');
+                }
+            } catch (err) {
+                showMessage('Eroare de conexiune.', 'error');
+            }
+            btn.disabled = false;
+            btn.innerHTML = '🔒 Schimbă Parola';
+        }
+
+        // Profile edit
+        async function handleEditProfile() {
+            const username = document.getElementById('editUsername').value.trim();
+            const email = document.getElementById('editEmail').value.trim();
+            if (!username && !email) {
+                showProfileMsg('Completează cel puțin un câmp.', 'error');
+                return;
+            }
+            try {
+                const res = await fetch('/api/profile', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: username || undefined, email: email || undefined })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showProfileMsg(data.message, 'success');
+                    document.getElementById('profileName').textContent = data.user.username;
+                    document.getElementById('profileEmail').textContent = data.user.email;
+                    document.getElementById('profileAvatar').textContent = data.user.username.charAt(0).toUpperCase();
+                    document.getElementById('editUsername').value = '';
+                    document.getElementById('editEmail').value = '';
+                } else {
+                    showProfileMsg(data.error, 'error');
+                }
+            } catch (err) {
+                showProfileMsg('Eroare de conexiune.', 'error');
+            }
+        }
+
+        async function handleChangePassword() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            if (!currentPassword || !newPassword) {
+                showProfileMsg('Completează ambele câmpuri.', 'error');
+                return;
+            }
+            try {
+                const res = await fetch('/api/password', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ currentPassword, newPassword })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showProfileMsg(data.message, 'success');
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                } else {
+                    showProfileMsg(data.error, 'error');
+                }
+            } catch (err) {
+                showProfileMsg('Eroare de conexiune.', 'error');
+            }
+        }
+
+        function showProfileMsg(text, type) {
+            const msg = document.getElementById('profileMessage');
+            msg.textContent = text;
+            msg.className = `auth-message ${type}`;
+            setTimeout(() => { msg.className = 'auth-message'; }, 5000);
+        }
+
+        // Check URL for reset token
+        function checkResetToken() {
+            const params = new URLSearchParams(window.location.search);
+            const token = params.get('reset');
+            if (token) {
+                document.getElementById('authCard').style.display = 'block';
+                document.getElementById('loginForm').classList.remove('active');
+                document.getElementById('registerForm').classList.remove('active');
+                document.getElementById('resetForm').classList.add('active');
+                document.getElementById('resetToken').value = token;
+                document.querySelector('.auth-tabs').style.display = 'none';
+                document.querySelector('.auth-title').textContent = '🔒 Resetare Parolă';
+                document.querySelector('.auth-subtitle').textContent = 'Alege o parolă nouă pentru contul tău.';
+            }
+        }
+
         // Init
+        checkResetToken();
         checkAuth();
     </script>
 </body>

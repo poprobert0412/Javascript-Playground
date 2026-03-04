@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Leaderboard JavaScript Playground — clasamentul celor mai activi utilizatori.">
+    <title>🏆 Leaderboard — JS Playground</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <style>
+        .leaderboard-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .lb-stats {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 32px;
+        }
+
+        .lb-stat {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px 32px;
+            text-align: center;
+            min-width: 140px;
+            transition: all 0.3s;
+        }
+
+        .lb-stat:hover {
+            transform: translateY(-2px);
+            border-color: rgba(0, 210, 255, 0.3);
+        }
+
+        .lb-stat-num {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-4), var(--accent-1));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .lb-stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Podium (top 3) */
+        .podium {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 12px;
+            margin-bottom: 40px;
+            padding: 20px 0;
+        }
+
+        .podium-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px 20px;
+            text-align: center;
+            min-width: 150px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .podium-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .podium-card.gold {
+            border-color: rgba(255, 215, 0, 0.5);
+            order: 2;
+            min-height: 200px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), transparent);
+        }
+
+        .podium-card.silver {
+            border-color: rgba(192, 192, 192, 0.4);
+            order: 1;
+            min-height: 170px;
+        }
+
+        .podium-card.bronze {
+            border-color: rgba(205, 127, 50, 0.4);
+            order: 3;
+            min-height: 150px;
+        }
+
+        .podium-rank {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+        }
+
+        .podium-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: white;
+            margin: 0 auto 12px;
+        }
+
+        .gold .podium-avatar {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .silver .podium-avatar {
+            background: linear-gradient(135deg, #C0C0C0, #808080);
+            box-shadow: 0 0 15px rgba(192, 192, 192, 0.3);
+        }
+
+        .bronze .podium-avatar {
+            background: linear-gradient(135deg, #CD7F32, #8B4513);
+            box-shadow: 0 0 15px rgba(205, 127, 50, 0.3);
+        }
+
+        .podium-name {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .podium-score {
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-4), var(--accent-1));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .podium-score-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Lista restul (rank 4+) */
+        .lb-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        .lb-row {
+            background: var(--bg-card);
+            transition: all 0.3s;
+        }
+
+        .lb-row:hover {
+            transform: translateX(4px);
+        }
+
+        .lb-row.current-user {
+            border: 1px solid rgba(0, 210, 255, 0.4);
+            background: rgba(0, 210, 255, 0.05);
+        }
+
+        .lb-row td {
+            padding: 14px 16px;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .lb-row td:first-child {
+            border-left: 1px solid var(--border);
+            border-radius: 12px 0 0 12px;
+        }
+
+        .lb-row td:last-child {
+            border-right: 1px solid var(--border);
+            border-radius: 0 12px 12px 0;
+        }
+
+        .lb-rank {
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-align: center;
+            width: 50px;
+        }
+
+        .lb-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .lb-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d2ff, #533483);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .lb-username {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .lb-details {
+            display: flex;
+            gap: 12px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .lb-detail-item {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .lb-score-cell {
+            text-align: right;
+            font-weight: 700;
+            font-size: 1.1rem;
+            background: linear-gradient(135deg, var(--accent-4), var(--accent-1));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .lb-empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .lb-empty-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .scoring-info {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 20px 24px;
+            margin-top: 32px;
+        }
+
+        .scoring-info h3 {
+            font-size: 1rem;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .scoring-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .scoring-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.03);
+            padding: 6px 12px;
+            border-radius: 8px;
+        }
+
+        .scoring-pts {
+            font-weight: 700;
+            color: var(--accent-4);
+        }
+
+        @media (max-width: 768px) {
+            .podium {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .podium-card {
+                order: unset !important;
+                min-height: unset !important;
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .lb-details {
+                display: none;
+            }
+
+            .lb-stats {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="logo">⚡ JS Playground</div>
+        <div class="nav-links">
+            <a href="index.html">🏠 Acasă</a>
+            <div class="nav-category">📚 Învață</div>
+            <a href="lectii.html">📖 Lecții</a>
+            <a href="typescript.html">🔷 TypeScript</a>
+            <a href="cheatsheet.html">📋 Cheatsheet</a>
+            <a href="glosar.html">📖 Glosar</a>
+            <a href="devtools.html">🔧 DevTools</a>
+            <a href="debugging.html">🐛 Debug</a>
+            <div class="nav-category">✏️ Practică</div>
+            <a href="exercitii.html">✏️ Exerciții</a>
+            <a href="quizuri.html">❓ Quiz</a>
+            <a href="provocari.html">🎯 Provocări</a>
+            <a href="console-challenges.html">🖥️ Console Tasks</a>
+            <a href="proiecte.html">🚀 Proiecte</a>
+            <div class="nav-category">🎮 Fun</div>
+            <a href="playground.html">💻 Playground</a>
+            <a href="puzzle.html">🧩 Code Puzzle</a>
+            <a href="flashcards.html">🃏 Flashcards</a>
+            <div class="nav-category">📊 Progres</div>
+            <a href="dashboard.html">📊 Dashboard</a>
+            <a href="achievements.html">🏆 Achievements</a>
+            <a href="leaderboard.html" class="active">🥇 Leaderboard</a>
+            <a href="search.html">🔍 Caută</a>
+            <div class="nav-category">👤 Cont</div>
+            <a href="login.html">🔐 Login</a>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <h1>🏆 Leaderboard</h1>
+        <p>Clasamentul celor mai activi utilizatori. Completează lecții, exerciții și provocări pentru a urca!</p>
+        <span class="badge" id="myRankBadge" style="display:none;"></span>
+    </div>
+
+    <main>
+        <div class="leaderboard-container">
+            <div class="lb-stats" id="lbStats"></div>
+
+            <div id="podium" class="podium" style="display:none;"></div>
+
+            <table class="lb-table" id="lbTable" style="display:none;">
+                <tbody id="lbBody"></tbody>
+            </table>
+
+            <div class="lb-empty" id="lbEmpty">
+                <div class="lb-empty-icon">🏆</div>
+                <h3>Se încarcă clasamentul...</h3>
+                <p>Creează un cont și completează lecții pentru a apărea aici!</p>
+            </div>
+
+            <div class="scoring-info">
+                <h3>📊 Cum se calculează scorul?</h3>
+                <div class="scoring-grid">
+                    <div class="scoring-item">📖 Lecție = <span class="scoring-pts">10 pts</span></div>
+                    <div class="scoring-item">✏️ Exercițiu = <span class="scoring-pts">15 pts</span></div>
+                    <div class="scoring-item">❓ Quiz = <span class="scoring-pts">10 pts</span></div>
+                    <div class="scoring-item">🎯 Provocare = <span class="scoring-pts">20 pts</span></div>
+                    <div class="scoring-item">🏆 Achievement = <span class="scoring-pts">25 pts</span></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>⚡ JavaScript Playground — Creat pentru a învăța prin practică</p>
+        <p style="margin-top: 8px;">
+            Resurse utile:
+            <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">MDN</a> ·
+            <a href="https://www.typescriptlang.org/docs/" target="_blank">TypeScript Docs</a> ·
+            <a href="https://javascript.info/" target="_blank">javascript.info</a>
+        </p>
+        <div class="footer-author">
+            <div class="author-name">Creat de poprobert0412</div>
+            <div class="social-links">
+                <a href="https://github.com/poprobert0412" target="_blank">🐙 GitHub</a>
+                <a href="https://www.linkedin.com/in/poprobert1999" target="_blank">💼 LinkedIn</a>
+            </div>
+        </div>
+        <p class="footer-license">© 2026 poprobert0412. Toate drepturile rezervate. Licență MIT.</p>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        (async function loadLeaderboard() {
+            try {
+                const res = await fetch('/api/progress/leaderboard');
+                if (!res.ok) throw new Error('API error');
+                const { leaderboard } = await res.json();
+
+                if (!leaderboard || leaderboard.length === 0) {
+                    document.getElementById('lbEmpty').innerHTML = `
+                        <div class="lb-empty-icon">🏜️</div>
+                        <h3>Nimeni nu e în clasament!</h3>
+                        <p>Creează un cont, completează lecții și fii primul pe leaderboard! 🚀</p>
+                    `;
+                    return;
+                }
+
+                document.getElementById('lbEmpty').style.display = 'none';
+
+                // Stats
+                const totalUsers = leaderboard.length;
+                const totalScore = leaderboard.reduce((s, u) => s + u.totalScore, 0);
+                const statsEl = document.getElementById('lbStats');
+                statsEl.innerHTML = `
+                    <div class="lb-stat">
+                        <div class="lb-stat-num">${totalUsers}</div>
+                        <div class="lb-stat-label">Utilizatori</div>
+                    </div>
+                    <div class="lb-stat">
+                        <div class="lb-stat-num">${totalScore}</div>
+                        <div class="lb-stat-label">Puncte Total</div>
+                    </div>
+                    <div class="lb-stat">
+                        <div class="lb-stat-num">${leaderboard[0].totalScore}</div>
+                        <div class="lb-stat-label">Scor #1</div>
+                    </div>
+                `;
+
+                // Current user
+                let currentUser = null;
+                try {
+                    const meRes = await fetch('/api/me');
+                    if (meRes.ok) {
+                        const me = await meRes.json();
+                        currentUser = me.user;
+                    }
+                } catch (e) { }
+
+                // My rank badge
+                if (currentUser) {
+                    const myIdx = leaderboard.findIndex(u => u.id === currentUser.id);
+                    if (myIdx >= 0) {
+                        const badge = document.getElementById('myRankBadge');
+                        badge.style.display = '';
+                        badge.textContent = `📍 Locul tău: #${myIdx + 1} (${leaderboard[myIdx].totalScore} pts)`;
+                    }
+                }
+
+                // Podium (top 3)
+                const top3 = leaderboard.slice(0, 3);
+                if (top3.length > 0) {
+                    const podiumEl = document.getElementById('podium');
+                    podiumEl.style.display = 'flex';
+                    const medals = ['gold', 'silver', 'bronze'];
+                    const icons = ['🥇', '🥈', '🥉'];
+
+                    top3.forEach((u, i) => {
+                        const isMe = currentUser && u.id === currentUser.id;
+                        podiumEl.innerHTML += `
+                            <div class="podium-card ${medals[i]} ${isMe ? 'current-user' : ''}">
+                                <div class="podium-rank">${icons[i]}</div>
+                                <div class="podium-avatar">${u.username.charAt(0).toUpperCase()}</div>
+                                <div class="podium-name">${u.username}${isMe ? ' (tu)' : ''}</div>
+                                <div class="podium-score">${u.totalScore}</div>
+                                <div class="podium-score-label">puncte</div>
+                            </div>
+                        `;
+                    });
+                }
+
+                // Rest of leaderboard (rank 4+)
+                const rest = leaderboard.slice(3);
+                if (rest.length > 0) {
+                    const table = document.getElementById('lbTable');
+                    table.style.display = '';
+                    const tbody = document.getElementById('lbBody');
+                    rest.forEach((u, i) => {
+                        const rank = i + 4;
+                        const isMe = currentUser && u.id === currentUser.id;
+                        tbody.innerHTML += `
+                            <tr class="lb-row ${isMe ? 'current-user' : ''}">
+                                <td class="lb-rank">#${rank}</td>
+                                <td>
+                                    <div class="lb-user">
+                                        <div class="lb-avatar">${u.username.charAt(0).toUpperCase()}</div>
+                                        <div>
+                                            <div class="lb-username">${u.username}${isMe ? ' (tu)' : ''}</div>
+                                            <div class="lb-details">
+                                                <span class="lb-detail-item">📖 ${u.lessons}</span>
+                                                <span class="lb-detail-item">✏️ ${u.exercises}</span>
+                                                <span class="lb-detail-item">❓ ${u.quizzes}</span>
+                                                <span class="lb-detail-item">🎯 ${u.challenges}</span>
+                                                <span class="lb-detail-item">🏆 ${u.achievements}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="lb-score-cell">${u.totalScore} pts</td>
+                            </tr>
+                        `;
+                    });
+                }
+
+            } catch (err) {
+                document.getElementById('lbEmpty').innerHTML = `
+                    <div class="lb-empty-icon">❌</div>
+                    <h3>Eroare la încărcarea clasamentului</h3>
+                    <p>Serverul nu răspunde. Încearcă din nou mai târziu.</p>
+                `;
+            }
+        })();
+    </script>
+</body>
+
+</html>

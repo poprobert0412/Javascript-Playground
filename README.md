@@ -1,6 +1,8 @@
 # ⚡ JavaScript Playground
 
 > Platformă interactivă de învățare JavaScript — de la zero la erou! 🚀
+>
+> 🌐 **[LIVE DEMO](https://javascript-playground-mvb.onrender.com)**
 
 ![Homepage Preview](screenshot.png)
 
@@ -46,6 +48,11 @@
 | 💬 **Tooltip-uri** | Hover arată descrieri pe link-uri |
 | 🤔 **Pagina 404** | Pagină custom cu cod animat |
 | 📱 **Responsive Design** | Perfect pe telefon, tabletă și desktop |
+| 🔐 **Autentificare** | Register, Login, Logout cu sesiuni securizate |
+| 👤 **Profil Editabil** | Schimbă username, email și parolă |
+| 🔒 **Reset Parolă** | Generare link de resetare cu token securizat |
+| 🥇 **Leaderboard** | Clasament live cu podium (gold/silver/bronze) |
+| 🔄 **Sincronizare** | Progresul se salvează automat pe server |
 
 ---
 
@@ -69,8 +76,11 @@ Meniul de navigare este organizat pe 4 categorii:
 - **JavaScript (Vanilla)** — Zero dependențe externe, cod curat și comentat
 - **Google Fonts** — Inter + JetBrains Mono
 - **TypeScript** — Exemple demonstrative compilabile (src/index.ts)
-- **SEO** — Meta descriptions pe toate paginile + favicon SVG
-- **localStorage** — Salvare progres, teme, achievements
+- **Node.js + Express** — Backend API cu autentificare
+- **PostgreSQL** — Bază de date pentru utilizatori și progres (Render)
+- **bcryptjs** — Hashing securizat pentru parole
+- **SEO** — Meta descriptions pe toate paginile + favicon custom
+- **localStorage + Server Sync** — Salvare progres local + sincronizare
 - **Intersection Observer** — Scroll animations cu 5 variante direcționale
 - **MutationObserver** — Detectare automată completare Console Challenges
 - **Web Audio API** — Sound effects fără fișiere externe
@@ -100,11 +110,13 @@ Meniul de navigare este organizat pe 4 categorii:
 ├── 📄 debugging.html            # Tutorial debugging
 ├── 📄 glosar.html               # Glosar 238+ termeni
 ├── 📄 search.html               # Căutare instant
-├── 📄 404.html                  # Pagină 404 custom
+├── 📄 login.html               # Login / Register / Profil
+├── 📄 leaderboard.html          # 🆕 Clasament utilizatori
 ├── 📂 css/
 │   └── 📄 styles.css            # Stiluri CSS partajate
 ├── 📂 js/
 │   ├── 📄 script.js             # JS principal (partajat, 16 secțiuni)
+│   ├── 📄 auth.js               # 🆕 Auth + progress sync (client)
 │   ├── 📄 index.js              # Typing animation (landing)
 │   ├── 📄 glosar.js             # Logica glosar
 │   ├── 📄 quizuri.js            # Logica quiz + confetti + sounds
@@ -116,8 +128,16 @@ Meniul de navigare este organizat pe 4 categorii:
 │   ├── 📄 puzzle.js             # Logica code puzzle + confetti
 │   ├── 📄 flashcards.js         # Logica flashcards
 │   └── 📄 console-challenges.js # Console Challenges detection
+├── 📂 server/                   # 🆕 Backend Node.js
+│   ├── 📄 server.js             # Express server principal
+│   ├── 📄 database.js           # Dual DB (JSON local + PostgreSQL)
+│   └── 📂 routes/
+│       ├── 📄 auth.js            # API: register/login/profil/reset
+│       └── 📄 progress.js        # API: progres + leaderboard
 ├── 📂 src/
 │   └── 📄 index.ts              # Exemple TypeScript (11 concepte)
+├── 📄 render.yaml               # 🆕 Configurație deploy Render
+├── 📄 favicon.png               # 🆕 Favicon custom
 ├── ⚡ favicon.svg                # Favicon SVG
 ├── 📄 tsconfig.json             # Configurație TypeScript
 ├── 📄 LICENSE                   # Licență MIT
@@ -135,17 +155,17 @@ Meniul de navigare este organizat pe 4 categorii:
    cd Typescript
    ```
 
-2. **Pornește un server local:**
    ```bash
-   npx -y serve . -l 3456
+   npm install
+   npm start
    ```
 
 3. **Deschide în browser:**
    ```
-   http://localhost:3456
+   http://localhost:3000
    ```
 
-> 💡 Alternativ, poți deschide `index.html` direct într-un browser (clic dublu).
+> 💡 Serverul pornește pe portul 3000 și include backend-ul cu autentificare.
 
 ---
 
