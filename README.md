@@ -49,12 +49,27 @@
 
 ---
 
+## 🧭 Navigare pe Categorii
+
+Meniul de navigare este organizat pe 4 categorii:
+
+| Categorie | Pagini |
+|---|---|
+| 📚 **Învață** | Lecții, TypeScript, Cheatsheet, Glosar, DevTools, Debug |
+| ✏️ **Practică** | Exerciții, Quiz, Provocări, Console Tasks, Proiecte |
+| 🎮 **Fun** | Playground, Code Puzzle, Flashcards |
+| 📊 **Progres** | Dashboard, Achievements, Caută |
+
+---
+
 ## 🛠️ Tehnologii
 
 - **HTML5** — Structură semantică
 - **CSS3** — Design modern cu variabile CSS, gradienți, animații, glassmorphism
 - **JavaScript (Vanilla)** — Zero dependențe externe, cod curat și comentat
 - **Google Fonts** — Inter + JetBrains Mono
+- **TypeScript** — Exemple demonstrative compilabile (src/index.ts)
+- **SEO** — Meta descriptions pe toate paginile + favicon SVG
 - **localStorage** — Salvare progres, teme, achievements
 - **Intersection Observer** — Scroll animations cu 5 variante direcționale
 - **MutationObserver** — Detectare automată completare Console Challenges
@@ -100,8 +115,11 @@
 │   ├── 📄 dashboard.js          # Logica dashboard
 │   ├── 📄 puzzle.js             # Logica code puzzle + confetti
 │   ├── 📄 flashcards.js         # Logica flashcards
-│   ├── 📄 console-challenges.js # 🆕 Console Challenges detection
-│   └── 📄 ...
+│   └── 📄 console-challenges.js # Console Challenges detection
+├── 📂 src/
+│   └── 📄 index.ts              # Exemple TypeScript (11 concepte)
+├── ⚡ favicon.svg                # Favicon SVG
+├── 📄 tsconfig.json             # Configurație TypeScript
 ├── 📄 LICENSE                   # Licență MIT
 ├── 📄 README.md                 # Acest fișier
 └── 🖼️ screenshot.png            # Preview homepage
