@@ -4,7 +4,7 @@
 >
 > 🌐 **[LIVE DEMO](https://javascript-playground-mvb.onrender.com)**
 
-![Homepage Preview](screenshot.png)
+![Homepage Preview](public/images/screenshot.png)
 
 ---
 
@@ -92,57 +92,55 @@ Meniul de navigare este organizat pe 4 categorii:
 
 ```
 📦 JavaScript-Playground/
-├── 📄 index.html                # Pagina principală (landing page)
-├── 📄 lectii.html               # 19 lecții interactive
-├── 📄 exercitii.html            # 18 exerciții practice
-├── 📄 quizuri.html              # 15 quiz-uri
-├── 📄 provocari.html            # 8 provocări consolă
-├── 📄 proiecte.html             # 3 mini-proiecte
-├── 📄 playground.html           # Consolă JS interactivă
-├── 📄 puzzle.html               # 10 code puzzle-uri
-├── 📄 flashcards.html           # 44 flashcards JavaScript
-├── 📄 console-challenges.html   # 🆕 9 Console Challenges (DevTools)
-├── 📄 typescript.html            # 🆕 12 lecții TypeScript
-├── 📄 achievements.html         # Pagina achievements
-├── 📄 dashboard.html            # Dashboard progres
-├── 📄 cheatsheet.html           # Referință rapidă
-├── 📄 devtools.html             # Tutorial DevTools
-├── 📄 debugging.html            # Tutorial debugging
-├── 📄 glosar.html               # Glosar 238+ termeni
-├── 📄 search.html               # Căutare instant
-├── 📄 login.html               # Login / Register / Profil
-├── 📄 leaderboard.html          # 🆕 Clasament utilizatori
-├── 📂 css/
-│   └── 📄 styles.css            # Stiluri CSS partajate
-├── 📂 js/
-│   ├── 📄 script.js             # JS principal (partajat, 16 secțiuni)
-│   ├── 📄 auth.js               # 🆕 Auth + progress sync (client)
-│   ├── 📄 index.js              # Typing animation (landing)
-│   ├── 📄 glosar.js             # Logica glosar
-│   ├── 📄 quizuri.js            # Logica quiz + confetti + sounds
-│   ├── 📄 proiecte.js           # Logica mini-proiecte
-│   ├── 📄 provocari.js          # Logica provocări
-│   ├── 📄 search.js             # Logica căutare
-│   ├── 📄 achievements.js       # Logica achievements
-│   ├── 📄 dashboard.js          # Logica dashboard
-│   ├── 📄 puzzle.js             # Logica code puzzle + confetti
-│   ├── 📄 flashcards.js         # Logica flashcards
-│   └── 📄 console-challenges.js # Console Challenges detection
-├── 📂 server/                   # 🆕 Backend Node.js
-│   ├── 📄 server.js             # Express server principal
-│   ├── 📄 database.js           # Dual DB (JSON local + PostgreSQL)
+├── 📂 public/                     # ← Frontend (tot ce vede user-ul)
+│   ├── 📄 index.html              # Pagina principală (landing page)
+│   ├── 📄 lectii.html             # 19 lecții interactive
+│   ├── 📄 exercitii.html          # 18 exerciții practice
+│   ├── 📄 quizuri.html            # 15 quiz-uri
+│   ├── 📄 provocari.html          # 8 provocări consolă
+│   ├── 📄 proiecte.html           # 3 mini-proiecte
+│   ├── 📄 playground.html         # Consolă JS interactivă
+│   ├── 📄 puzzle.html             # 10 code puzzle-uri
+│   ├── 📄 flashcards.html         # 44 flashcards JavaScript
+│   ├── 📄 console-challenges.html # 9 Console Challenges (DevTools)
+│   ├── 📄 typescript.html         # 12 lecții TypeScript
+│   ├── 📄 login.html              # Login / Register / Profil
+│   ├── 📄 leaderboard.html        # 🆕 Clasament utilizatori
+│   ├── 📄 achievements.html       # Pagina achievements
+│   ├── 📄 dashboard.html          # Dashboard progres
+│   ├── 📄 cheatsheet.html         # Referință rapidă
+│   ├── 📄 devtools.html           # Tutorial DevTools
+│   ├── 📄 debugging.html          # Tutorial debugging
+│   ├── 📄 glosar.html             # Glosar 238+ termeni
+│   ├── 📄 search.html             # Căutare instant
+│   ├── 📄 404.html                # Pagină 404 custom
+│   ├── 📂 css/
+│   │   └── 📄 styles.css          # Stiluri CSS partajate
+│   ├── 📂 js/
+│   │   ├── 📄 script.js           # JS principal (partajat)
+│   │   ├── 📄 auth.js             # 🆕 Auth + progress sync
+│   │   ├── 📄 index.js            # Typing animation
+│   │   ├── 📄 achievements.js     # Logica achievements
+│   │   ├── 📄 dashboard.js        # Logica dashboard
+│   │   └── 📄 ...                 # + alte module JS
+│   └── 📂 images/
+│       ├── 🖼️ favicon.svg          # Favicon SVG
+│       ├── 🖼️ favicon.png          # Favicon PNG
+│       └── 🖼️ screenshot*.png      # Screenshots
+├── 📂 server/                     # ← Backend Node.js
+│   ├── 📄 server.js               # Express server principal
+│   ├── 📄 database.js             # Dual DB (JSON + PostgreSQL)
 │   └── 📂 routes/
-│       ├── 📄 auth.js            # API: register/login/profil/reset
-│       └── 📄 progress.js        # API: progres + leaderboard
+│       ├── 📄 auth.js             # API: register/login/profil/reset
+│       └── 📄 progress.js         # API: progres + leaderboard
 ├── 📂 src/
-│   └── 📄 index.ts              # Exemple TypeScript (11 concepte)
-├── 📄 render.yaml               # 🆕 Configurație deploy Render
-├── 📄 favicon.png               # 🆕 Favicon custom
-├── ⚡ favicon.svg                # Favicon SVG
-├── 📄 tsconfig.json             # Configurație TypeScript
-├── 📄 LICENSE                   # Licență MIT
-├── 📄 README.md                 # Acest fișier
-└── 🖼️ screenshot.png            # Preview homepage
+│   └── 📄 index.ts                # Exemple TypeScript
+├── 📄 package.json                # Dependențe Node.js
+├── 📄 render.yaml                 # Configurație deploy Render
+├── 📄 tsconfig.json               # Configurație TypeScript
+├── 📄 README.md                   # Acest fișier
+├── 📄 LICENSE                     # Licență MIT
+└── 📄 .gitignore                  # Fișiere ignorate de Git
 ```
 
 ---
@@ -172,22 +170,22 @@ Meniul de navigare este organizat pe 4 categorii:
 ## 📸 Screenshots
 
 ### 🏠 Homepage
-![Homepage](screenshot.png)
+![Homepage](public/images/screenshot.png)
 
 ### 🖥️ Console Challenges — Învață din DevTools
-![Console Challenges](screenshot-console.png)
+![Console Challenges](public/images/screenshot-console.png)
 
 ### ❓ Quiz cu Confetti + Achievement Toast
-![Quiz cu Confetti](screenshot-quiz.png)
+![Quiz cu Confetti](public/images/screenshot-quiz.png)
 
 ### 🃏 Flashcards cu Flip 3D
-![Flashcards](screenshot-flashcards.png)
+![Flashcards](public/images/screenshot-flashcards.png)
 
 ### 📊 Dashboard Progres
-![Dashboard](screenshot-dashboard.png)
+![Dashboard](public/images/screenshot-dashboard.png)
 
 ### 🤔 Pagina 404 Custom
-![404](screenshot-404.png)
+![404](public/images/screenshot-404.png)
 
 ---
 

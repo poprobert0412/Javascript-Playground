@@ -72,8 +72,8 @@ async function start() {
         }
     }));
 
-    // Servim fișierele statice
-    app.use(express.static(path.join(__dirname, '..')));
+    // Servim fișierele statice din public/
+    app.use(express.static(path.join(__dirname, '..', 'public')));
 
     // Rute API (DUPĂ session middleware!)
     app.use('/api', authRoutes);
