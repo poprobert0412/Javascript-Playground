@@ -501,124 +501,503 @@ if (demoTarget) {
 
     rightControls.appendChild(toggle);
 
-    // --- Lo-Fi Beat Music Player ---
+    // --- ✨ SUPER MEGA COMPLEX HAPPY LO-FI BEAT ✨ ---
     let audioCtx = null;
     let musicPlaying = false;
     let beatInterval = null;
+    let masterGain = null;
+
+    function createConvolver(ctx) {
+        const convolver = ctx.createConvolver();
+        const rate = ctx.sampleRate;
+        const length = rate * 3;
+        const impulse = ctx.createBuffer(2, length, rate);
+        for (let ch = 0; ch < 2; ch++) {
+            const data = impulse.getChannelData(ch);
+            for (let i = 0; i < length; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2.2);
+            }
+        }
+        convolver.buffer = impulse;
+        return convolver;
+    }
+
+    function createDelay(ctx, delayTime, feedback) {
+        const delay = ctx.createDelay(2);
+        delay.delayTime.value = delayTime;
+        const fb = ctx.createGain();
+        fb.gain.value = feedback;
+        const filt = ctx.createBiquadFilter();
+        filt.type = 'lowpass';
+        filt.frequency.value = 2500;
+        delay.connect(filt);
+        filt.connect(fb);
+        fb.connect(delay);
+        return delay;
+    }
 
     function createLoFiBeat() {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const master = audioCtx.createGain();
-        master.gain.value = 0.08;
-        const comp = audioCtx.createDynamicsCompressor();
-        comp.threshold.value = -20;
-        comp.ratio.value = 4;
-        master.connect(comp);
-        comp.connect(audioCtx.destination);
+        masterGain = audioCtx.createGain();
+        const savedVol = parseFloat(localStorage.getItem('js-playground-volume') || '0.08');
+        masterGain.gain.value = savedVol;
 
-        // Vinyl crackle
-        const cLen = audioCtx.sampleRate * 4;
-        const cBuf = audioCtx.createBuffer(1, cLen, audioCtx.sampleRate);
-        const cD = cBuf.getChannelData(0);
-        for (let i = 0; i < cLen; i++) cD[i] = Math.random() > 0.997 ? (Math.random() - 0.5) * 0.3 : (Math.random() - 0.5) * 0.008;
+        // Master chain: compression + saturation
+        const comp = audioCtx.createDynamicsCompressor();
+        comp.threshold.value = -16;
+        comp.ratio.value = 5;
+        comp.knee.value = 12;
+        comp.attack.value = 0.003;
+        comp.release.value = 0.15;
+
+        // Stereo reverb
+        const reverb = createConvolver(audioCtx);
+        const reverbGain = audioCtx.createGain();
+        reverbGain.gain.value = 0.3;
+        const dryGain = audioCtx.createGain();
+        dryGain.gain.value = 0.7;
+
+        // Stereo ping-pong delay
+        const delayL = createDelay(audioCtx, 0.375, 0.3);
+        const delayR = createDelay(audioCtx, 0.5, 0.25);
+        const delayGain = audioCtx.createGain();
+        delayGain.gain.value = 0.12;
+        const merger = audioCtx.createChannelMerger(2);
+
+        // Lo-fi tape wobble
+        const wobbleOsc = audioCtx.createOscillator();
+        wobbleOsc.type = 'sine';
+        wobbleOsc.frequency.value = 0.4;
+        const wobbleGain = audioCtx.createGain();
+        wobbleGain.gain.value = 3;
+
+        // Routing
+        masterGain.connect(dryGain);
+        dryGain.connect(comp);
+        masterGain.connect(reverb);
+        reverb.connect(reverbGain);
+        reverbGain.connect(comp);
+        masterGain.connect(delayL);
+        masterGain.connect(delayR);
+        delayL.connect(merger, 0, 0);
+        delayR.connect(merger, 0, 1);
+        merger.connect(delayGain);
+        delayGain.connect(comp);
+        comp.connect(audioCtx.destination);
+        wobbleOsc.start();
+
+        // ═══ VINYL CRACKLE + TAPE HISS ═══
+        const cLen = audioCtx.sampleRate * 6;
+        const cBuf = audioCtx.createBuffer(2, cLen, audioCtx.sampleRate);
+        for (let ch = 0; ch < 2; ch++) {
+            const cD = cBuf.getChannelData(ch);
+            for (let i = 0; i < cLen; i++) {
+                const pop = Math.random() > 0.998 ? (Math.random() - 0.5) * 0.2 : 0;
+                const hiss = (Math.random() - 0.5) * 0.004;
+                cD[i] = pop + hiss;
+            }
+        }
         const cSrc = audioCtx.createBufferSource();
         cSrc.buffer = cBuf; cSrc.loop = true;
         const cF = audioCtx.createBiquadFilter();
-        cF.type = 'bandpass'; cF.frequency.value = 4000;
-        const cG = audioCtx.createGain(); cG.gain.value = 0.5;
-        cSrc.connect(cF); cF.connect(cG); cG.connect(master); cSrc.start();
+        cF.type = 'bandpass'; cF.frequency.value = 3500; cF.Q.value = 0.4;
+        const cGn = audioCtx.createGain(); cGn.gain.value = 0.35;
+        cSrc.connect(cF); cF.connect(cGn); cGn.connect(masterGain); cSrc.start();
 
+        // ═══ WARM SUB-BASS LAYER ═══
+        const subOsc = audioCtx.createOscillator();
+        subOsc.type = 'sine';
+        subOsc.frequency.value = 50;
+        const subGain = audioCtx.createGain();
+        subGain.gain.value = 0.05;
+        const subLFO = audioCtx.createOscillator();
+        subLFO.type = 'sine';
+        subLFO.frequency.value = 0.12;
+        const subLFOGain = audioCtx.createGain();
+        subLFOGain.gain.value = 6;
+        subLFO.connect(subLFOGain);
+        subLFOGain.connect(subOsc.frequency);
+        const subFilter = audioCtx.createBiquadFilter();
+        subFilter.type = 'lowpass';
+        subFilter.frequency.value = 90;
+        subOsc.connect(subFilter);
+        subFilter.connect(subGain);
+        subGain.connect(masterGain);
+        subOsc.start();
+        subLFO.start();
+
+        // ═══ WIND CHIMES BACKGROUND ═══
+        function windChime() {
+            if (!musicPlaying || !audioCtx) return;
+            const chimeFreqs = [1318.51, 1567.98, 1760, 2093, 2349.32, 2637.02];
+            const freq = chimeFreqs[Math.floor(Math.random() * chimeFreqs.length)];
+            const t = audioCtx.currentTime;
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            const f = audioCtx.createBiquadFilter();
+            o.type = 'sine';
+            o.frequency.value = freq;
+            f.type = 'bandpass';
+            f.frequency.value = freq;
+            f.Q.value = 15;
+            g.gain.setValueAtTime(0, t);
+            g.gain.linearRampToValueAtTime(0.008, t + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.0001, t + 3);
+            o.connect(f);
+            f.connect(g);
+            g.connect(masterGain);
+            o.start(t);
+            o.stop(t + 3.5);
+            setTimeout(windChime, 2000 + Math.random() * 6000);
+        }
+        setTimeout(windChime, 3000);
+
+        // ═══ FM SYNTHESIS — HAPPY RHODES ═══
+        function rhodesNote(freq, t, dur) {
+            const carrier = audioCtx.createOscillator();
+            const mod = audioCtx.createOscillator();
+            const modG = audioCtx.createGain();
+            const carG = audioCtx.createGain();
+            const filt = audioCtx.createBiquadFilter();
+
+            carrier.type = 'sine';
+            carrier.frequency.value = freq;
+            mod.type = 'sine';
+            mod.frequency.value = freq * 2;
+            modG.gain.setValueAtTime(freq * 2, t);
+            modG.gain.exponentialRampToValueAtTime(freq * 0.2, t + dur * 0.5);
+
+            filt.type = 'lowpass';
+            filt.frequency.value = 1200 + Math.random() * 600;
+            filt.Q.value = 0.3;
+
+            carG.gain.setValueAtTime(0, t);
+            carG.gain.linearRampToValueAtTime(0.10, t + 0.05);
+            carG.gain.setValueAtTime(0.08, t + dur * 0.3);
+            carG.gain.exponentialRampToValueAtTime(0.001, t + dur);
+
+            mod.connect(modG);
+            modG.connect(carrier.frequency);
+            carrier.connect(filt);
+            filt.connect(carG);
+            carG.connect(masterGain);
+
+            carrier.start(t);
+            mod.start(t);
+            carrier.stop(t + dur + 0.1);
+            mod.stop(t + dur + 0.1);
+        }
+
+        // ═══ GLOCKENSPIEL/BELL SYNTH ═══
+        function bellNote(freq, t, dur) {
+            const o1 = audioCtx.createOscillator();
+            const o2 = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            const f = audioCtx.createBiquadFilter();
+            o1.type = 'sine';
+            o1.frequency.value = freq;
+            o2.type = 'sine';
+            o2.frequency.value = freq * 3.01; // Slight inharmonic for bell character
+            const g2 = audioCtx.createGain();
+            g2.gain.value = 0.3;
+            f.type = 'highpass';
+            f.frequency.value = 400;
+            g.gain.setValueAtTime(0, t);
+            g.gain.linearRampToValueAtTime(0.035, t + 0.01);
+            g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+            o1.connect(f);
+            o2.connect(g2);
+            g2.connect(f);
+            f.connect(g);
+            g.connect(masterGain);
+            o1.start(t); o2.start(t);
+            o1.stop(t + dur + 0.1); o2.stop(t + dur + 0.1);
+        }
+
+        // ═══ PLUCK SYNTH (for bass) ═══
+        function pluckBass(freq, t, dur) {
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            const f = audioCtx.createBiquadFilter();
+            o.type = 'sawtooth';
+            o.frequency.value = freq;
+            f.type = 'lowpass';
+            f.frequency.setValueAtTime(600, t);
+            f.frequency.exponentialRampToValueAtTime(150, t + dur * 0.6);
+            f.Q.value = 2;
+            g.gain.setValueAtTime(0, t);
+            g.gain.linearRampToValueAtTime(0.28, t + 0.02);
+            g.gain.setValueAtTime(0.22, t + dur * 0.3);
+            g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+            o.connect(f); f.connect(g); g.connect(masterGain);
+            o.start(t); o.stop(t + dur + 0.05);
+        }
+
+        // ═══ DRUMS ═══
         function kick(t) {
             const o = audioCtx.createOscillator(), g = audioCtx.createGain();
             o.type = 'sine';
-            o.frequency.setValueAtTime(150, t);
-            o.frequency.exponentialRampToValueAtTime(30, t + 0.15);
-            g.gain.setValueAtTime(0.8, t);
+            o.frequency.setValueAtTime(170, t);
+            o.frequency.exponentialRampToValueAtTime(30, t + 0.14);
+            g.gain.setValueAtTime(0.65, t);
             g.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
-            o.connect(g); g.connect(master); o.start(t); o.stop(t + 0.4);
+            o.connect(g); g.connect(masterGain); o.start(t); o.stop(t + 0.4);
+            // Click transient
+            const cl = audioCtx.createOscillator(), clG = audioCtx.createGain();
+            cl.type = 'square';
+            cl.frequency.setValueAtTime(900, t);
+            cl.frequency.exponentialRampToValueAtTime(80, t + 0.015);
+            clG.gain.setValueAtTime(0.06, t);
+            clG.gain.exponentialRampToValueAtTime(0.001, t + 0.025);
+            cl.connect(clG); clG.connect(masterGain); cl.start(t); cl.stop(t + 0.03);
         }
 
-        function hihat(t, open) {
-            const len = audioCtx.sampleRate * (open ? 0.15 : 0.05);
+        function hihat(t, open, vel) {
+            vel = vel || 1;
+            const len = audioCtx.sampleRate * (open ? 0.2 : 0.035);
             const b = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
             const d = b.getChannelData(0);
             for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
             const s = audioCtx.createBufferSource(); s.buffer = b;
-            const f = audioCtx.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 7000;
+            const f1 = audioCtx.createBiquadFilter(); f1.type = 'highpass'; f1.frequency.value = 8000;
+            const f2 = audioCtx.createBiquadFilter(); f2.type = 'highpass'; f2.frequency.value = 9500;
             const g = audioCtx.createGain();
-            g.gain.setValueAtTime(open ? 0.12 : 0.08, t);
-            g.gain.exponentialRampToValueAtTime(0.001, t + (open ? 0.15 : 0.05));
-            s.connect(f); f.connect(g); g.connect(master); s.start(t);
+            g.gain.setValueAtTime((open ? 0.08 : 0.05) * vel, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + (open ? 0.2 : 0.035));
+            s.connect(f1); f1.connect(f2); f2.connect(g); g.connect(masterGain); s.start(t);
         }
 
         function snare(t) {
-            const len = audioCtx.sampleRate * 0.12;
+            const len = audioCtx.sampleRate * 0.15;
             const b = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
             const d = b.getChannelData(0);
             for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
             const s = audioCtx.createBufferSource(); s.buffer = b;
-            const nF = audioCtx.createBiquadFilter(); nF.type = 'bandpass'; nF.frequency.value = 3000;
+            const nF = audioCtx.createBiquadFilter(); nF.type = 'bandpass'; nF.frequency.value = 4000; nF.Q.value = 0.6;
             const nG = audioCtx.createGain();
-            nG.gain.setValueAtTime(0.2, t);
-            nG.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
-            s.connect(nF); nF.connect(nG); nG.connect(master); s.start(t);
+            nG.gain.setValueAtTime(0.16, t);
+            nG.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+            s.connect(nF); nF.connect(nG); nG.connect(masterGain); s.start(t);
             const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-            o.type = 'triangle'; o.frequency.value = 180;
-            g.gain.setValueAtTime(0.25, t);
+            o.type = 'triangle'; o.frequency.value = 190;
+            g.gain.setValueAtTime(0.18, t);
             g.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
-            o.connect(g); g.connect(master); o.start(t); o.stop(t + 0.08);
+            o.connect(g); g.connect(masterGain); o.start(t); o.stop(t + 0.08);
         }
 
+        function shaker(t) {
+            const len = audioCtx.sampleRate * 0.03;
+            const b = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+            const d = b.getChannelData(0);
+            for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+            const s = audioCtx.createBufferSource(); s.buffer = b;
+            const f = audioCtx.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 11000;
+            const g = audioCtx.createGain();
+            g.gain.setValueAtTime(0.04, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
+            s.connect(f); f.connect(g); g.connect(masterGain); s.start(t);
+        }
+
+        function rimClick(t) {
+            const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+            o.type = 'square';
+            o.frequency.value = 1200;
+            g.gain.setValueAtTime(0.06, t);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.015);
+            o.connect(g); g.connect(masterGain); o.start(t); o.stop(t + 0.02);
+        }
+
+        function softCymbal(t) {
+            const len = audioCtx.sampleRate * 1.5;
+            const b = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+            const d = b.getChannelData(0);
+            for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+            const s = audioCtx.createBufferSource(); s.buffer = b;
+            const f = audioCtx.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 5000;
+            const f2 = audioCtx.createBiquadFilter(); f2.type = 'lowpass'; f2.frequency.value = 12000;
+            const g = audioCtx.createGain();
+            g.gain.setValueAtTime(0, t);
+            g.gain.linearRampToValueAtTime(0.03, t + 0.3);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 1.5);
+            s.connect(f); f.connect(f2); f2.connect(g); g.connect(masterGain); s.start(t);
+        }
+
+        // ═══ HAPPY ARPEGGIATED MELODIES ═══
+        function happyArpeggio(baseFreq, t, beatLen) {
+            // Major pentatonic intervals (happy!)
+            const majorPenta = [1, 1.125, 1.25, 1.5, 1.667, 2];
+            const noteCount = 4 + Math.floor(Math.random() * 4);
+            const pattern = Math.random() > 0.5 ? 'up' : 'updown';
+            for (let i = 0; i < noteCount; i++) {
+                let idx;
+                if (pattern === 'updown') {
+                    idx = i < noteCount / 2 ? i % majorPenta.length : (noteCount - 1 - i) % majorPenta.length;
+                } else {
+                    idx = i % majorPenta.length;
+                }
+                const ratio = majorPenta[idx];
+                const octave = i >= majorPenta.length ? 2 : 1;
+                const freq = baseFreq * ratio * octave;
+                const noteT = t + i * beatLen * 0.375;
+                const noteDur = beatLen * 0.7;
+
+                // Use bell synth for sparkle
+                bellNote(freq, noteT, noteDur);
+            }
+        }
+
+        // ═══ CHORD PROGRESSIONS — HAPPY MAJOR 7TH ═══
         const chords = [
-            { pad: [220, 261.63, 329.63], bass: 110 },
-            { pad: [196, 246.94, 293.66], bass: 98 },
-            { pad: [174.61, 220, 261.63], bass: 87.31 },
-            { pad: [196, 233.08, 293.66], bass: 98 },
-            { pad: [220, 261.63, 329.63], bass: 110 },
-            { pad: [174.61, 220, 277.18], bass: 87.31 },
-            { pad: [164.81, 196, 246.94], bass: 82.41 },
-            { pad: [196, 246.94, 293.66], bass: 98 },
+            // I: Cmaj7 voicing
+            { pad: [261.63, 329.63, 392, 493.88], bass: 130.81, name: 'Cmaj7' },
+            // IV: Fmaj7  
+            { pad: [349.23, 440, 523.25, 659.25], bass: 174.61, name: 'Fmaj7' },
+            // V: G7
+            { pad: [392, 493.88, 587.33, 698.46], bass: 196, name: 'G7' },
+            // vi: Am7
+            { pad: [220, 261.63, 329.63, 392], bass: 110, name: 'Am7' },
+            // I: Cmaj7 (different voicing)
+            { pad: [523.25, 659.25, 783.99, 987.77], bass: 130.81, name: 'Cmaj7h' },
+            // ii: Dm7
+            { pad: [293.66, 349.23, 440, 523.25], bass: 146.83, name: 'Dm7' },
+            // V: G7 (different voicing)
+            { pad: [196, 246.94, 293.66, 349.23], bass: 98, name: 'G7l' },
+            // IV: Fmaj7 (lower)
+            { pad: [174.61, 220, 261.63, 329.63], bass: 87.31, name: 'Fmaj7l' },
         ];
 
-        const BPM = 75;
+        const BPM = 78; // Slightly faster for happy feel
         const beatLen = 60 / BPM;
+        const swingAmount = 0.03;
         let beat = 0, chordIdx = 0;
+        let subBeat = 0; // For 16th note patterns
 
         function tick() {
             if (!musicPlaying || !audioCtx) return;
-            const t = audioCtx.currentTime + 0.05;
-            const b = beat % 8;
-            if ([0, 3, 4, 6].includes(b)) kick(t);
-            if ([2, 6].includes(b)) snare(t);
-            hihat(t, b === 1 || b === 5);
+            const swing = (beat % 2 === 1) ? swingAmount : 0;
+            const t = audioCtx.currentTime + 0.05 + swing;
+            const b = beat % 16; // 16-beat loop for more variation!
 
-            if (b === 0) {
-                const c = chords[chordIdx % chords.length]; chordIdx++;
+            // ──── KICK PATTERN (syncopated & bouncy) ────
+            if ([0, 5, 8, 11].includes(b)) kick(t);
+
+            // ──── SNARE (on 4 and 12 with ghost on 7) ────
+            if ([4, 12].includes(b)) snare(t);
+            if (b === 7 && Math.random() > 0.4) {
+                const ghostSnareG = audioCtx.createGain();
+                ghostSnareG.gain.value = 0.4;
+                snare(t);
+            }
+
+            // ──── HI-HAT (16th note pattern with velocity) ────
+            const hhVel = [1, 0.4, 0.7, 0.35, 1, 0.3, 0.65, 0.4, 1, 0.35, 0.7, 0.3, 1, 0.4, 0.6, 0.35];
+            const isOpen = b === 2 || b === 6 || b === 10 || b === 14;
+            hihat(t, isOpen, hhVel[b]);
+
+            // ──── SHAKER (every other beat for groove) ────
+            if (b % 2 === 1) shaker(t);
+
+            // ──── RIM CLICK (sparse syncopation) ────
+            if ((b === 3 || b === 9) && Math.random() > 0.5) rimClick(t);
+
+            // ──── SOFT CYMBAL SWELL (every 16 beats) ────
+            if (b === 0 && Math.random() > 0.6) softCymbal(t);
+
+            // ──── GHOST HI-HATS (random humanization) ────
+            if (Math.random() > 0.8) {
+                hihat(t + beatLen * 0.5, false, 0.2);
+            }
+
+            // ──── CHORD CHANGES (every 8 beats = half bar) ────
+            if (b === 0 || b === 8) {
+                const cI = (b === 0) ? chordIdx : chordIdx;
+                const c = chords[cI % chords.length];
+                if (b === 0) chordIdx++;
+
+                // Rhodes FM chords — wider voicings with humanized timing
+                const chordDur = beatLen * 7.5;
                 c.pad.forEach((freq, i) => {
-                    const o = audioCtx.createOscillator(), g = audioCtx.createGain(), f = audioCtx.createBiquadFilter();
-                    o.type = 'triangle'; o.frequency.value = freq; o.detune.value = (Math.random() - 0.5) * 15;
-                    f.type = 'lowpass'; f.frequency.value = 500 + Math.random() * 300;
-                    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.2, t + 0.8);
-                    g.gain.setValueAtTime(0.2, t + beatLen * 6); g.gain.linearRampToValueAtTime(0, t + beatLen * 8);
-                    o.connect(f); f.connect(g); g.connect(master);
-                    o.start(t + i * 0.1); o.stop(t + beatLen * 8.5);
+                    const humanize = (Math.random() - 0.5) * 0.04;
+                    rhodesNote(freq, t + i * 0.06 + humanize, chordDur);
                 });
-                const bs = audioCtx.createOscillator(), bG = audioCtx.createGain();
-                bs.type = 'sine'; bs.frequency.value = c.bass;
-                bG.gain.setValueAtTime(0, t); bG.gain.linearRampToValueAtTime(0.4, t + 0.3);
-                bG.gain.setValueAtTime(0.4, t + beatLen * 6); bG.gain.linearRampToValueAtTime(0, t + beatLen * 8);
-                bs.connect(bG); bG.connect(master); bs.start(t); bs.stop(t + beatLen * 8.5);
 
+                // Extra upper harmony note for brightness
                 if (Math.random() > 0.3) {
-                    const mN = c.pad[Math.floor(Math.random() * 3)] * 2;
+                    const topNote = c.pad[c.pad.length - 1] * 2;
+                    rhodesNote(topNote, t + 0.35, chordDur * 0.6);
+                }
+
+                // Pluck bass with rhythmic pattern
+                pluckBass(c.bass, t, beatLen * 1.8);
+                // Octave bass jump at beat 4
+                if (b === 0) {
+                    pluckBass(c.bass * 2, t + beatLen * 4, beatLen * 1.2);
+                    pluckBass(c.bass * 1.5, t + beatLen * 6, beatLen * 1.2);
+                }
+
+                // Happy arpeggios — play often for complexity!
+                if (Math.random() > 0.25) {
+                    const arpDelay = beatLen * (2 + Math.floor(Math.random() * 3));
+                    happyArpeggio(c.pad[0], t + arpDelay, beatLen);
+                }
+
+                // Glockenspiel melody accent (uplifting!)
+                if (Math.random() > 0.3) {
+                    const melodyNotes = c.pad.slice(1, 3).map(f => f * 2);
+                    const noteIdx = Math.floor(Math.random() * melodyNotes.length);
+                    const mT = t + beatLen * (1 + Math.floor(Math.random() * 4));
+                    bellNote(melodyNotes[noteIdx], mT, beatLen * 2.5);
+                }
+
+                // Second bell note for call-and-response
+                if (Math.random() > 0.5) {
+                    const respFreq = c.pad[0] * 4;
+                    bellNote(respFreq, t + beatLen * (3 + Math.random() * 2), beatLen * 1.5);
+                }
+
+                // Melodic sine accent (dreamy)
+                if (Math.random() > 0.4) {
+                    const mN = c.pad[Math.floor(Math.random() * c.pad.length)] * 2;
                     const m = audioCtx.createOscillator(), mG = audioCtx.createGain();
+                    const mF = audioCtx.createBiquadFilter();
                     m.type = 'sine'; m.frequency.value = mN;
-                    const mT = t + beatLen * (1 + Math.floor(Math.random() * 3));
-                    mG.gain.setValueAtTime(0, mT); mG.gain.linearRampToValueAtTime(0.06, mT + 0.2);
-                    mG.gain.linearRampToValueAtTime(0, mT + 1.5);
-                    m.connect(mG); mG.connect(master); m.start(mT); m.stop(mT + 2);
+                    mF.type = 'lowpass'; mF.frequency.value = 1200;
+                    const mT = t + beatLen * (1 + Math.random() * 3);
+                    mG.gain.setValueAtTime(0, mT);
+                    mG.gain.linearRampToValueAtTime(0.04, mT + 0.1);
+                    mG.gain.exponentialRampToValueAtTime(0.001, mT + 2);
+                    m.connect(mF); mF.connect(mG); mG.connect(masterGain);
+                    m.start(mT); m.stop(mT + 2.5);
+                }
+
+                // Warm pad layer (adds thickness)
+                c.pad.slice(0, 2).forEach((freq) => {
+                    const pad = audioCtx.createOscillator();
+                    const padG = audioCtx.createGain();
+                    const padF = audioCtx.createBiquadFilter();
+                    pad.type = 'triangle';
+                    pad.frequency.value = freq / 2;
+                    pad.detune.value = (Math.random() - 0.5) * 12;
+                    padF.type = 'lowpass';
+                    padF.frequency.value = 350;
+                    padG.gain.setValueAtTime(0, t);
+                    padG.gain.linearRampToValueAtTime(0.06, t + 1.5);
+                    padG.gain.setValueAtTime(0.05, t + chordDur * 0.7);
+                    padG.gain.linearRampToValueAtTime(0, t + chordDur);
+                    pad.connect(padF); padF.connect(padG); padG.connect(masterGain);
+                    pad.start(t); pad.stop(t + chordDur + 0.2);
+                });
+            }
+
+            // ──── WALKING BASS FILLS (on beats 2, 6, 10, 14) ────
+            if ([2, 6, 10, 14].includes(b)) {
+                const c = chords[chordIdx % chords.length];
+                if (Math.random() > 0.5) {
+                    const fillFreq = c.bass * (Math.random() > 0.5 ? 1.5 : 1.333);
+                    pluckBass(fillFreq, t, beatLen * 0.8);
                 }
             }
+
             beat++;
         }
 
@@ -629,7 +1008,8 @@ if (demoTarget) {
     function stopMusic() {
         musicPlaying = false;
         if (beatInterval) { clearInterval(beatInterval); beatInterval = null; }
-        if (audioCtx) { audioCtx.close().catch(() => {}); audioCtx = null; }
+        if (audioCtx) { audioCtx.close().catch(() => { }); audioCtx = null; }
+        masterGain = null;
     }
 
     function startMusic() {
@@ -648,15 +1028,35 @@ if (demoTarget) {
     musicBtn.title = 'Lo-Fi Beat (Off)';
     musicBtn.style.opacity = '0.5';
 
+    // Volume slider
+    const volContainer = document.createElement('div');
+    volContainer.className = 'volume-slider-container';
+    volContainer.style.display = 'none';
+    const volSlider = document.createElement('input');
+    volSlider.type = 'range';
+    volSlider.min = '0';
+    volSlider.max = '100';
+    volSlider.value = Math.round((parseFloat(localStorage.getItem('js-playground-volume') || '0.08')) * 500);
+    volSlider.className = 'volume-slider';
+    volSlider.title = 'Volum muzică';
+    volSlider.addEventListener('input', () => {
+        const vol = volSlider.value / 500;
+        if (masterGain) masterGain.gain.value = vol;
+        localStorage.setItem('js-playground-volume', vol.toString());
+    });
+    volContainer.appendChild(volSlider);
+
     musicBtn.addEventListener('click', () => {
         if (musicPlaying) {
             stopMusic();
             musicBtn.textContent = '🎵';
             musicBtn.title = 'Lo-Fi Beat (Off)';
             musicBtn.style.opacity = '0.5';
+            volContainer.style.display = 'none';
             localStorage.setItem('js-playground-music', 'off');
         } else {
             startMusic();
+            volContainer.style.display = 'flex';
             localStorage.setItem('js-playground-music', 'on');
         }
     });
@@ -665,22 +1065,68 @@ if (demoTarget) {
     if (localStorage.getItem('js-playground-music') === 'on') {
         try {
             const test = new (window.AudioContext || window.webkitAudioContext)();
-            if (test.state === 'running') { test.close(); startMusic(); }
+            if (test.state === 'running') { test.close(); startMusic(); volContainer.style.display = 'flex'; }
             else {
                 test.close();
-                const resume = () => { if (!musicPlaying) startMusic(); };
+                const resume = () => { if (!musicPlaying) { startMusic(); volContainer.style.display = 'flex'; } };
                 document.addEventListener('click', resume, { once: true });
                 document.addEventListener('scroll', resume, { once: true, passive: true });
                 musicBtn.textContent = '⏸️'; musicBtn.title = 'Click/scroll to resume'; musicBtn.style.opacity = '0.8';
             }
         } catch (e) {
-            document.addEventListener('click', () => { if (!musicPlaying) startMusic(); }, { once: true });
+            document.addEventListener('click', () => { if (!musicPlaying) { startMusic(); volContainer.style.display = 'flex'; } }, { once: true });
         }
     }
 
+    rightControls.appendChild(volContainer);
     rightControls.appendChild(musicBtn);
     rightControls.appendChild(hamburger);
     navbar.appendChild(rightControls);
+
+    // --- Ripple effect on buttons ---
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.cta-btn, .demo-btn, .btn-run');
+        if (!btn) return;
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple';
+        const rect = btn.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height) * 2;
+        ripple.style.width = ripple.style.height = size + 'px';
+        ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
+        ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
+        btn.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 600);
+    });
+
+    // --- Animated stat counters on homepage ---
+    const statNumbers = document.querySelectorAll('.stat-number');
+    if (statNumbers.length > 0 && (window.location.pathname.includes('index') || window.location.pathname.endsWith('/'))) {
+        const countObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target;
+                    const finalText = el.textContent;
+                    const finalNum = parseInt(finalText);
+                    if (!isNaN(finalNum) && finalNum > 0) {
+                        el.textContent = '0';
+                        const duration = 1200;
+                        const start = performance.now();
+                        function animate(now) {
+                            const elapsed = now - start;
+                            const progress = Math.min(elapsed / duration, 1);
+                            const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+                            el.textContent = Math.round(finalNum * eased);
+                            if (progress < 1) requestAnimationFrame(animate);
+                            else el.textContent = finalText; // restore original (might have ∞)
+                        }
+                        requestAnimationFrame(animate);
+                    }
+                    countObserver.unobserve(el);
+                }
+            });
+        }, { threshold: 0.5 });
+        statNumbers.forEach(s => countObserver.observe(s));
+    }
 
     // Ctrl+K hint badge
     const hint = document.createElement('div');
@@ -878,18 +1324,6 @@ if (demoTarget) {
         });
     });
 
-    // --- 3. Custom Cursor Glow ---
-    const cursorGlow = document.createElement('div');
-    cursorGlow.id = 'cursorGlow';
-    cursorGlow.style.cssText = 'position:fixed;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(0,210,255,0.04) 0%,transparent 70%);pointer-events:none;z-index:0;transform:translate(-50%,-50%);transition:opacity 0.3s ease;opacity:0;';
-    document.documentElement.appendChild(cursorGlow);
-
-    document.addEventListener('mousemove', (e) => {
-        cursorGlow.style.left = e.clientX + 'px';
-        cursorGlow.style.top = e.clientY + 'px';
-        cursorGlow.style.opacity = '1';
-    });
-    document.addEventListener('mouseleave', () => { cursorGlow.style.opacity = '0'; });
 
     // --- 4. Skeleton Loading ---
     const skeletonStyle = document.createElement('style');

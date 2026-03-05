@@ -279,7 +279,10 @@
     </div>
 
     <nav class="navbar">
-        <div class="logo"><a href="index.html" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;"><img src="images/favicon.png" alt="JS Playground" style="width:32px;height:32px;border-radius:6px;"> JS Playground</a></div>
+        <div class="logo"><a href="index.html"
+                style="display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;"><img
+                    src="images/favicon.png" alt="JS Playground" style="width:32px;height:32px;border-radius:6px;"> JS
+                Playground</a></div>
         <div class="nav-links">
             <a href="index.html">🏠 Acasă</a>
             <div class="nav-category">📚 Învață</div>
@@ -829,6 +832,257 @@
                 <div class="ts-warning">
                     <strong>⚠️ Important:</strong> TypeScript există DOAR la compilare. La runtime, totul devine
                     JavaScript normal. Tipurile sunt "șterse" — nu există overhead de performanță!
+                </div>
+            </div>
+
+            <!-- ============================================================ -->
+            <!-- INTERACTIVE JS vs TS COMPARISONS                             -->
+            <!-- ============================================================ -->
+            <div class="ts-interactive-section">
+                <h2 class="ts-interactive-title">⚡ JS vs TS — Scenarii Reale</h2>
+                <p class="ts-interactive-subtitle">Aceleași situații din viața reală. Vezi ce bug-uri prinde TypeScript
+                    automat!</p>
+
+                <!-- Scenario 1: API Fetch -->
+                <div class="ts-scenario">
+                    <div class="ts-scenario-header">
+                        <div>
+                            <span class="ts-scenario-title">🌐 Scenario 1: Fetch API Data</span>
+                            <span class="ts-bug-badge danger">JS: Bug ascuns</span>
+                            <span class="ts-bug-badge safe">TS: Detectat</span>
+                        </div>
+                        <button class="ts-toggle-btn"
+                            onclick="this.parentElement.parentElement.querySelector('.ts-error-explanation').classList.toggle('visible'); this.textContent = this.textContent === '👁️ Arată explicația' ? '🙈 Ascunde' : '👁️ Arată explicația';">👁️
+                            Arată explicația</button>
+                    </div>
+                    <div class="ts-compare">
+                        <div class="ts-compare-block js">
+                            <span class="label">JavaScript</span>
+                            <span class="kw">async function</span> <span class="fn">getUser</span>(id) {
+                            <span class="kw">const</span> res = <span class="kw">await</span> <span
+                                class="fn">fetch</span>(<span class="str">`/api/users/${id}`</span>);
+                            <span class="kw">const</span> user = <span class="kw">await</span> res.<span
+                                class="fn">json</span>();
+                            <span class="kw">return</span> user.<span class="fn">fulName</span>; <span class="com">//
+                                typo! e fullName</span>
+                            }
+                            <span class="com">// Runtime: returnează "undefined" — bug greu de găsit!</span>
+                        </div>
+                        <div class="ts-compare-block ts">
+                            <span class="label">TypeScript</span>
+                            <span class="kw">interface</span> <span class="ts-type">User</span> { fullName: <span
+                                class="ts-type">string</span>; age: <span class="ts-type">number</span>; }
+
+                            <span class="kw">async function</span> <span class="fn">getUser</span>(id: <span
+                                class="ts-type">number</span>): <span class="ts-type">Promise</span>&lt;<span
+                                class="ts-type">User</span>&gt; {
+                            <span class="kw">const</span> res = <span class="kw">await</span> <span
+                                class="fn">fetch</span>(<span class="str">`/api/users/${id}`</span>);
+                            <span class="kw">const</span> user: <span class="ts-type">User</span> = <span
+                                class="kw">await</span> res.<span class="fn">json</span>();
+                            <span class="kw">return</span> user.fulName; <span class="com">// ❌ Error: Property
+                                'fulName' does not exist</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="ts-error-explanation">
+                        <strong>🎓 Ce prinde TS:</strong> Typo-ul <code>fulName</code> (în loc de <code>fullName</code>)
+                        e detectat <em>instant</em> la compilare. În JS, ai fi descoperit bug-ul doar la runtime, când
+                        user-ul vede "undefined" pe ecran.
+                    </div>
+                </div>
+
+                <!-- Scenario 2: Form Validation -->
+                <div class="ts-scenario">
+                    <div class="ts-scenario-header">
+                        <div>
+                            <span class="ts-scenario-title">📝 Scenario 2: Validare Formular</span>
+                            <span class="ts-bug-badge danger">JS: Crash la runtime</span>
+                            <span class="ts-bug-badge safe">TS: Eroare la compilare</span>
+                        </div>
+                        <button class="ts-toggle-btn"
+                            onclick="this.parentElement.parentElement.querySelector('.ts-error-explanation').classList.toggle('visible'); this.textContent = this.textContent === '👁️ Arată explicația' ? '🙈 Ascunde' : '👁️ Arată explicația';">👁️
+                            Arată explicația</button>
+                    </div>
+                    <div class="ts-compare">
+                        <div class="ts-compare-block js">
+                            <span class="label">JavaScript</span>
+                            <span class="kw">function</span> <span class="fn">validateAge</span>(age) {
+                            <span class="kw">if</span> (age.<span class="fn">trim</span>() === <span
+                                class="str">""</span>) <span class="kw">return false</span>;
+                            <span class="kw">return</span> age >= <span class="num">18</span>;
+                            }
+                            <span class="fn">validateAge</span>(<span class="num">25</span>);
+                            <span class="com">// Crash! 25.trim() — TypeError: trim is not a function</span>
+                        </div>
+                        <div class="ts-compare-block ts">
+                            <span class="label">TypeScript</span>
+                            <span class="kw">function</span> <span class="fn">validateAge</span>(age: <span
+                                class="ts-type">string</span> | <span class="ts-type">number</span>): <span
+                                class="ts-type">boolean</span> {
+                            <span class="kw">if</span> (<span class="kw">typeof</span> age === <span
+                                class="str">"string"</span>) {
+                            <span class="kw">return</span> age.<span class="fn">trim</span>() !== <span
+                                class="str">""</span> && Number(age) >= <span class="num">18</span>;
+                            }
+                            <span class="kw">return</span> age >= <span class="num">18</span>;
+                            }
+                            <span class="com">// ✅ TS te forțează să verifici tipul înainte</span>
+                        </div>
+                    </div>
+                    <div class="ts-error-explanation">
+                        <strong>🎓 Ce prinde TS:</strong> Dacă <code>age</code> poate fi și string și number, TS te
+                        forțează să faci <em>type narrowing</em> (typeof check) înainte de a folosi metode specifice
+                        unui tip.
+                    </div>
+                </div>
+
+                <!-- Scenario 3: Event Handling -->
+                <div class="ts-scenario">
+                    <div class="ts-scenario-header">
+                        <div>
+                            <span class="ts-scenario-title">🎯 Scenario 3: Event Handling DOM</span>
+                            <span class="ts-bug-badge danger">JS: Null crash</span>
+                            <span class="ts-bug-badge safe">TS: Forțează null check</span>
+                        </div>
+                        <button class="ts-toggle-btn"
+                            onclick="this.parentElement.parentElement.querySelector('.ts-error-explanation').classList.toggle('visible'); this.textContent = this.textContent === '👁️ Arată explicația' ? '🙈 Ascunde' : '👁️ Arată explicația';">👁️
+                            Arată explicația</button>
+                    </div>
+                    <div class="ts-compare">
+                        <div class="ts-compare-block js">
+                            <span class="label">JavaScript</span>
+                            <span class="kw">const</span> btn = document.<span class="fn">getElementById</span>(<span
+                                class="str">"submit"</span>);
+                            btn.<span class="fn">addEventListener</span>(<span class="str">"click"</span>, () => {
+                            <span class="kw">const</span> input = document.<span class="fn">querySelector</span>(<span
+                                class="str">"#email"</span>);
+                            console.<span class="fn">log</span>(input.value);
+                            });
+                            <span class="com">// Dacă #submit sau #email nu există — null crash!</span>
+                        </div>
+                        <div class="ts-compare-block ts">
+                            <span class="label">TypeScript</span>
+                            <span class="kw">const</span> btn = document.<span class="fn">getElementById</span>(<span
+                                class="str">"submit"</span>);
+                            btn?.<span class="fn">addEventListener</span>(<span class="str">"click"</span>, () => {
+                            <span class="kw">const</span> input = document.<span
+                                class="fn">querySelector</span>&lt;<span
+                                class="ts-type">HTMLInputElement</span>&gt;(<span class="str">"#email"</span>);
+                            <span class="kw">if</span> (input) console.<span class="fn">log</span>(input.value);
+                            });
+                            <span class="com">// ✅ TS avertizează: Object is possibly 'null'</span>
+                        </div>
+                    </div>
+                    <div class="ts-error-explanation">
+                        <strong>🎓 Ce prinde TS:</strong> <code>getElementById</code> returnează
+                        <code>HTMLElement | null</code>. TS te obligă să verifici null înainte de a folosi elementul. Cu
+                        <code>&lt;HTMLInputElement&gt;</code> ai acces la <code>.value</code>.
+                    </div>
+                </div>
+
+                <!-- Scenario 4: Array Processing -->
+                <div class="ts-scenario">
+                    <div class="ts-scenario-header">
+                        <div>
+                            <span class="ts-scenario-title">📋 Scenario 4: Array Processing</span>
+                            <span class="ts-bug-badge danger">JS: NaN silențios</span>
+                            <span class="ts-bug-badge safe">TS: Type mismatch</span>
+                        </div>
+                        <button class="ts-toggle-btn"
+                            onclick="this.parentElement.parentElement.querySelector('.ts-error-explanation').classList.toggle('visible'); this.textContent = this.textContent === '👁️ Arată explicația' ? '🙈 Ascunde' : '👁️ Arată explicația';">👁️
+                            Arată explicația</button>
+                    </div>
+                    <div class="ts-compare">
+                        <div class="ts-compare-block js">
+                            <span class="label">JavaScript</span>
+                            <span class="kw">const</span> prices = [<span class="num">10</span>, <span
+                                class="num">20</span>, <span class="str">"30"</span>, <span class="num">40</span>];
+                            <span class="kw">const</span> total = prices.<span class="fn">reduce</span>((sum, p) => sum
+                            + p, <span class="num">0</span>);
+                            console.<span class="fn">log</span>(total);
+                            <span class="com">// Rezultat: "3030​40" (string concatenation!)</span>
+                            <span class="com">// În loc de 100, primești un string. Bug subtil!</span>
+                        </div>
+                        <div class="ts-compare-block ts">
+                            <span class="label">TypeScript</span>
+                            <span class="kw">const</span> prices: <span class="ts-type">number[]</span> = [<span
+                                class="num">10</span>, <span class="num">20</span>, <span class="str">"30"</span>, <span
+                                class="num">40</span>];
+                            <span class="com">// ❌ Error: Type 'string' is not assignable to type 'number'</span>
+
+                            <span class="kw">const</span> prices2: <span class="ts-type">number[]</span> = [<span
+                                class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span
+                                class="num">40</span>];
+                            <span class="kw">const</span> total = prices2.<span class="fn">reduce</span>((sum, p) => sum
+                            + p, <span class="num">0</span>);
+                            <span class="com">// ✅ Rezultat: 100 — garantat number!</span>
+                        </div>
+                    </div>
+                    <div class="ts-error-explanation">
+                        <strong>🎓 Ce prinde TS:</strong> Array-ul JS avea un string (<code>"30"</code>) printre numere.
+                        JS face coercion silențios: <code>30 + "30" = "3030"</code> (string!). TS nu te lasă să pui
+                        string într-un <code>number[]</code>.
+                    </div>
+                </div>
+
+                <!-- Scenario 5: Error Handling -->
+                <div class="ts-scenario">
+                    <div class="ts-scenario-header">
+                        <div>
+                            <span class="ts-scenario-title">⚠️ Scenario 5: Error Handling</span>
+                            <span class="ts-bug-badge danger">JS: Erori ignorate</span>
+                            <span class="ts-bug-badge safe">TS: Exhaustive check</span>
+                        </div>
+                        <button class="ts-toggle-btn"
+                            onclick="this.parentElement.parentElement.querySelector('.ts-error-explanation').classList.toggle('visible'); this.textContent = this.textContent === '👁️ Arată explicația' ? '🙈 Ascunde' : '👁️ Arată explicația';">👁️
+                            Arată explicația</button>
+                    </div>
+                    <div class="ts-compare">
+                        <div class="ts-compare-block js">
+                            <span class="label">JavaScript</span>
+                            <span class="kw">function</span> <span class="fn">getStatus</span>(code) {
+                            <span class="kw">switch</span> (code) {
+                            <span class="kw">case</span> <span class="str">"active"</span>: <span
+                                class="kw">return</span> <span class="str">"✅ Activ"</span>;
+                            <span class="kw">case</span> <span class="str">"pending"</span>: <span
+                                class="kw">return</span> <span class="str">"⏳ Așteptare"</span>;
+                            }
+                            }
+                            <span class="fn">getStatus</span>(<span class="str">"cancelled"</span>);
+                            <span class="com">// Returnează undefined — nimeni nu e avertizat!</span>
+                        </div>
+                        <div class="ts-compare-block ts">
+                            <span class="label">TypeScript</span>
+                            <span class="kw">type</span> <span class="ts-type">Status</span> = <span
+                                class="str">"active"</span> | <span class="str">"pending"</span> | <span
+                                class="str">"cancelled"</span>;
+
+                            <span class="kw">function</span> <span class="fn">getStatus</span>(code: <span
+                                class="ts-type">Status</span>): <span class="ts-type">string</span> {
+                            <span class="kw">switch</span> (code) {
+                            <span class="kw">case</span> <span class="str">"active"</span>: <span
+                                class="kw">return</span> <span class="str">"✅ Activ"</span>;
+                            <span class="kw">case</span> <span class="str">"pending"</span>: <span
+                                class="kw">return</span> <span class="str">"⏳ Așteptare"</span>;
+                            <span class="kw">case</span> <span class="str">"cancelled"</span>: <span
+                                class="kw">return</span> <span class="str">"❌ Anulat"</span>;
+                            }
+                            }
+                            <span class="com">// ✅ TS: dacă uiți un caz, primești eroare!</span>
+                        </div>
+                    </div>
+                    <div class="ts-error-explanation">
+                        <strong>🎓 Ce prinde TS:</strong> Cu <em>union types</em>
+                        (<code>"active" | "pending" | "cancelled"</code>), TS verifică că ai acoperit
+                        <strong>toate</strong> cazurile posibile în switch. Dacă adaugi un status nou dar uiți
+                        switch-ul, TS te avertizează instant.
+                    </div>
+                </div>
+
+                <div class="ts-note">
+                    <strong>🏆 Concluzie:</strong> TypeScript nu te încetinește — te <em>accelerează</em>. Bug-urile de
+                    mai sus pot lua ore de debug în JS. Cu TS, le vezi <strong>instantaneu</strong> în editor!
                 </div>
             </div>
 
