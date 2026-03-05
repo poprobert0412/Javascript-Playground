@@ -36,7 +36,10 @@
         authBtn.style.cssText = 'display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:10px;font-size:0.85rem;font-weight:600;text-decoration:none;transition:all 0.3s ease;cursor:pointer;white-space:nowrap;';
 
         if (user) {
-            authBtn.innerHTML = `<span style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#00d2ff,#533483);display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:white;font-weight:700;">${user.username.charAt(0).toUpperCase()}</span> ${user.username}`;
+            const avatarHTML = user.avatar_url
+                ? `<img src="${user.avatar_url}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;">`
+                : `<span style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#00d2ff,#533483);display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:white;font-weight:700;">${user.username.charAt(0).toUpperCase()}</span>`;
+            authBtn.innerHTML = `${avatarHTML} ${user.username}`;
             authBtn.style.color = 'var(--accent-4)';
             authBtn.style.border = '1px solid rgba(0, 210, 255, 0.3)';
             authBtn.style.background = 'rgba(0, 210, 255, 0.08)';

@@ -84,6 +84,11 @@ async function start() {
     app.use('/api/progress', progressRoutes);
     app.use('/api/admin', adminRoutes);
 
+    // Catch-all: serve 404.html for unknown routes
+    app.use((req, res) => {
+        res.status(404).sendFile(path.join(__dirname, '..', 'public', '404.html'));
+    });
+
     app.listen(PORT, () => {
         console.log(`Server running on port ${PORT}`);
         console.log(`Mode: ${db.IS_PRODUCTION ? 'production' : 'development'}`);
