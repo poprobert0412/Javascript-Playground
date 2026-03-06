@@ -110,6 +110,10 @@ body.light-mode {
     box-sizing: border-box;
 }
 
+html {
+    overflow-x: hidden;
+}
+
 body {
     font-family: 'Inter', sans-serif;
     background: var(--bg-primary);
@@ -125,6 +129,125 @@ a {
 
 a:hover {
     text-decoration: underline;
+}
+
+/* === OFF-CANVAS NAVIGATION PANEL === */
+.nav-links {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 280px;
+    max-width: 80vw;
+    height: 100vh;
+    background: var(--bg-card);
+    border-left: 1px solid var(--border);
+    z-index: 150;
+    transform: translateX(100%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        visibility 0s linear 0.35s;
+    overflow-y: auto;
+    padding: 70px 20px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    box-shadow: -8px 0 30px rgba(0, 0, 0, 0.5);
+    visibility: hidden;
+}
+
+.nav-links.open {
+    transform: translateX(0);
+    visibility: visible;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        visibility 0s linear 0s;
+}
+
+.nav-links a {
+    display: block;
+    padding: 10px 14px;
+    color: var(--text-primary);
+    text-decoration: none;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 500;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    background: rgba(0, 210, 255, 0.08);
+    color: var(--accent-4);
+    text-decoration: none;
+}
+
+.nav-category {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-secondary);
+    padding: 16px 14px 6px;
+    margin-top: 4px;
+    pointer-events: none;
+}
+
+/* === NAV OVERLAY === */
+.nav-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 140;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    backdrop-filter: blur(2px);
+}
+
+.nav-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* === HAMBURGER BUTTON === */
+.hamburger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 36px;
+    height: 36px;
+    padding: 6px;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 200;
+    transition: border-color 0.2s ease;
+    flex-shrink: 0;
+}
+
+.hamburger span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background: var(--text-primary);
+    border-radius: 2px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.hamburger:hover {
+    border-color: var(--accent-4);
+}
+
+.hamburger.active span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
 }
 
 /* === ANIMATED BACKGROUND === */
@@ -2061,5 +2184,265 @@ footer .footer-license {
     .ts-scenario-header {
         flex-direction: column;
         align-items: flex-start;
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   COMPREHENSIVE MOBILE FIX — 375px+ (iPhone, Android)
+   Fixes: navbar overflow, stats crop, footer overlap,
+   volume slider, code blocks, typing text
+   ═══════════════════════════════════════════════════════════ */
+
+@media (max-width: 480px) {
+
+    /* --- NAVBAR: prevent overflow --- */
+    .navbar {
+        padding: 8px 12px;
+        gap: 6px;
+        flex-wrap: nowrap;
+        overflow: hidden;
+    }
+
+    .navbar .logo {
+        font-size: 0.95rem;
+        flex-shrink: 0;
+        max-width: 130px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .navbar .logo img,
+    .navbar .logo svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    /* Hide non-essential navbar items on small screens */
+    .navbar .nav-right,
+    .navbar .right-controls {
+        gap: 4px;
+        flex-shrink: 1;
+        overflow: hidden;
+    }
+
+    /* Volume slider hidden on mobile — takes too much space */
+    .navbar input[type="range"],
+    .navbar .volume-slider {
+        display: none !important;
+    }
+
+    /* Auth button smaller */
+    .navbar .auth-btn,
+    .navbar [style*="padding:6px 14px"],
+    .navbar [style*="padding: 6px 14px"] {
+        padding: 4px 8px !important;
+        font-size: 0.72rem !important;
+        max-width: 90px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* Theme toggle and music toggle */
+    .theme-toggle {
+        padding: 4px 8px;
+        font-size: 0.9rem;
+    }
+
+    /* --- HERO SECTION --- */
+    .hero {
+        padding: 50px 16px 30px !important;
+    }
+
+    .hero h1 {
+        font-size: 1.5rem !important;
+        letter-spacing: -1px;
+    }
+
+    .hero p {
+        font-size: 0.82rem;
+        padding: 0 4px;
+    }
+
+    /* Typing demo fix */
+    .typing-demo {
+        font-size: 0.72rem !important;
+        padding: 8px 12px !important;
+        max-width: 100% !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* --- STATS: 2x2 grid, no overflow --- */
+    .stats {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        padding: 0 8px;
+    }
+
+    .stat-item {
+        min-width: unset !important;
+        text-align: center;
+    }
+
+    .stat-item .stat-number {
+        font-size: 1.8rem;
+    }
+
+    .stat-item .stat-label {
+        font-size: 0.72rem;
+    }
+
+    /* --- CARDS --- */
+    .landing-grid,
+    .concept-grid {
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+    }
+
+    .landing-card {
+        padding: 14px !important;
+    }
+
+    .landing-card h3 {
+        font-size: 0.95rem;
+    }
+
+    .landing-card p {
+        font-size: 0.78rem;
+    }
+
+    /* --- FOOTER: clean spacing --- */
+    footer {
+        padding: 20px 12px 70px !important;
+        text-align: center;
+    }
+
+    footer p {
+        font-size: 0.75rem;
+        line-height: 1.5;
+    }
+
+    footer .footer-license {
+        font-size: 0.65rem !important;
+        padding: 0 8px;
+    }
+
+    /* --- SCROLL TO TOP BUTTON: don't overlap footer --- */
+    .scroll-to-top,
+    [style*="bottom:30px"][style*="right:30px"] {
+        bottom: 16px !important;
+        right: 12px !important;
+        width: 40px !important;
+        height: 40px !important;
+        font-size: 1rem !important;
+    }
+
+    /* --- KEYBOARD HINT: hide on mobile --- */
+    .ctrl-k-hint {
+        display: none !important;
+    }
+
+    /* --- CODE BLOCKS: proper mobile sizing --- */
+    pre,
+    .code-block,
+    .ts-code,
+    .expected-output {
+        font-size: 0.68rem !important;
+        padding: 10px !important;
+        border-radius: 8px;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* --- PROF NOTE --- */
+    .prof-note {
+        padding: 12px !important;
+        font-size: 0.8rem !important;
+    }
+
+    /* --- TS COMPARISON SECTION --- */
+    .ts-interactive-section {
+        margin-top: 30px;
+        padding-top: 20px;
+    }
+
+    .ts-interactive-title {
+        font-size: 1.1rem !important;
+    }
+
+    .ts-compare {
+        grid-template-columns: 1fr !important;
+        gap: 10px;
+    }
+
+    .ts-compare-block {
+        padding: 12px !important;
+        font-size: 0.7rem !important;
+    }
+
+    .ts-scenario {
+        padding: 14px !important;
+        margin-bottom: 16px;
+    }
+
+    .ts-toggle-btn {
+        padding: 8px 14px;
+        font-size: 0.75rem;
+        width: 100%;
+        text-align: center;
+    }
+
+    .ts-error-explanation {
+        font-size: 0.78rem;
+        padding: 10px 14px;
+    }
+
+    /* --- TS LESSONS (cards) --- */
+    .ts-lesson {
+        padding: 16px;
+    }
+
+    .ts-lesson h3 {
+        font-size: 1rem;
+    }
+
+    /* --- ROADMAP --- */
+    .roadmap-item {
+        padding: 16px;
+    }
+
+    .step-number {
+        width: 36px;
+        height: 36px;
+        font-size: 0.85rem;
+    }
+
+    /* --- ACHIEVEMENT TOAST --- */
+    .achievement-toast {
+        right: 10px;
+        left: 10px;
+        top: 10px;
+        font-size: 0.8rem;
+        padding: 12px 16px;
+    }
+}
+
+/* ═══ Extra small screens (320px) ═══ */
+@media (max-width: 360px) {
+    .hero h1 {
+        font-size: 1.3rem !important;
+    }
+
+    .stats {
+        grid-template-columns: 1fr !important;
+    }
+
+    .navbar .logo {
+        max-width: 100px;
+        font-size: 0.85rem;
     }
 }
