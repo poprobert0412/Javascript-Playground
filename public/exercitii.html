@@ -4,8 +4,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Exerciții practice JavaScript cu dificultate progresivă — rezolvă probleme reale și învață prin practică.">
+    <meta name="theme-color" content="#0f0f1a">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Exerciții — Practică JavaScript">
+    <meta property="og:description" content="">
+    <meta property="og:image" content="/images/favicon.png">
+    <meta property="og:url" content="https://jsplayground.ro/exercitii.html">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Exerciții — Practică JavaScript">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:image" content="/images/favicon.png">
+    <meta name="description"
+        content="Exerciții practice JavaScript cu dificultate progresivă — rezolvă probleme reale și învață prin practică.">
     <title>Exerciții — Practică JavaScript</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
         rel="stylesheet">
@@ -60,6 +78,80 @@
             font-family: 'JetBrains Mono', monospace;
             min-width: 60px;
         }
+
+        /* === LOCKED EXERCISE CARD === */
+        .exercise-card {
+            position: relative;
+            transition: transform 0.4s, opacity 0.4s, border-color 0.4s, background 0.4s, box-shadow 0.4s ease;
+        }
+
+        .exercise-card.ex-locked {
+            opacity: 0.45;
+            filter: grayscale(0.3);
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .exercise-card.ex-locked textarea {
+            opacity: 0.3;
+        }
+
+        .exercise-card.ex-locked .exercise-actions {
+            opacity: 0.3;
+        }
+
+        .exercise-card .lock-badge {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: none;
+            z-index: 2;
+        }
+
+        .exercise-card.ex-locked .lock-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* === COMPLETED EXERCISE CARD === */
+        .exercise-card.ex-completed {
+            border-left: 4px solid #00e676;
+        }
+
+        .exercise-card.ex-completed .exercise-label {
+            position: relative;
+        }
+
+        .exercise-card.ex-completed .exercise-label::after {
+            content: ' ✅';
+        }
+
+        /* === UNLOCK ANIMATION === */
+        @keyframes unlockPop {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+                box-shadow: 0 0 30px rgba(0, 210, 255, 0.3);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .exercise-card.ex-just-unlocked {
+            animation: unlockPop 0.6s ease;
+        }
     </style>
 </head>
 
@@ -70,19 +162,22 @@
         <div class="orb"></div>
     </div>
 
-    <nav class="navbar">
-        <div class="logo"><a href="index.html" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;"><img src="images/favicon.png" alt="JS Playground" style="width:32px;height:32px;border-radius:6px;"> JS Playground</a></div>
+    <nav class="navbar" role="navigation" aria-label="Navigare principala">
+        <div class="logo"><a href="index.html"
+                style="display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;"><img loading="lazy"
+                    src="images/favicon.png" alt="JS Playground" style="width:32px;height:32px;border-radius:6px;"> JS
+                Playground</a></div>
         <div class="nav-links">
             <a href="index.html">🏠 Acasă</a>
             <div class="nav-category">📚 Învață</div>
-            <a href="lectii.html">📖 Lecții</a>
+            <a href="lectii-nivele.html">📖 Lecții</a>
             <a href="typescript.html">🔷 TypeScript</a>
             <a href="cheatsheet.html">📋 Cheatsheet</a>
             <a href="glosar.html">📖 Glosar</a>
             <a href="devtools.html">🔧 DevTools</a>
             <a href="debugging.html">🐛 Debug</a>
             <div class="nav-category">✏️ Practică</div>
-            <a href="exercitii.html" class="active">✏️ Exerciții</a>
+            <a href="exercitii-nivele.html" class="active">✏️ Exerciții</a>
             <a href="quizuri.html">❓ Quiz</a>
             <a href="provocari.html">🎯 Provocări</a>
             <a href="console-challenges.html">🖥️ Console Tasks</a>
@@ -100,10 +195,16 @@
         </div>
     </nav>
 
-    <div class="page-header">
+    <header class="page-header">
         <h1>✏️ Exerciții Practice</h1>
         <p>18 exerciții ordonate de la simplu la complex. Fiecare are buton de rulare și hint dacă te blochezi!</p>
         <span class="badge">De la ⭐ la 🏆 Boss Final</span>
+        <div style="margin-top: 16px;">
+            <a href="exercitii-nivele.html"
+                style="display:inline-flex;align-items:center;gap:8px;padding:10px 22px;background:rgba(0,210,255,0.1);border:1px solid rgba(0,210,255,0.3);border-radius:12px;color:var(--accent-4);font-weight:600;font-size:0.9rem;text-decoration:none;transition: transform 0.2s, opacity 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s ease;"
+                onmouseover="this.style.background='rgba(0,210,255,0.2)'"
+                onmouseout="this.style.background='rgba(0,210,255,0.1)'">🔙 Înapoi la Nivele</a>
+        </header>
     </div>
 
     <main>
@@ -580,40 +681,65 @@ console.log(`TOTAL: ${total} RON`);</textarea>
 
     </main>
 
-    <footer>
+    <footer role="contentinfo">
         <p>⚡ JavaScript Playground — Creat pentru a învăța prin practică</p>
         <p style="margin-top: 8px;">
             Resurse utile:
-            <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">MDN</a> ·
-            <a href="https://www.typescriptlang.org/docs/" target="_blank">TypeScript Docs</a> ·
-            <a href="https://javascript.info/" target="_blank">javascript.info</a>
+            <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" rel="noopener noreferrer">MDN</a> ·
+            <a href="https://www.typescriptlang.org/docs/" target="_blank" rel="noopener noreferrer">TypeScript Docs</a> ·
+            <a href="https://javascript.info/" target="_blank" rel="noopener noreferrer">javascript.info</a>
         </p>
         <div class="footer-author">
             <div class="author-name">Creat de poprobert0412</div>
             <div class="social-links">
-                <a href="https://github.com/poprobert0412" target="_blank">🐙 GitHub</a>
-                <a href="https://www.linkedin.com/in/poprobert1999" target="_blank">💼 LinkedIn</a>
+                <a href="https://github.com/poprobert0412" target="_blank" rel="noopener noreferrer">🐙 GitHub</a>
+                <a href="https://www.linkedin.com/in/poprobert1999" target="_blank" rel="noopener noreferrer">💼 LinkedIn</a>
             </div>
         </div>
         <p class="footer-license">© 2026 poprobert0412. Toate drepturile rezervate. Licență MIT.</p>
     </footer>
 
-    <script src="js/script.js"></script>
-    <script src="js/auth.js"></script>
+    <script src="js/script.js" defer></script>
+    <script src="js/auth.js" defer></script>
     <script>
-        // === Progress tracking ===
-        // Ascultăm click-urile pe "Rulează" pentru a actualiza bara de progres
+        // === Progress tracking + Level unlock system ===
+        const STORAGE_KEY = 'exerciseLevels';
         let completedExercises = new Set();
+
+        // Load completed from localStorage
+        function loadCompleted() {
+            try {
+                const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+                Object.keys(data).forEach(k => { if (data[k]) completedExercises.add(k); });
+            } catch (e) { }
+        }
+
+        // Save a completed exercise to localStorage
+        function saveCompleted(id) {
+            try {
+                const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+                data[id] = true;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            } catch (e) { }
+        }
+
+        loadCompleted();
 
         const originalRunExercise = runExercise;
         runExercise = function (id) {
+            // Prevent running locked exercises
+            const card = document.getElementById(id)?.closest('.exercise-card');
+            if (card && card.classList.contains('ex-locked')) return;
+
             originalRunExercise(id);
-            // Marchează ca rezolvat după rulare reușită
+            // Mark as completed on successful run
             setTimeout(() => {
                 const output = document.getElementById(`${id}-output`);
                 if (output && output.querySelector('.result')) {
                     completedExercises.add(id);
+                    saveCompleted(id);
                     updateProgress();
+                    applyLockStates(); // Refresh locks — next exercise unlocks!
                 }
             }, 100);
         };
@@ -625,6 +751,63 @@ console.log(`TOTAL: ${total} RON`);</textarea>
             const text = document.getElementById('progressText');
             if (fill) fill.style.width = `${(done / total) * 100}%`;
             if (text) text.textContent = `${done} / ${total}`;
+        }
+
+        // Scroll to exercise from hash (#ex1, #ex5, etc.)
+        document.addEventListener('DOMContentLoaded', () => {
+            updateProgress();
+            applyLockStates();
+            const hash = window.location.hash;
+            if (hash) {
+                const target = document.getElementById(hash.substring(1));
+                if (target) {
+                    setTimeout(() => {
+                        const card = target.closest('.exercise-card') || target.closest('.card');
+                        if (card) {
+                            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            card.style.transition = 'box-shadow 0.3s ease';
+                            card.style.boxShadow = '0 0 30px rgba(0, 210, 255, 0.4)';
+                            setTimeout(() => { card.style.boxShadow = ''; }, 2000);
+                        }
+                    }, 300);
+                }
+            }
+        });
+
+        // === Lock/Unlock exercise cards based on completion ===
+        function applyLockStates() {
+            const allCards = document.querySelectorAll('.exercise-card');
+            const completed = getCompletedData();
+
+            allCards.forEach((card, index) => {
+                const exId = `ex${index + 1}`;
+                const prevId = `ex${index}`;
+                const isCompleted = completed[exId] === true;
+                const isUnlocked = index === 0 || completed[prevId] === true;
+
+                // Remove old states
+                card.classList.remove('ex-locked', 'ex-completed', 'ex-just-unlocked');
+                // Remove old lock badges
+                const oldBadge = card.querySelector('.lock-badge');
+                if (oldBadge) oldBadge.remove();
+
+                if (isCompleted) {
+                    card.classList.add('ex-completed');
+                } else if (!isUnlocked) {
+                    card.classList.add('ex-locked');
+                    // Add lock badge
+                    const badge = document.createElement('div');
+                    badge.className = 'lock-badge';
+                    badge.innerHTML = '🔒 Rezolvă exercițiul anterior';
+                    card.appendChild(badge);
+                }
+            });
+        }
+
+        function getCompletedData() {
+            try {
+                return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+            } catch (e) { return {}; }
         }
     </script>
 </body>

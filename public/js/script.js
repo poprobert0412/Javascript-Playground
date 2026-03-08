@@ -445,6 +445,7 @@ if (demoTarget) {
     hamburger.className = 'hamburger';
     hamburger.id = 'hamburgerBtn';
     hamburger.setAttribute('aria-label', 'Deschide meniul');
+    hamburger.setAttribute('aria-expanded', 'false');
     hamburger.innerHTML = '<span></span><span></span><span></span>';
 
     const navLinks = navbar.querySelector('.nav-links');
@@ -460,7 +461,10 @@ if (demoTarget) {
         hamburger.classList.toggle('active');
         navLinks.classList.toggle('open');
         overlay.classList.toggle('show');
-        document.body.style.overflow = navLinks.classList.contains('open') ? 'hidden' : '';
+        const isOpen = navLinks.classList.contains('open');
+        document.body.style.overflow = isOpen ? 'hidden' : '';
+        hamburger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        hamburger.setAttribute('aria-label', isOpen ? 'Închide meniul' : 'Deschide meniul');
     }
 
     hamburger.addEventListener('click', toggleMenu);
@@ -954,8 +958,6 @@ if (demoTarget) {
     }
 
     window.addEventListener('scroll', checkScroll, { passive: true });
-    document.addEventListener('scroll', checkScroll, { passive: true });
-    setInterval(checkScroll, 300);
 
     // Hover glow on scroll button
     scrollBtn.addEventListener('mouseenter', () => {
@@ -972,19 +974,17 @@ if (demoTarget) {
     // --- Scroll Progress Bar ---
     const progressBar = document.createElement('div');
     progressBar.id = 'scrollProgressBar';
-    progressBar.style.cssText = 'position:fixed!important;top:0!important;left:0!important;height:3px!important;width:0%!important;background:linear-gradient(90deg,#00d2ff,#7b2ff7,#ff6b9d)!important;z-index:100001!important;transition:width 0.1s linear!important;pointer-events:none!important;';
+    progressBar.style.cssText = 'position:fixed!important;top:0!important;left:0!important;height:3px!important;width:100%!important;background:linear-gradient(90deg,#00d2ff,#7b2ff7,#ff6b9d)!important;z-index:100001!important;pointer-events:none!important;transform-origin:left;transform:scaleX(0);will-change:transform;';
     document.documentElement.appendChild(progressBar);
 
     function updateProgress() {
         const s = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
         const docHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight) - window.innerHeight;
         const percent = docHeight > 0 ? Math.min((s / docHeight) * 100, 100) : 0;
-        progressBar.style.width = percent + '%';
+        progressBar.style.transform = `scaleX(${percent / 100})`;
     }
 
     window.addEventListener('scroll', updateProgress, { passive: true });
-    document.addEventListener('scroll', updateProgress, { passive: true });
-    setInterval(updateProgress, 300);
 
     // --- Reading Time Badge ---
     const mainContent = document.querySelector('main');
@@ -1078,30 +1078,7 @@ if (demoTarget) {
         pageHeader.appendChild(quoteEl);
     }
 
-    // =========================================================================
-    // 🎨 PREMIUM UI EFFECTS
-    // =========================================================================
-
-    // --- 1. Smooth Page Transitions ---
-    const pageTransitionStyle = document.createElement('style');
-    pageTransitionStyle.textContent = `
-        body { animation: pageSlideIn 0.4s ease-out; }
-        @keyframes pageSlideIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-        body.page-leaving { animation: pageFadeOut 0.25s ease-in forwards; }
-        @keyframes pageFadeOut { to { opacity: 0; transform: translateY(-8px); } }
-    `;
-    document.head.appendChild(pageTransitionStyle);
-
-    // Intercept nav link clicks for smooth transition
-    document.querySelectorAll('a[href$=".html"]').forEach(link => {
-        link.addEventListener('click', (e) => {
-            const href = link.getAttribute('href');
-            if (!href || href.startsWith('http') || href.startsWith('#') || link.classList.contains('active')) return;
-            e.preventDefault();
-            document.body.classList.add('page-leaving');
-            setTimeout(() => { window.location.href = href; }, 250);
-        });
-    });
+    // (Page transitions handled by Section 14 below)
 
     // --- 2. Particle Sparkles on Card Hover ---
     document.querySelectorAll('.feature-card, .card').forEach(card => {
@@ -1553,7 +1530,7 @@ document.addEventListener('click', function (e) {
         pointer-events: none; opacity: 0;
         transition: opacity 0.2s ease, transform 0.2s ease;
         transform: translateY(4px);
-        backdrop-filter: blur(10px);
+
         border: 1px solid rgba(255,255,255,0.1);
         white-space: nowrap;
         font-family: 'Inter', sans-serif;
@@ -1596,5 +1573,73 @@ document.addEventListener('click', function (e) {
         if (!el) return;
         tooltip.style.opacity = '0';
         tooltip.style.transform = 'translateY(4px)';
+    });
+})();
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 🧲 SECTION 16 — MAGNETIC CTA BUTTONS
+// Buttons subtly follow the cursor when hovering
+// ═══════════════════════════════════════════════════════════════════════════
+(function initMagneticButtons() {
+    const magneticSelectors = '.cta-btn, .demo-btn, .auth-btn.login-btn, .auth-btn.register-btn';
+
+    document.addEventListener('mousemove', (e) => {
+        const btn = e.target.closest(magneticSelectors);
+        if (!btn) return;
+
+        const rect = btn.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        // How far cursor is from center (max 8px movement)
+        const maxMove = 8;
+        const dx = ((e.clientX - centerX) / (rect.width / 2)) * maxMove;
+        const dy = ((e.clientY - centerY) / (rect.height / 2)) * maxMove;
+
+        btn.style.transform = `translate(${dx}px, ${dy}px)`;
+    });
+
+    document.addEventListener('mouseout', (e) => {
+        const btn = e.target.closest(magneticSelectors);
+        if (!btn) return;
+        btn.style.transform = '';
+    });
+})();
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 👁️ SECTION 17 — ENHANCED SCROLL REVEAL
+// Elements fade in + slide up when entering viewport (staggered)
+// ═══════════════════════════════════════════════════════════════════════════
+(function initScrollReveal() {
+    // Add scroll-reveal class to common elements
+    const targets = document.querySelectorAll(
+        '.landing-card, .concept-card, .stat-item, .feature-item, ' +
+        '.quick-example, .scroll-animated, [class*="card"]'
+    );
+
+    if (!targets.length) return;
+
+    // Pre-style: start invisible + shifted down
+    targets.forEach((el, i) => {
+        if (el.closest('.navbar, .nav-links')) return; // skip nav items
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = `opacity 0.5s ease ${i % 6 * 0.1}s, transform 0.5s ease ${i % 6 * 0.1}s`;
+    });
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    targets.forEach((el) => {
+        if (!el.closest('.navbar, .nav-links')) {
+            observer.observe(el);
+        }
     });
 })();

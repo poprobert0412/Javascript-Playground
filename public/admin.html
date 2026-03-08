@@ -4,8 +4,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f0f1a">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Admin Panel — JS Playground">
+    <meta property="og:description" content="Admin Panel — JS Playground">
+    <meta property="og:image" content="/images/favicon.png">
+    <meta property="og:url" content="https://jsplayground.ro/admin.html">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Admin Panel — JS Playground">
+    <meta name="twitter:description" content="Admin Panel — JS Playground">
+    <meta name="twitter:image" content="/images/favicon.png">
     <meta name="description" content="Admin Panel — JS Playground">
     <title>Admin Panel — JS Playground</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
         rel="stylesheet">
@@ -30,7 +47,7 @@
             border-radius: 14px;
             padding: 24px;
             text-align: center;
-            transition: all 0.3s;
+            transition: transform 0.3s, opacity 0.3s, border-color 0.3s, background 0.3s, box-shadow 0.3s;
         }
 
         .admin-stat:hover {
@@ -147,7 +164,7 @@
             border: 1px solid var(--border);
             background: transparent;
             color: var(--text-secondary);
-            transition: all 0.2s;
+            transition: transform 0.2s, opacity 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s;
             font-family: 'Inter', sans-serif;
         }
 
@@ -202,9 +219,9 @@
         <div class="orb"></div>
     </div>
 
-    <nav class="navbar">
+    <nav class="navbar" role="navigation" aria-label="Navigare principala">
         <div class="logo"><a href="index.html"
-                style="display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;"><img
+                style="display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;"><img loading="lazy"
                     src="images/favicon.png" alt="JS Playground"
                     style="width:32px;height:32px;border-radius:6px;"> JS Playground</a></div>
         <div class="nav-links">
@@ -218,10 +235,10 @@
         </div>
     </nav>
 
-    <div class="page-header">
+    <header class="page-header">
         <h1>⚙️ Admin Panel</h1>
         <p>Gestionează utilizatorii și vezi statisticile platformei.</p>
-    </div>
+    </header>
 
     <main>
         <div class="admin-container">
@@ -251,12 +268,12 @@
         </div>
     </main>
 
-    <footer>
+    <footer role="contentinfo">
         <p>⚡ JavaScript Playground — Admin Panel</p>
     </footer>
 
-    <script src="js/script.js"></script>
-    <script src="js/auth.js"></script>
+    <script src="js/script.js" defer></script>
+    <script src="js/auth.js" defer></script>
     <script>
         (async function loadAdmin() {
             try {
@@ -296,7 +313,7 @@
                     tbody.innerHTML = users.map(u => {
                         const date = new Date(u.createdAt).toLocaleDateString('ro-RO');
                         const avatarHtml = u.avatarUrl
-                            ? `<img src="${u.avatarUrl}" class="user-avatar" style="object-fit:cover;">`
+                            ? `<img alt="" loading="lazy" src="${u.avatarUrl}" class="user-avatar" style="object-fit:cover;">`
                             : `<div class="user-avatar">${u.username.charAt(0).toUpperCase()}</div>`;
                         return `
                             <tr>

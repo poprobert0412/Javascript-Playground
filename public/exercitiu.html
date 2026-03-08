@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f0f1a">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Exercițiu — JavaScript Playground">
+    <meta property="og:description" content="Exercițiu practic JavaScript — rezolvă și deblochează nivelul următor!">
+    <meta property="og:image" content="/images/favicon.png">
+    <meta property="og:url" content="https://jsplayground.ro/exercitiu.html">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Exercițiu — JavaScript Playground">
+    <meta name="twitter:description" content="Exercițiu practic JavaScript — rezolvă și deblochează nivelul următor!">
+    <meta name="twitter:image" content="/images/favicon.png">
+    <meta name="description" content="Exercițiu practic JavaScript — rezolvă și deblochează nivelul următor!">
+    <title>Exercițiu — JavaScript Playground</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <style>
+        .difficulty {
+            display: inline-flex;
+            gap: 2px;
+            margin-left: 8px;
+        }
+
+        .difficulty .star {
+            color: var(--warning);
+            font-size: 0.8rem;
+        }
+
+        .difficulty .star.dim {
+            opacity: 0.25;
+        }
+
+        /* === EXERCISE NAVIGATION === */
+        .ex-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .ex-nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: transform 0.2s, opacity 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s ease;
+            cursor: pointer;
+            border: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .ex-nav-btn.back {
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            color: var(--accent-4);
+        }
+
+        .ex-nav-btn.back:hover {
+            background: rgba(0, 210, 255, 0.2);
+        }
+
+        .ex-nav-btn.next {
+            background: linear-gradient(135deg, var(--accent-4), var(--accent-3));
+            color: white;
+            border: none;
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+            transition: transform 0.4s, opacity 0.4s, border-color 0.4s, background 0.4s, box-shadow 0.4s ease;
+        }
+
+        .ex-nav-btn.next.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+        }
+
+        .ex-nav-btn.next:hover {
+            box-shadow: 0 6px 20px rgba(0, 210, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .ex-nav-btn.next.show:hover {
+            transform: translateY(-2px);
+        }
+
+        /* === LEVEL INDICATOR === */
+        .level-indicator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .level-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: rgba(0, 210, 255, 0.1);
+            border: 2px solid rgba(0, 210, 255, 0.3);
+            color: var(--accent-4);
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .level-badge.boss {
+            background: rgba(233, 69, 96, 0.15);
+            border-color: rgba(233, 69, 96, 0.4);
+            color: var(--accent-1);
+        }
+
+        .level-info h2 {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .level-info span {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
+
+        /* === LOCKED PAGE OVERLAY === */
+        .locked-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 15, 26, 0.95);
+            z-index: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 20px;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .locked-overlay .lock-icon {
+            font-size: 4rem;
+            margin-bottom: 10px;
+        }
+
+        .locked-overlay h2 {
+            font-size: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .locked-overlay p {
+            color: var(--text-secondary);
+            max-width: 400px;
+        }
+
+        /* === COMPLETION CELEBRATION === */
+        .completion-banner {
+            display: none;
+            background: linear-gradient(135deg, rgba(0, 230, 118, 0.15), rgba(0, 210, 255, 0.1));
+            border: 1px solid rgba(0, 230, 118, 0.4);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            margin-top: 20px;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .completion-banner.show {
+            display: block;
+        }
+
+        .completion-banner h3 {
+            color: #00e676;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .completion-banner p {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* === EXERCISE CARD SPECIFIC === */
+        .exercise-card {
+            position: relative;
+        }
+
+        .exercise-card.boss-card {
+            border-color: rgba(233, 69, 96, 0.4);
+            background: linear-gradient(135deg, rgba(233, 69, 96, 0.15), rgba(83, 52, 131, 0.2));
+        }
+
+        .exercise-label {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(0, 210, 255, 0.1);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--accent-4);
+            margin-bottom: 12px;
+        }
+
+        .boss-card .exercise-label {
+            background: rgba(233, 69, 96, 0.3);
+            color: #ff6b6b;
+        }
+
+        .exercise-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .btn-run {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-run:hover {
+            opacity: 0.85;
+            transform: translateY(-1px);
+        }
+
+        .btn-hint {
+            padding: 8px 20px;
+            background: rgba(255, 171, 64, 0.1);
+            border: 1px solid rgba(255, 171, 64, 0.3);
+            border-radius: 10px;
+            color: var(--warning);
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-hint:hover {
+            background: rgba(255, 171, 64, 0.2);
+        }
+
+        .hint-text {
+            display: none;
+            margin-top: 12px;
+            padding: 12px 16px;
+            background: rgba(255, 171, 64, 0.08);
+            border: 1px solid rgba(255, 171, 64, 0.2);
+            border-radius: 10px;
+            font-size: 0.88rem;
+            color: var(--warning);
+        }
+
+        .exercise-output {
+            display: none;
+            margin-top: 12px;
+            padding: 14px 18px;
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 140px;
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.88rem;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        textarea:focus {
+            border-color: rgba(0, 210, 255, 0.4);
+        }
+
+        .prof-note {
+            background: rgba(0, 210, 255, 0.06);
+            border: 1px solid rgba(0, 210, 255, 0.15);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .prof-label {
+            font-weight: 600;
+            color: var(--accent-4);
+            margin-bottom: 6px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <nav class="navbar" role="navigation" aria-label="Navigare principala">
+        <div class="logo"><a href="index.html"
+                style="display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;"><img loading="lazy"
+                    src="images/favicon.png" alt="JS Playground" style="width:32px;height:32px;border-radius:6px;"> JS
+                Playground</a></div>
+        <div class="nav-links">
+            <a href="index.html">🏠 Acasă</a>
+            <div class="nav-category">📚 Învață</div>
+            <a href="lectii-nivele.html">📖 Lecții</a>
+            <a href="typescript.html">🔷 TypeScript</a>
+            <a href="cheatsheet.html">📋 Cheatsheet</a>
+            <a href="glosar.html">📖 Glosar</a>
+            <a href="devtools.html">🔧 DevTools</a>
+            <a href="debugging.html">🐛 Debug</a>
+            <div class="nav-category">✏️ Practică</div>
+            <a href="exercitii-nivele.html" class="active">✏️ Exerciții</a>
+            <a href="quizuri.html">❓ Quiz</a>
+            <a href="provocari.html">🎯 Provocări</a>
+            <a href="console-challenges.html">🖥️ Console Tasks</a>
+            <a href="proiecte.html">🚀 Proiecte</a>
+            <div class="nav-category">🎮 Fun</div>
+            <a href="playground.html">💻 Playground</a>
+            <a href="puzzle.html">🧩 Code Puzzle</a>
+            <a href="flashcards.html">🃏 Flashcards</a>
+            <div class="nav-category">📊 Progres</div>
+            <a href="dashboard.html">📊 Dashboard</a>
+            <a href="achievements.html">🏆 Achievements</a>
+            <a href="leaderboard.html">🥇 Leaderboard</a>
+            <a href="search.html">🔍 Caută</a>
+        </div>
+    </nav>
+
+    <header class="page-header">
+        <h1 id="pageTitle">✏️ Exercițiu</h1>
+        <div id="levelIndicator" class="level-indicator" style="justify-content: center;"></div>
+    </header>
+
+    <main>
+        <!-- Navigation -->
+        <div class="ex-nav">
+            <a href="exercitii-nivele.html" class="ex-nav-btn back">🔙 Înapoi la Nivele</a>
+            <button class="ex-nav-btn next" id="nextBtn" onclick="goNext()">Exercițiul următor ➡️</button>
+        </div>
+
+        <!-- Exercise Container -->
+        <div id="exerciseContainer"></div>
+
+        <!-- Completion Banner -->
+        <div class="completion-banner" id="completionBanner">
+            <h3>🎉 Felicitări! Exercițiu completat!</h3>
+            <p id="completionText">Nivelul următor a fost deblocat. Continuă!</p>
+            <button class="ex-nav-btn next show" onclick="goNext()" id="completionNextBtn">Exercițiul următor
+                ➡️</button>
+        </div>
+    </main>
+
+    <footer role="contentinfo">
+        <p>⚡ JavaScript Playground — Creat pentru a învăța prin practică</p>
+        <p style="margin-top: 8px;">
+            Resurse utile:
+            <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" rel="noopener noreferrer">MDN</a> ·
+            <a href="https://www.typescriptlang.org/docs/" target="_blank" rel="noopener noreferrer">TypeScript Docs</a> ·
+            <a href="https://javascript.info/" target="_blank" rel="noopener noreferrer">javascript.info</a>
+        </p>
+        <div class="footer-author">
+            <div class="author-name">Creat de poprobert0412</div>
+            <div class="social-links">
+                <a href="https://github.com/poprobert0412" target="_blank" rel="noopener noreferrer">🐙 GitHub</a>
+                <a href="https://www.linkedin.com/in/poprobert1999" target="_blank" rel="noopener noreferrer">💼 LinkedIn</a>
+            </div>
+        </div>
+        <p class="footer-license">© 2026 poprobert0412. Toate drepturile rezervate. Licență MIT.</p>
+    </footer>
+
+    <script src="js/script.js" defer></script>
+    <script src="js/auth.js" defer></script>
+    <script>
+        // ═══════════════════════════════════════════════
+        // EXERCISE DATA — All 18 exercises
+        // ═══════════════════════════════════════════════
+        const EXERCISES = [
+            {
+                id: 'ex1', num: 1, icon: '➕', title: 'Calculează suma unui array', stars: 1,
+                desc: 'Scrie o funcție <code>suma</code> care primește un array de numere și returnează suma lor.',
+                code: `function suma(numere) {\n    // Folosește .reduce() pentru a calcula suma\n    // reduce((total, numar) => total + numar, 0)\n}\n\nconsole.log(suma([1, 2, 3, 4, 5])); // 15\nconsole.log(suma([10, 20, 30]));     // 60`,
+                hint: 'Folosește <code>return numere.reduce((total, n) => total + n, 0);</code>'
+            },
+            {
+                id: 'ex2', num: 2, icon: '🔍', title: 'Filtrează numerele pare', stars: 1,
+                desc: 'Scrie o funcție <code>numPare</code> care returnează doar numerele pare dintr-un array.',
+                code: `function numPare(numere) {\n    // Folosește .filter() cu operatorul % (modulo)\n    // Un număr e par dacă n % 2 === 0\n}\n\nconsole.log(numPare([1, 2, 3, 4, 5, 6, 7, 8])); // [2, 4, 6, 8]`,
+                hint: '<code>return numere.filter(n => n % 2 === 0);</code> — % returnează restul: 4%2=0 (par), 5%2=1 (impar)'
+            },
+            {
+                id: 'ex3', num: 3, icon: '🏗️', title: 'Creează un obiect', stars: 1,
+                desc: 'Creează un obiect <code>masina</code> cu proprietățile: marca, model, an, și o metodă <code>descriere()</code>.',
+                code: `const masina = {\n    // marca: "...",\n    // model: "...",\n    // an: 2024,\n    // descriere() { return \`...\`; }\n};\n\nconsole.log(masina.descriere());`,
+                hint: '<code>descriere() { return \`\${this.marca} \${this.model} (\${this.an})\`; }</code> — <code>this</code> se referă la obiectul curent'
+            },
+            {
+                id: 'ex4', num: 4, icon: '📦', title: 'Variabile — let vs const', stars: 1,
+                desc: 'Declară <code>scor</code> cu let (valoare 0), incrementeaz-o de 3 ori. Declară <code>nume</code> cu const. Afișează ambele.',
+                code: `// Pasul 1: let scor = ???\n// Pasul 2: scor++ (de 3 ori)\n// Pasul 3: const nume = ???\n// Pasul 4: console.log cu template literal\n\nconsole.log(\`\${nume} are scorul: \${scor}\`);`,
+                hint: '<code>let scor = 0; scor++; scor++; scor++; const nume = "Robert";</code> — scor va fi 3!'
+            },
+            {
+                id: 'ex5', num: 5, icon: '🏷️', title: 'typeof — Ce tip are?', stars: 1,
+                desc: 'Declară 5 variabile de tipuri diferite și afișează <code>typeof</code> pentru fiecare.',
+                code: `let text = "Salut";\nlet numar = 42;\nlet eAdevarat = true;\nlet nimic = null;\nlet nedefinit;\n\nconsole.log("text:", typeof text);\n// Completează restul...\n// SURPRIZĂ: typeof null e "object" (bug din 1995!)`,
+                hint: '<code>console.log("numar:", typeof numar);</code> — repetă pentru fiecare. typeof null = "object" (bug celebru!)'
+            },
+            {
+                id: 'ex6', num: 6, icon: '✨', title: 'Template Literals', stars: 1,
+                desc: 'Declară <code>nume</code>, <code>varsta</code>, <code>oras</code> și construiește un mesaj cu backticks.',
+                code: `const nume = "???";\nconst varsta = 0;\nconst oras = "???";\n\nconsole.log(\`Mă numesc \${???}, am \${???} ani și locuiesc în \${???}.\`);`,
+                hint: 'Completează cu datele tale: <code>const nume = "Robert";</code> și <code>${nume}</code> în template literal.'
+            },
+            {
+                id: 'ex7', num: 7, icon: '🔢', title: 'Aritmetică și Modulo (%)', stars: 2,
+                desc: 'Calculează suma, diferența, produsul, câtul și restul împărțirii lui 17 și 5.',
+                code: `const a = 17, b = 5;\n\nconsole.log("Suma:", a + b);\nconsole.log("Diferența:", a - b);\nconsole.log("Produsul:", a * b);\nconsole.log("Câtul:", ???);       // a / b\nconsole.log("Restul (%):", ???);  // a % b\n// BONUS: Math.floor(a / b) = ?`,
+                hint: '<code>a / b</code> = 3.4, <code>a % b</code> = 2 (rest: 17÷5 = 3 rest 2). <code>Math.floor(a/b)</code> = 3'
+            },
+            {
+                id: 'ex8', num: 8, icon: '⚙️', title: 'Funcții — Return vs No Return', stars: 2,
+                desc: 'Scrie 2 funcții: una care returnează aria dreptunghiului, una care doar afișează un mesaj.',
+                code: `function ariadreptunghi(lungime, latime) {\n    // Scrie return lungime * latime\n}\n\nfunction afiseaza(text) {\n    // Folosește console.log(text)\n}\n\nconst aria = ariadreptunghi(5, 3);\nconsole.log("Aria:", aria);        // 15\nafiseaza("Salut din funcție!");`,
+                hint: '<code>return lungime * latime;</code> vs <code>console.log(text);</code> — prima RETURNEAZĂ, a doua AFIȘEAZĂ'
+            },
+            {
+                id: 'ex9', num: 9, icon: '➡️', title: 'Arrow Functions', stars: 2,
+                desc: 'Rescrie funcțiile clasice ca arrow functions cu forma scurtă.',
+                code: `// Rescrie ca arrow:\n// function dublu(n) { return n * 2; }\nconst dubluArrow = ???;\n\n// function salut(nume) { return \`Bună, \${nume}!\`; }\nconst salutArrow = ???;\n\n// function aduna(a, b) { return a + b; }\nconst adunaArrow = ???;\n\nconsole.log(dubluArrow(5));         // 10\nconsole.log(salutArrow("Robert"));  // "Bună, Robert!"\nconsole.log(adunaArrow(3, 7));      // 10`,
+                hint: '<code>const dubluArrow = (n) => n * 2;</code> — fără {} și fără return pe o linie!'
+            },
+            {
+                id: 'ex10', num: 10, icon: '🔀', title: 'if / else — Verifică un număr', stars: 2,
+                desc: 'Scrie o funcție care returnează "pozitiv", "negativ", sau "zero".',
+                code: `function verificaNumar(n) {\n    // if (n > 0) → "pozitiv"\n    // else if (n < 0) → "negativ"  \n    // else → "zero"\n}\n\nconsole.log(verificaNumar(5));   // "pozitiv"\nconsole.log(verificaNumar(-3));  // "negativ"\nconsole.log(verificaNumar(0));   // "zero"`,
+                hint: '<code>if (n > 0) return "pozitiv"; else if (n < 0) return "negativ"; else return "zero";</code>'
+            },
+            {
+                id: 'ex11', num: 11, icon: '❓', title: 'Ternary Operator', stars: 2,
+                desc: 'Rescrie <code>if/else</code> folosind operatorul ternary <code>? :</code>',
+                code: `const varsta = 20;\n\n// Rescrie cu ternary pe O linie:\nconst mesaj = ???;  // varsta >= 18 ? "major" : "minor"\n\nconsole.log(\`La \${varsta} ani ești: \${mesaj}\`);`,
+                hint: '<code>const mesaj = varsta >= 18 ? "major" : "minor";</code>'
+            },
+            {
+                id: 'ex12', num: 12, icon: '🔄', title: 'For Loop', stars: 2,
+                desc: 'Afișează numerele 1-10 și calculează suma lor cu <code>for</code> loop.',
+                code: `let suma = 0;\n\nfor (let i = 1; i <= 10; i++) {\n    // Adaugă i la sumă (suma += i)\n    // Afișează i (console.log)\n}\n\nconsole.log("Suma 1-10:", suma); // 55`,
+                hint: '<code>suma += i; console.log(i);</code> — <code>+=</code> e scurtătura pt <code>suma = suma + i</code>'
+            },
+            {
+                id: 'ex13', num: 13, icon: '🗺️', title: 'Array .map() — EUR → RON', stars: 3,
+                desc: 'Convertește prețuri din EUR în RON (1 EUR = 5 RON) cu <code>.map()</code>',
+                code: `const preturiEUR = [10, 25, 50, 100, 7.5];\nconst preturiRON = preturiEUR.map(???);\n\nconsole.log("EUR:", preturiEUR);\nconsole.log("RON:", preturiRON); // [50, 125, 250, 500, 37.5]`,
+                hint: '<code>preturiEUR.map(pret => pret * 5)</code>'
+            },
+            {
+                id: 'ex14', num: 14, icon: '🔍', title: 'Array .filter() — Doar majori', stars: 3,
+                desc: 'Filtrează din array-ul de vârste doar persoanele >= 18 ani.',
+                code: `const varste = [12, 25, 17, 30, 15, 42, 8, 19, 16, 21];\nconst majori = varste.filter(???);\n\nconsole.log("Majori:", majori);         // [25, 30, 42, 19, 21]\nconsole.log("Câți:", majori.length);`,
+                hint: '<code>varste.filter(v => v >= 18)</code> — returnează true/false pt fiecare element'
+            },
+            {
+                id: 'ex15', num: 15, icon: '📊', title: 'Array .reduce() — Coș cumpărături', stars: 3,
+                desc: 'Calculează prețul total din coșul de cumpărături cu <code>.reduce()</code>',
+                code: `const cos = [\n    { produs: "Laptop", pret: 3000 },\n    { produs: "Mouse", pret: 150 },\n    { produs: "Tastatură", pret: 250 },\n    { produs: "Monitor", pret: 1200 }\n];\n\nconst total = cos.reduce(???);\nconsole.log("Total:", total, "RON"); // 4600`,
+                hint: '<code>cos.reduce((total, item) => total + item.pret, 0)</code> — start de la 0, adaugă .pret'
+            },
+            {
+                id: 'ex16', num: 16, icon: '🧱', title: 'Obiecte — Profil complet', stars: 3,
+                desc: 'Creează un obiect <code>profil</code> cu proprietăți, un array de hobby-uri, și o metodă <code>prezentare()</code>.',
+                code: `const profil = {\n    // nume: "..."\n    // varsta: number\n    // hobbyuri: ["...", "...", "..."]\n    // eStudent: true/false\n    // prezentare() { return \`...folosește this...\`; }\n};\n\nconsole.log(profil.prezentare());\nconsole.log("Primul hobby:", profil.hobbyuri[0]);`,
+                hint: '<code>prezentare() { return \`\${this.nume}, \${this.varsta}. Hobby: \${this.hobbyuri.join(", ")}\`; }</code>'
+            },
+            {
+                id: 'ex17', num: 17, icon: '🔗', title: 'Chaining — .filter() + .map()', stars: 4,
+                desc: 'Filtrează studenții promovați (nota >= 5) și transformă-i în mesaje formatate.',
+                code: `const studenti = [\n    { nume: "Ana", nota: 9 },\n    { nume: "Ion", nota: 4 },\n    { nume: "Maria", nota: 7 },\n    { nume: "Vlad", nota: 3 },\n    { nume: "Elena", nota: 10 },\n    { nume: "Alex", nota: 5 }\n];\n\nconst promovati = studenti\n    .filter(???)\n    .map(???);\n\npromovati.forEach(m => console.log(m));`,
+                hint: '<code>.filter(s => s.nota >= 5).map(s => \`\${s.nume} — Nota: \${s.nota}\`)</code>'
+            },
+            {
+                id: 'ex18', num: 18, icon: '🏆', title: 'Magazin de Produse — BOSS FINAL', stars: 4, boss: true,
+                desc: 'Folosește <strong>tot</strong> ce ai învățat: variabile, funcții, .filter, .map, .reduce, template literals, spread operator!',
+                code: `const produse = [\n    { nume: "Laptop", pret: 3000, inStoc: true },\n    { nume: "Telefon", pret: 2500, inStoc: false },\n    { nume: "Căști", pret: 200, inStoc: true },\n    { nume: "Tabletă", pret: 1800, inStoc: true },\n    { nume: "Cameră", pret: 4000, inStoc: false },\n    { nume: "Ceas Smart", pret: 800, inStoc: true }\n];\n\n// PASUL 1: .filter() — doar produsele IN STOC\nconst inStoc = produse.filter(???);\n\n// PASUL 2: .map() — adaugă pretNou cu 10% reducere\nconst cuReducere = inStoc.map(p => ({\n    ...p,\n    pretNou: ???  // pret * 0.9\n}));\n\n// PASUL 3: .reduce() — totalul\nconst total = cuReducere.reduce(???);\n\n// PASUL 4: Afișează\nconsole.log("=== PRODUSE DISPONIBILE ===");\ncuReducere.forEach(p => {\n    console.log(\`\${p.nume}: \${p.pret} → \${p.pretNou} RON (-10%)\`);\n});\nconsole.log(\`TOTAL: \${total} RON\`);`,
+                hint: '<code>.filter(p => p.inStoc)</code> | <code>pretNou: p.pret * 0.9</code> | <code>.reduce((sum, p) => sum + p.pretNou, 0)</code>'
+            }
+        ];
+
+        const STORAGE_KEY = 'exerciseLevels';
+        let currentExNum = 1;
+
+        // ── Get exercise number from URL ──
+        function getExNum() {
+            const params = new URLSearchParams(window.location.search);
+            const ex = parseInt(params.get('ex'));
+            return (ex >= 1 && ex <= 18) ? ex : 1;
+        }
+
+        // ── LocalStorage helpers ──
+        function getCompletedData() {
+            try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
+            catch (e) { return {}; }
+        }
+
+        function saveCompleted(id) {
+            try {
+                const data = getCompletedData();
+                data[id] = true;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            } catch (e) { }
+        }
+
+        function isUnlocked(num) {
+            if (num === 1) return true;
+            return getCompletedData()[`ex${num - 1}`] === true;
+        }
+
+        // ── Generate star HTML ──
+        function genStars(count) {
+            let s = '';
+            for (let i = 1; i <= 4; i++) s += `<span class="star${i > count ? ' dim' : ''}">⭐</span>`;
+            return s;
+        }
+
+        // ── Render exercise ──
+        function renderExercise() {
+            currentExNum = getExNum();
+            const ex = EXERCISES[currentExNum - 1];
+            if (!ex) { window.location.href = 'exercitii-nivele.html'; return; }
+
+            // Check if locked
+            if (!isUnlocked(currentExNum)) {
+                document.getElementById('exerciseContainer').innerHTML = `
+                    <div class="locked-overlay">
+                        <div class="lock-icon">🔒</div>
+                        <h2>Exercițiul ${currentExNum} este blocat</h2>
+                        <p>Trebuie să rezolvi exercițiul ${currentExNum - 1} pentru a debloca acest nivel.</p>
+                        <a href="exercitii-nivele.html" class="ex-nav-btn back" style="margin-top:10px;">🔙 Înapoi la Nivele</a>
+                    </div>
+                `;
+                document.getElementById('exerciseContainer').querySelector('.locked-overlay').style.position = 'relative';
+                return;
+            }
+
+            // Update page title
+            document.title = `Exercițiu ${ex.num} — ${ex.title}`;
+            document.getElementById('pageTitle').textContent = `✏️ Exercițiu ${ex.num}`;
+
+            // Level indicator
+            document.getElementById('levelIndicator').innerHTML = `
+                <div class="level-badge${ex.boss ? ' boss' : ''}">${ex.boss ? '🏆' : ex.num}</div>
+                <div class="level-info">
+                    <h2>${ex.icon} ${ex.title}</h2>
+                    <span>Nivel ${ex.num} / 18 <span class="difficulty">${genStars(ex.stars)}</span></span>
+                </div>
+            `;
+
+            // Build exercise card
+            const bossClass = ex.boss ? ' boss-card' : '';
+            const labelStyle = ex.boss ? ' style="background: rgba(233,69,96,0.3); color: #ff6b6b;"' : '';
+            const labelText = ex.boss ? `🏆 EXERCIȚIU ${ex.num} — BOSS FINAL` : `Exercițiu ${ex.num}`;
+
+            document.getElementById('exerciseContainer').innerHTML = `
+                <div class="card exercise-card${bossClass}">
+                    <div class="exercise-label"${labelStyle}>${labelText} <span class="difficulty">${genStars(ex.stars)}</span></div>
+                    <h3><span class="icon">${ex.icon}</span> ${ex.title}</h3>
+                    <p>${ex.desc}</p>
+                    <textarea id="${ex.id}" spellcheck="false">${ex.code}</textarea>
+                    <div class="exercise-actions">
+                        <button class="btn-run" onclick="runEx()">▶ Rulează</button>
+                        <button class="btn-hint" onclick="toggleHint()">💡 Hint</button>
+                    </div>
+                    <div class="hint-text" id="hintBox">${ex.hint}</div>
+                    <div class="exercise-output" id="ex-output"></div>
+                </div>
+            `;
+
+            // Update next button
+            const isCompleted = getCompletedData()[ex.id] === true;
+            if (isCompleted && currentExNum < 18) {
+                document.getElementById('nextBtn').classList.add('show');
+            }
+            if (currentExNum >= 18 && isCompleted) {
+                document.getElementById('nextBtn').style.display = 'none';
+            }
+        }
+
+        // ── Run exercise ──
+        function runEx() {
+            const ex = EXERCISES[currentExNum - 1];
+            const code = document.getElementById(ex.id).value;
+            const outputEl = document.getElementById('ex-output');
+            outputEl.style.display = 'block';
+            outputEl.innerHTML = '';
+
+            const originalLog = console.log;
+            const outputs = [];
+
+            console.log = (...args) => {
+                outputs.push(args.map(a => {
+                    if (typeof a === 'object') return JSON.stringify(a);
+                    return String(a);
+                }).join(' '));
+            };
+
+            try {
+                eval(code);
+                if (outputs.length > 0) {
+                    outputEl.innerHTML = outputs.map(o =>
+                        `<div class="output-line result">✅ ${o}</div>`
+                    ).join('');
+
+                    // Mark as completed!
+                    const wasCompleted = getCompletedData()[ex.id] === true;
+                    saveCompleted(ex.id);
+
+                    if (!wasCompleted) {
+                        // Show completion banner
+                        const banner = document.getElementById('completionBanner');
+                        banner.classList.add('show');
+
+                        if (currentExNum >= 18) {
+                            document.getElementById('completionText').textContent = '🎉 Ai completat TOATE exercițiile! Ești un campion!';
+                            document.getElementById('completionNextBtn').style.display = 'none';
+                        }
+
+                        // Show next button in nav
+                        if (currentExNum < 18) {
+                            document.getElementById('nextBtn').classList.add('show');
+                        }
+                    }
+                } else {
+                    outputEl.innerHTML = '<div class="output-line info">ℹ️ Codul a rulat, dar nu a afișat nimic. Adaugă console.log()!</div>';
+                }
+            } catch (err) {
+                outputEl.innerHTML = `<div class="output-line error">❌ ${err.message}</div>`;
+            }
+
+            console.log = originalLog;
+        }
+
+        // ── Toggle hint ──
+        function toggleHint() {
+            const hint = document.getElementById('hintBox');
+            hint.style.display = hint.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // ── Go to next exercise ──
+        function goNext() {
+            if (currentExNum < 18) {
+                window.location.href = `exercitiu.html?ex=${currentExNum + 1}`;
+            }
+        }
+
+        // ── Init ──
+        document.addEventListener('DOMContentLoaded', renderExercise);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="ro">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f0f1a">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Lecție — JavaScript Playground">
+    <meta property="og:description" content="Lecție practică JavaScript — învață și rezolvă exercițiul!">
+    <meta property="og:image" content="/images/favicon.png">
+    <meta property="og:url" content="https://jsplayground.ro/lectie.html">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Lecție — JavaScript Playground">
+    <meta name="twitter:description" content="Lecție practică JavaScript — învață și rezolvă exercițiul!">
+    <meta name="twitter:image" content="/images/favicon.png">
+    <meta name="description" content="Lecție practică JavaScript — învață și rezolvă exercițiul!">
+    <title>Lecție — JavaScript Playground</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" type="image/png" href="images/favicon.png">
+    <style>
+        .ex-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .ex-nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: transform 0.2s, opacity 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s ease;
+            cursor: pointer;
+            border: none;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .ex-nav-btn.back {
+            background: rgba(0, 210, 255, 0.1);
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            color: var(--accent-4);
+        }
+
+        .ex-nav-btn.back:hover {
+            background: rgba(0, 210, 255, 0.2);
+        }
+
+        .ex-nav-btn.next {
+            background: linear-gradient(135deg, var(--accent-4), var(--accent-3));
+            color: white;
+            border: none;
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+            transition: transform 0.4s, opacity 0.4s, border-color 0.4s, background 0.4s, box-shadow 0.4s ease;
+        }
+
+        .ex-nav-btn.next.show {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: all;
+        }
+
+        .ex-nav-btn.next:hover {
+            box-shadow: 0 6px 20px rgba(0, 210, 255, 0.3);
+        }
+
+        .ex-nav-btn.next.show:hover {
+            transform: translateY(-2px);
+        }
+
+        .level-indicator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .level-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: rgba(0, 210, 255, 0.1);
+            border: 2px solid rgba(0, 210, 255, 0.3);
+            color: var(--accent-4);
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .level-badge.boss {
+            background: rgba(233, 69, 96, 0.15);
+            border-color: rgba(233, 69, 96, 0.4);
+            color: var(--accent-1);
+        }
+
+        .level-info h2 {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .level-info span {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
+
+        .difficulty {
+            display: inline-flex;
+            gap: 2px;
+            margin-left: 8px;
+        }
+
+        .difficulty .star {
+            color: var(--warning);
+            font-size: 0.8rem;
+        }
+
+        .difficulty .star.dim {
+            opacity: 0.25;
+        }
+
+        /* Lesson content styling */
+        .lesson-content {
+            margin-bottom: 30px;
+        }
+
+        .lesson-content .card {
+            margin-bottom: 20px;
+        }
+
+        /* Exercise section at bottom */
+        .lesson-exercise-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid var(--border);
+        }
+
+        .lesson-exercise-section h3 {
+            color: var(--accent-4);
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+        }
+
+        .completion-banner {
+            display: none;
+            background: linear-gradient(135deg, rgba(0, 230, 118, 0.15), rgba(0, 210, 255, 0.1));
+            border: 1px solid rgba(0, 230, 118, 0.4);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            margin-top: 20px;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .completion-banner.show {
+            display: block;
+        }
+
+        .completion-banner h3 {
+            color: #00e676;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .completion-banner p {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0)
+            }
+        }
+
+        .locked-overlay {
+            text-align: center;
+            padding: 60px 40px;
+        }
+
+        .locked-overlay .lock-icon {
+            font-size: 4rem;
+            margin-bottom: 10px;
+        }
+
+        .locked-overlay h2 {
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+        }
+
+        .locked-overlay p {
+            color: var(--text-secondary);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 140px;
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.88rem;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        textarea:focus {
+            border-color: rgba(0, 210, 255, 0.4);
+        }
+
+        .exercise-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .btn-run {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-run:hover {
+            opacity: 0.85;
+            transform: translateY(-1px);
+        }
+
+        .btn-hint {
+            padding: 8px 20px;
+            background: rgba(255, 171, 64, 0.1);
+            border: 1px solid rgba(255, 171, 64, 0.3);
+            border-radius: 10px;
+            color: var(--warning);
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s, border-color 0.2s, background 0.2s, box-shadow 0.2s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-hint:hover {
+            background: rgba(255, 171, 64, 0.2);
+        }
+
+        .hint-text {
+            display: none;
+            margin-top: 12px;
+            padding: 12px 16px;
+            background: rgba(255, 171, 64, 0.08);
+            border: 1px solid rgba(255, 171, 64, 0.2);
+            border-radius: 10px;
+            font-size: 0.88rem;
+            color: var(--warning);
+        }
+
+        .exercise-output {
+            display: none;
+            margin-top: 12px;
+            padding: 14px 18px;
+            background: var(--bg-code);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        .key-area-wrap {
+            display: inline-block;
+            padding: 6px 12px;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            outline: none;
+            min-width: 200px;
+            text-align: center;
+            margin: 8px 0;
+        }
+
+        .key-area-wrap:focus {
+            border-color: var(--accent-4);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+
+    <nav class="navbar" role="navigation" aria-label="Navigare principala">
+        <div class="logo"><a href="index.html"
+                style="display:flex;align-items:center;gap:8px;text-decoration:none;color:inherit;"><img loading="lazy"
+                    src="images/favicon.png" alt="JS Playground" style="width:32px;height:32px;border-radius:6px;"> JS
+                Playground</a></div>
+        <div class="nav-links">
+            <a href="index.html">🏠 Acasă</a>
+            <div class="nav-category">📚 Învață</div>
+            <a href="lectii-nivele.html" class="active">📖 Lecții</a>
+            <a href="typescript.html">🔷 TypeScript</a>
+            <a href="cheatsheet.html">📋 Cheatsheet</a>
+            <a href="glosar.html">📖 Glosar</a>
+            <a href="devtools.html">🔧 DevTools</a>
+            <a href="debugging.html">🐛 Debug</a>
+            <div class="nav-category">✏️ Practică</div>
+            <a href="exercitii-nivele.html">✏️ Exerciții</a>
+            <a href="quizuri.html">❓ Quiz</a>
+            <a href="provocari.html">🎯 Provocări</a>
+            <a href="console-challenges.html">🖥️ Console Tasks</a>
+            <a href="proiecte.html">🚀 Proiecte</a>
+            <div class="nav-category">🎮 Fun</div>
+            <a href="playground.html">💻 Playground</a>
+            <a href="puzzle.html">🧩 Code Puzzle</a>
+            <a href="flashcards.html">🃏 Flashcards</a>
+            <div class="nav-category">📊 Progres</div>
+            <a href="dashboard.html">📊 Dashboard</a>
+            <a href="achievements.html">🏆 Achievements</a>
+            <a href="leaderboard.html">🥇 Leaderboard</a>
+            <a href="search.html">🔍 Caută</a>
+        </div>
+    </nav>
+
+    <header class="page-header">
+        <h1 id="pageTitle">📖 Lecție</h1>
+        <div id="levelIndicator" class="level-indicator"></div>
+    </header>
+
+    <main>
+        <div class="ex-nav">
+            <a href="lectii-nivele.html" class="ex-nav-btn back">🔙 Înapoi la Nivele</a>
+            <button class="ex-nav-btn next" id="nextBtn" onclick="goNext()">Lecția următoare ➡️</button>
+        </div>
+
+        <div id="lessonContainer" class="lesson-content">
+            <div style="text-align:center;padding:40px;color:var(--text-secondary);">⏳ Se încarcă lecția...</div>
+        </div>
+
+        <div class="completion-banner" id="completionBanner">
+            <h3>🎉 Felicitări! Lecție completată!</h3>
+            <p id="completionText">Lecția următoare a fost deblocată. Continuă!</p>
+            <button class="ex-nav-btn next show" onclick="goNext()" id="completionNextBtn">Lecția următoare ➡️</button>
+        </div>
+    </main>
+
+    <footer role="contentinfo">
+        <p>⚡ JavaScript Playground — Creat pentru a învăța prin practică</p>
+        <div class="footer-author">
+            <div class="author-name">Creat de poprobert0412</div>
+            <div class="social-links">
+                <a href="https://github.com/poprobert0412" target="_blank" rel="noopener noreferrer">🐙 GitHub</a>
+                <a href="https://www.linkedin.com/in/poprobert1999" target="_blank" rel="noopener noreferrer">💼 LinkedIn</a>
+            </div>
+        </div>
+        <p class="footer-license">© 2026 poprobert0412. Toate drepturile rezervate. Licență MIT.</p>
+    </footer>
+
+    <script src="js/script.js" defer></script>
+    <script src="js/auth.js" defer></script>
+    <script>
+        // ═══════════════════════════════════════════════
+        // LESSON DATA
+        // ═══════════════════════════════════════════════
+        const LESSONS_META = [
+            { num: 1, icon: '📦', title: 'Variabile', stars: 1, sectionId: 'variabile' },
+            { num: 2, icon: '🏷️', title: 'Tipuri de Date', stars: 1, sectionId: 'tipuri' },
+            { num: 3, icon: '🔀', title: 'Condiții', stars: 1, sectionId: 'conditionals' },
+            { num: 4, icon: '🔄', title: 'Bucle', stars: 1, sectionId: 'loops' },
+            { num: 5, icon: '⚙️', title: 'Funcții', stars: 2, sectionId: 'functii' },
+            { num: 6, icon: '📋', title: 'Array-uri', stars: 2, sectionId: 'arrays' },
+            { num: 7, icon: '📝', title: 'Metode String', stars: 2, sectionId: 'strings' },
+            { num: 8, icon: '🧱', title: 'Obiecte', stars: 2, sectionId: 'obiecte' },
+            { num: 9, icon: '⚖️', title: 'Comparații & Logică', stars: 2, sectionId: 'comparisons' },
+            { num: 10, icon: '🛡️', title: 'Error Handling', stars: 2, sectionId: 'errors' },
+            { num: 11, icon: '🧰', title: 'Built-in Objects', stars: 2, sectionId: 'builtins' },
+            { num: 12, icon: '🔒', title: 'Scope & Closures', stars: 3, sectionId: 'scope' },
+            { num: 13, icon: '📦', title: 'Destructuring & Spread', stars: 3, sectionId: 'destructuring' },
+            { num: 14, icon: '🏛️', title: 'Classes (OOP)', stars: 3, sectionId: 'classes' },
+            { num: 15, icon: '⏳', title: 'Promises & Async/Await', stars: 3, sectionId: 'async' },
+            { num: 16, icon: '🌍', title: 'Fetch API', stars: 3, sectionId: 'fetch' },
+            { num: 17, icon: '🌐', title: 'DOM Manipulation', stars: 3, sectionId: 'dom' },
+            { num: 18, icon: '🎯', title: 'Events & Listeners', stars: 3, sectionId: 'events' },
+            { num: 19, icon: '🎮', title: 'Demo-uri Live', stars: 4, sectionId: 'events-demo', boss: true }
+        ];
+
+        // Exercises for each lesson
+        const LESSON_EXERCISES = [
+            { // 1 - Variabile
+                desc: 'Declară o variabilă <code>nume</code> cu const și <code>varsta</code> cu let. Incrementează vârsta și afișează ambele.',
+                code: `// const nume = ???\n// let varsta = ???\n// varsta++\n// console.log(nume, varsta)`,
+                hint: '<code>const nume = "Robert"; let varsta = 25; varsta++; console.log(nume, varsta);</code>'
+            },
+            { // 2 - Tipuri
+                desc: 'Declară 5 variabile de tipuri diferite și afișează <code>typeof</code> pentru fiecare.',
+                code: `let text = "Salut";\nlet numar = 42;\nlet bool = true;\nlet nimic = null;\nlet undef;\n\n// console.log(typeof text, typeof numar, ...)`,
+                hint: '<code>console.log(typeof text, typeof numar, typeof bool, typeof nimic, typeof undef);</code>'
+            },
+            { // 3 - Condiții
+                desc: 'Scrie o funcție care primește o notă și returnează "Excelent", "Promovat", sau "Nepromovat".',
+                code: `function verificaNota(nota) {\n  // if (nota >= 9) ...\n  // else if (nota >= 5) ...\n  // else ...\n}\n\nconsole.log(verificaNota(9));\nconsole.log(verificaNota(6));\nconsole.log(verificaNota(3));`,
+                hint: '<code>if (nota >= 9) return "Excelent"; else if (nota >= 5) return "Promovat"; else return "Nepromovat";</code>'
+            },
+            { // 4 - Bucle
+                desc: 'Folosește un <code>for</code> loop pentru a afișa numerele de la 1 la 5 și suma lor.',
+                code: `let suma = 0;\n// for (...) { suma += i; console.log(i); }\nconsole.log("Suma:", suma);`,
+                hint: '<code>for (let i = 1; i <= 5; i++) { suma += i; console.log(i); }</code>'
+            },
+            { // 5 - Funcții
+                desc: 'Scrie o funcție clasică și una arrow care calculează aria unui cerc (π × r²).',
+                code: `// function ariaClassic(r) { ... }\n// const ariaArrow = (r) => ...\n\nconsole.log(ariaClassic(5));\nconsole.log(ariaArrow(5));`,
+                hint: '<code>function ariaClassic(r) { return Math.PI * r * r; } const ariaArrow = (r) => Math.PI * r * r;</code>'
+            },
+            { // 6 - Array-uri
+                desc: 'Folosește <code>.map()</code> pentru a dubla numerele și <code>.filter()</code> pentru cele > 5.',
+                code: `const numere = [1, 2, 3, 4, 5];\nconst duble = numere.map(???);\nconst mari = duble.filter(???);\nconsole.log("Duble:", duble);\nconsole.log("Mari:", mari);`,
+                hint: '<code>numere.map(n => n * 2)</code> și <code>duble.filter(n => n > 5)</code>'
+            },
+            { // 7 - Strings
+                desc: 'Inversează un text folosind <code>.split()</code>, <code>.reverse()</code> și <code>.join()</code>.',
+                code: `const text = "JavaScript";\nconst inversat = ???;\nconsole.log(inversat); // "tpircSavaJ"`,
+                hint: '<code>text.split("").reverse().join("")</code>'
+            },
+            { // 8 - Obiecte
+                desc: 'Creează un obiect cu proprietăți și o metodă <code>prezentare()</code> care folosește <code>this</code>.',
+                code: `const student = {\n  // nume, varsta, nota\n  // prezentare() { return ... }\n};\nconsole.log(student.prezentare());`,
+                hint: '<code>prezentare() { return this.nume + ", nota " + this.nota; }</code>'
+            },
+            { // 9 - Comparații
+                desc: 'Verifică diferența între <code>==</code> și <code>===</code>. Afișează rezultatele.',
+                code: `console.log(5 == "5");   // ???\nconsole.log(5 === "5");  // ???\nconsole.log(null == undefined);  // ???\nconsole.log(null === undefined); // ???`,
+                hint: 'Rezultate: true, false, true, false — <code>===</code> compară ȘI tipul!'
+            },
+            { // 10 - Error Handling
+                desc: 'Folosește <code>try/catch</code> pentru a prinde o eroare de JSON parsing.',
+                code: `try {\n  const data = JSON.parse("nu sunt json");\n  console.log(data);\n} catch (err) {\n  console.log("Eroare:", err.message);\n}`,
+                hint: 'Codul este deja corect! Rulează-l și vezi mesajul de eroare.'
+            },
+            { // 11 - Built-in
+                desc: 'Generează un număr aleator între 1 și 100 folosind <code>Math</code>.',
+                code: `const random = ???;\nconsole.log("Număr aleator:", random);`,
+                hint: '<code>Math.floor(Math.random() * 100) + 1</code>'
+            },
+            { // 12 - Scope
+                desc: 'Creează un closure — o funcție contor care incrementează de fiecare dată.',
+                code: `function creazaContor() {\n  // let count = 0;\n  // return function() { ... }\n}\n\nconst contor = creazaContor();\nconsole.log(contor()); // 1\nconsole.log(contor()); // 2\nconsole.log(contor()); // 3`,
+                hint: '<code>let count = 0; return function() { count++; return count; };</code>'
+            },
+            { // 13 - Destructuring
+                desc: 'Folosește destructuring pentru a extrage <code>nume</code> și <code>varsta</code> din obiect.',
+                code: `const persoana = { nume: "Robert", varsta: 25, oras: "București" };\n// const { ??? } = persoana;\nconsole.log(nume, varsta);`,
+                hint: '<code>const { nume, varsta } = persoana;</code>'
+            },
+            { // 14 - Classes
+                desc: 'Creează o clasă <code>Animal</code> cu constructor și metodă <code>sunet()</code>.',
+                code: `class Animal {\n  // constructor(nume, tip) { ... }\n  // sunet() { return ... }\n}\n\nconst caine = new Animal("Rex", "câine");\nconsole.log(caine.sunet());`,
+                hint: '<code>constructor(n, t) { this.nume = n; this.tip = t; } sunet() { return this.nume + " face sunet!"; }</code>'
+            },
+            { // 15 - Async
+                desc: 'Creează un Promise care se rezolvă după 1 secundă cu un mesaj.',
+                code: `const promisiune = new Promise((resolve) => {\n  setTimeout(() => resolve("Gata!"), 1000);\n});\n\npromisiune.then(msg => console.log(msg));`,
+                hint: 'Codul este deja corect! Rulează-l și așteaptă 1 secundă.'
+            },
+            { // 16 - Fetch
+                desc: 'Simulează un fetch: creează un obiect JSON, stringify-l și parse-l înapoi.',
+                code: `const user = { id: 1, name: "Robert", role: "dev" };\nconst jsonStr = JSON.stringify(user);\nconsole.log("JSON:", jsonStr);\nconst parsed = JSON.parse(jsonStr);\nconsole.log("Parsed:", parsed.name);`,
+                hint: 'Codul este deja corect! Rulează-l pentru a vedea cum funcționează JSON.'
+            },
+            { // 17 - DOM
+                desc: 'Creează un mini-DOM: un obiect care simulează <code>document.getElementById</code>.',
+                code: `const elements = {\n  "titlu": { textContent: "Salut!" },\n  "buton": { textContent: "Click" }\n};\n\nfunction getById(id) {\n  return elements[id] || null;\n}\n\nconsole.log(getById("titlu").textContent);\nconsole.log(getById("buton").textContent);`,
+                hint: 'Codul este deja corect! E o simulare a cum funcționează DOM-ul.'
+            },
+            { // 18 - Events
+                desc: 'Simulează un event listener: obiect cu <code>on()</code> și <code>emit()</code>.',
+                code: `const emitter = {\n  listeners: {},\n  on(event, fn) { this.listeners[event] = fn; },\n  emit(event, data) {\n    if (this.listeners[event]) this.listeners[event](data);\n  }\n};\n\nemitter.on("click", (data) => console.log("Click!", data));\nemitter.emit("click", "buton");`,
+                hint: 'Codul este deja corect! E un mini event system.'
+            },
+            { // 19 - Demo Live (Boss)
+                desc: '🏆 BOSS FINAL — Combină tot: creează un mini-app cu clase, events, și array methods!',
+                code: `class TodoApp {\n  constructor() { this.tasks = []; }\n  add(task) { this.tasks.push({ text: task, done: false }); }\n  complete(index) { this.tasks[index].done = true; }\n  pending() { return this.tasks.filter(t => !t.done); }\n  summary() {\n    const done = this.tasks.filter(t => t.done).length;\n    return done + "/" + this.tasks.length + " complete";\n  }\n}\n\nconst app = new TodoApp();\napp.add("Învață JS");\napp.add("Fă exerciții");\napp.add("Construiește proiect");\napp.complete(0);\nconsole.log("Pending:", app.pending().map(t => t.text));\nconsole.log("Status:", app.summary());`,
+                hint: 'Codul este deja corect! Rulează-l pentru a vedea mini-app-ul Todo.'
+            }
+        ];
+
+        const STORAGE_KEY = 'lessonLevels';
+        let currentNum = 1;
+
+        // ── Get lesson number from URL ──
+        function getLessonNum() {
+            const params = new URLSearchParams(window.location.search);
+            const n = parseInt(params.get('lectie'));
+            return (n >= 1 && n <= 19) ? n : 1;
+        }
+
+        // ── LocalStorage helpers ──
+        function getCompletedData() {
+            try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); }
+            catch (e) { return {}; }
+        }
+
+        function saveCompleted(id) {
+            try {
+                const data = getCompletedData();
+                data[id] = true;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            } catch (e) { }
+        }
+
+        function isUnlocked(num) {
+            if (num === 1) return true;
+            return getCompletedData()[`lectie${num - 1}`] === true;
+        }
+
+        function genStars(count) {
+            let s = '';
+            for (let i = 1; i <= 4; i++) s += `<span class="star${i > count ? ' dim' : ''}">⭐</span>`;
+            return s;
+        }
+
+        // ── Render lesson ──
+        async function renderLesson() {
+            currentNum = getLessonNum();
+            const meta = LESSONS_META[currentNum - 1];
+            if (!meta) { window.location.href = 'lectii-nivele.html'; return; }
+
+            // Check if locked
+            if (!isUnlocked(currentNum)) {
+                document.getElementById('lessonContainer').innerHTML = `
+                    <div class="locked-overlay">
+                        <div class="lock-icon">🔒</div>
+                        <h2>Lecția ${currentNum} este blocată</h2>
+                        <p>Trebuie să completezi lecția ${currentNum - 1} pentru a debloca acest nivel.</p>
+                        <a href="lectii-nivele.html" class="ex-nav-btn back" style="margin-top:16px;display:inline-flex;">🔙 Înapoi la Nivele</a>
+                    </div>
+                `;
+                return;
+            }
+
+            // Update page title
+            document.title = `Lecția ${meta.num} — ${meta.title}`;
+            document.getElementById('pageTitle').textContent = `📖 Lecția ${meta.num}`;
+
+            // Level indicator
+            document.getElementById('levelIndicator').innerHTML = `
+                <div class="level-badge${meta.boss ? ' boss' : ''}">${meta.boss ? '🎮' : meta.num}</div>
+                <div class="level-info">
+                    <h2>${meta.icon} ${meta.title}</h2>
+                    <span>Lecția ${meta.num} / 19 <span class="difficulty">${genStars(meta.stars)}</span></span>
+                </div>
+            `;
+
+            // Fetch lesson content from lectii.html
+            try {
+                const resp = await fetch('lectii.html');
+                const html = await resp.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                // Find the section by id
+                const sectionHeader = doc.getElementById(meta.sectionId);
+                if (!sectionHeader) throw new Error('Section not found');
+
+                // Get all cards between this section header and the next
+                let content = '';
+                let el = sectionHeader.closest('h2');
+                if (!el) el = sectionHeader;
+
+                // Skip the h2 title itself
+                let sibling = el.nextElementSibling;
+                while (sibling && sibling.tagName !== 'H2') {
+                    content += sibling.outerHTML;
+                    sibling = sibling.nextElementSibling;
+                }
+
+                // Add exercise section
+                const exercise = LESSON_EXERCISES[currentNum - 1];
+                const exerciseHTML = `
+                    <div class="lesson-exercise-section">
+                        <h3>✏️ Exercițiu — Pune în practică ce ai învățat!</h3>
+                        <div class="card${meta.boss ? ' boss-card' : ''}">
+                            <p>${exercise.desc}</p>
+                            <textarea id="lessonExCode" spellcheck="false">${exercise.code}</textarea>
+                            <div class="exercise-actions">
+                                <button class="btn-run" onclick="runExercise()">▶ Rulează</button>
+                                <button class="btn-hint" onclick="toggleHint()">💡 Hint</button>
+                            </div>
+                            <div class="hint-text" id="hintBox">${exercise.hint}</div>
+                            <div class="exercise-output" id="ex-output"></div>
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('lessonContainer').innerHTML = content + exerciseHTML;
+
+            } catch (err) {
+                document.getElementById('lessonContainer').innerHTML = `
+                    <div class="card"><p>❌ Nu s-a putut încărca lecția. Încearcă din nou.</p></div>
+                `;
+            }
+
+            // Show next button if already completed
+            const isCompleted = getCompletedData()[`lectie${currentNum}`] === true;
+            if (isCompleted && currentNum < 19) {
+                document.getElementById('nextBtn').classList.add('show');
+            }
+            if (currentNum >= 19 && isCompleted) {
+                document.getElementById('nextBtn').style.display = 'none';
+            }
+        }
+
+        // ── Run exercise ──
+        function runExercise() {
+            const code = document.getElementById('lessonExCode').value;
+            const outputEl = document.getElementById('ex-output');
+            outputEl.style.display = 'block';
+            outputEl.innerHTML = '';
+
+            const originalLog = console.log;
+            const outputs = [];
+
+            console.log = (...args) => {
+                outputs.push(args.map(a => {
+                    if (typeof a === 'object') return JSON.stringify(a);
+                    return String(a);
+                }).join(' '));
+            };
+
+            try {
+                eval(code);
+                // Wait for async operations
+                setTimeout(() => {
+                    console.log = originalLog;
+                    if (outputs.length > 0) {
+                        outputEl.innerHTML = outputs.map(o =>
+                            `<div class="output-line result">✅ ${o}</div>`
+                        ).join('');
+
+                        // Mark as completed
+                        const lessonId = `lectie${currentNum}`;
+                        const wasCompleted = getCompletedData()[lessonId] === true;
+                        saveCompleted(lessonId);
+
+                        if (!wasCompleted) {
+                            const banner = document.getElementById('completionBanner');
+                            banner.classList.add('show');
+
+                            if (currentNum >= 19) {
+                                document.getElementById('completionText').textContent = '🎉 Ai completat TOATE lecțiile! Ești un maestru JavaScript!';
+                                document.getElementById('completionNextBtn').style.display = 'none';
+                            }
+
+                            if (currentNum < 19) {
+                                document.getElementById('nextBtn').classList.add('show');
+                            }
+                        }
+                    } else {
+                        outputEl.innerHTML = '<div class="output-line info">ℹ️ Codul a rulat, dar nu a afișat nimic. Adaugă console.log()!</div>';
+                    }
+                }, 1200);
+            } catch (err) {
+                console.log = originalLog;
+                outputEl.innerHTML = `<div class="output-line error">❌ ${err.message}</div>`;
+            }
+        }
+
+        // ── Toggle hint ──
+        function toggleHint() {
+            const hint = document.getElementById('hintBox');
+            hint.style.display = hint.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // ── Go next ──
+        function goNext() {
+            if (currentNum < 19) {
+                window.location.href = `lectie.html?lectie=${currentNum + 1}`;
+            }
+        }
+
+        // ── Init ──
+        document.addEventListener('DOMContentLoaded', renderLesson);
+    </script>
+</body>
+
+</html>
